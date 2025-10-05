@@ -13,3 +13,51 @@ export function getKeyCert(): {
 		keyCert: md5(`${key}${time}`),
 	};
 }
+
+export function obfuscateEmail(email: string) {
+	// Tách phần trước @ và phần tên miền
+	const [username, domain] = email.split('@');
+
+	// Giữ lại ký tự đầu tiên và cuối cùng của tên người dùng
+	const firstChar = username[0];
+	const lastChar = username[username.length - 1];
+
+	// Tạo phần che giấu giữa
+	const middleHidden = '...';
+
+	// Tạo tên người dùng mới với phần che giấu
+	const newUsername = firstChar + middleHidden + lastChar;
+
+	// Kết hợp với tên miền để tạo email đã che giấu
+	const obfuscatedEmail = newUsername + '@' + domain;
+
+	return obfuscatedEmail;
+}
+
+export default function fancyTimeFormat(duration: number) {
+	// Hours, minutes and seconds
+	var hrs = ~~(duration / 3600);
+	var mins = ~~((duration % 3600) / 60);
+	var secs = ~~duration % 60;
+
+	// Output like "1:01" or "4:03:59" or "123:03:59"
+	var ret = '';
+
+	if (hrs > 0) {
+		ret += '' + hrs + ':' + (mins < 10 ? '0' : '');
+	}
+
+	ret += '' + mins + ':' + (secs < 10 ? '0' : '');
+	ret += '' + secs;
+	return ret;
+}
+
+export function removeVietnameseTones(str: string): string {
+	return str
+		.trim()
+		.toLowerCase()
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/đ/g, 'd')
+		.replace(/Đ/g, 'D');
+}

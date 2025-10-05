@@ -12,16 +12,16 @@ body {
 	margin: 0;
 	font-family: SF-Pro;
 	color: #353945;
-	background-color: #f8f8f8;
+	background-color: #fff;
 
 	::-moz-selection {
 		color: #fff;
-		background: #3772ff;
+		background: #20c874;
 	}
 
 	::selection {
 		color: #fff;
-		background: #3772ff;
+		background: #20c874;
 	}
 }
 
@@ -98,7 +98,7 @@ input:-internal-autofill-selected {
 }
 
 #nprogress .bar {
-	background: #3772ff;
+	background: #20c874;
 	position: fixed;
 	z-index: 10;
 	top: 0;
@@ -113,7 +113,7 @@ input:-internal-autofill-selected {
 	right: 0px;
 	width: 100px;
 	height: 100%;
-	box-shadow: 0 0 10px #3772ff, 0 0 5px #3772ff;
+	box-shadow: 0 0 10px #20c874, 0 0 5px #20c874;
 	opacity: 1;
 	-webkit-transform: rotate(3deg) translate(0px, -4px);
 	-ms-transform: rotate(3deg) translate(0px, -4px);
@@ -134,8 +134,8 @@ input:-internal-autofill-selected {
 	height: 18px;
 	box-sizing: border-box;
 	border: solid 2px transparent;
-	border-top-color: #3772ff;
-	border-left-color: #3772ff;
+	border-top-color: #20c874;
+	border-left-color: #20c874;
 	border-radius: 50%;
 
 	-webkit-animation: nprogress-spinner 400ms linear infinite;
@@ -300,113 +300,5 @@ input:-internal-autofill-selected {
 	.Toastify__toast-body {
 		padding: 0;
 		text-align: left;
-	}
-}
-
-.jodit-container {
-	height: 100% !important;
-	width: 100% !important;
-}
-
-.jodit-workplace {
-	min-height: 800px !important;
-}
-
-.jodit-status-bar {
-	display: none !important;
-}
-
-.rdtPicker {
-	border: none !important;
-	padding: 0 !important;
-	margin-top: 0 !important;
-
-	// Lưới ngày
-	th {
-		padding: 6px 0 !important;
-	}
-
-	thead tr:first-of-type th:hover {
-		transition: 0.3s;
-		background: rgba(154, 169, 182, 0.2) !important;
-	}
-
-	td,
-	th {
-		border-radius: 6px;
-		height: 40px !important;
-	}
-
-	td {
-		font-weight: 500;
-	}
-
-	td.rdtOld {
-		color: #9aa9b6;
-	}
-
-	td.rdtActive,
-	td.rdtActive:hover {
-		background-color: #ff8357 !important;
-	}
-
-	td.rdtToday:before {
-		display: none !important;
-	}
-
-	td.rdtDisabled,
-	td.rdtDisabled:hover {
-		color: #9aa9b6 !important;
-	}
-
-	.rdtDays .rdtTimeToggle {
-		background-color: #fff;
-		border: 1px solid #00b7c4;
-
-		&:hover {
-			background-color: unset;
-			opacity: 0.6;
-		}
-	}
-
-	// Lưới tháng
-	td.rdtMonth,
-	td.rdtYear {
-		height: 44px !important;
-	}
-
-	th.rdtSwitch {
-		width: 250px !important;
-	}
-
-	.rdtMonths th.rdtSwitch {
-		width: 32px !important;
-	}
-
-	.rdtTime .rdtSwitch {
-		cursor: pointer;
-		font-size: 20px;
-		font-weight: 600;
-
-		&:hover {
-			opacity: 0.8;
-		}
-	}
-
-	.rdtBtn {
-		border-radius: 6px;
-		height: 44px;
-		width: 44px;
-	}
-
-	.rdtCounter .rdtCount {
-		height: 25%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.rdtCounterSeparator {
-		margin: 0 16px;
 	}
 }

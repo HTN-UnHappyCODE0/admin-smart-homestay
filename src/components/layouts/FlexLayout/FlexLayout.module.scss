@@ -1,0 +1,60 @@
+@import '../../../styles/variables';
+
+.flex_layout {
+	height: 100%;
+	display: flex;
+}
+
+.fit-height {
+	height: fit-content;
+}
+
+.row {
+	flex-direction: row;
+}
+
+.row-reverse {
+	flex-direction: row-reverse;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.column-reverse {
+	flex-direction: column-reverse;
+}
+
+.gap-4 {
+	gap: 4px;
+}
+
+.gap-8 {
+	gap: 8px;
+}
+
+.gap-10 {
+	gap: 10px;
+}
+
+.gap-12 {
+	gap: 12px;
+}
+
+.gap-16 {
+	gap: 16px;
+}
+
+.gap-20 {
+	gap: 20px;
+}
+
+.gap-24 {
+	gap: 24px;
+}
+
+@media (max-width: $widthTablet) {
+	.flex_layout {
+		gap: 8px !important;
+	}
+}
