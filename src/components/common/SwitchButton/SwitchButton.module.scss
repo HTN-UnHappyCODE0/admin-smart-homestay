@@ -1,0 +1,42 @@
+.main {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	.btn {
+		cursor: pointer;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #a1a1a1;
+		width: 48px;
+		height: 24px;
+		border-radius: 18px;
+		transition: 0.3s;
+
+		.switch {
+			transition: 0.3s;
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background-color: #a1a1a1;
+			left: 2px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+
+	.btn.on {
+		background-color: #17b26a;
+		border: 1px solid #17b26a;
+
+		.switch {
+			left: 25px;
+			background-color: #fff;
+		}
+	}
+
+	.text {
+		color: #fff;
+	}
+}

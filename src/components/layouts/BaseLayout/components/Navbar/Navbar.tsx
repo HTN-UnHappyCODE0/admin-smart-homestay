@@ -10,14 +10,16 @@ import {useRouter} from 'next/router';
 import clsx from 'clsx';
 import Tippy from '@tippyjs/react';
 import useWindowWidth from '~/common/hooks/useWindowWidth';
-import {Notification, UserEdit} from 'iconsax-react';
+import {Danger, Notification, UserEdit} from 'iconsax-react';
 import {IoLogOutOutline} from 'react-icons/io5';
+import Dialog from '~/components/common/Dialog';
 
 function Navbar({}: PropsNavbar) {
 	const router = useRouter();
 	const width = useWindowWidth({debounceMs: 150});
 
 	const [small, setSmall] = useState<boolean>(false);
+	const [openLogout, setOpenLogout] = useState<boolean>(false);
 
 	const checkActive = useCallback(
 		(pathname: string) => {
@@ -78,7 +80,7 @@ function Navbar({}: PropsNavbar) {
 				</Tippy>
 			</div>
 			<Tippy content='Đăng xuất'>
-				<div className={styles.profile}>
+				<div className={styles.profile} onClick={() => setOpenLogout(true)}>
 					<div className={styles.info}>
 						<Image
 							alt='Avatar'
@@ -95,6 +97,16 @@ function Navbar({}: PropsNavbar) {
 					<IoLogOutOutline size={24} color='#EE0033' />
 				</div>
 			</Tippy>
+
+			<Dialog
+				open={openLogout}
+				onClose={() => setOpenLogout(false)}
+				title='Đăng xuất'
+				note='Bạn có muốn đăng xuất khỏi hệ thống không?'
+				icon={<Danger size='76' color='#F46161' variant='Bold' />}
+				type='error'
+				onSubmit={() => {}}
+			/>
 		</div>
 	);
 }
