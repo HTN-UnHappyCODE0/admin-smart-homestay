@@ -12,3 +12,8 @@ export enum TYPE_DATE {
 	LAST_7_DAYS = 8,
 	LUA_CHON = 9,
 }
+
+export const COOKIE_KEY = {
+	ACCESS_TOKEN: 'accessToken',
+	REFRESH_TOKEN: 'refreshToken',
+};

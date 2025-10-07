@@ -13,10 +13,21 @@ import useWindowWidth from '~/common/hooks/useWindowWidth';
 import {Danger, Notification, UserEdit} from 'iconsax-react';
 import {IoLogOutOutline} from 'react-icons/io5';
 import Dialog from '~/components/common/Dialog';
+import {useSelector} from 'react-redux';
+import {RootState, store} from '~/redux/store';
+import {useMutation} from '@tanstack/react-query';
+import {httpRequest} from '~/services';
+import authServices from '~/services/authServices';
+import {COOKIE_KEY} from '~/constants/config/enum';
+import {deleteCookie} from 'cookies-next';
+import {logout} from '~/redux/reducer/auth';
+import {setInfoUser} from '~/redux/reducer/user';
 
 function Navbar({}: PropsNavbar) {
 	const router = useRouter();
 	const width = useWindowWidth({debounceMs: 150});
+
+	const {infoUser} = useSelector((state: RootState) => state.user);
 
 	const [small, setSmall] = useState<boolean>(false);
 	const [openLogout, setOpenLogout] = useState<boolean>(false);
@@ -33,6 +44,25 @@ function Navbar({}: PropsNavbar) {
 	useEffect(() => {
 		if (width <= 1200) setSmall(true);
 	}, [width]);
+
+	const funcLogout = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Đăng xuất thành công!',
+				http: authServices.logout({}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
+				deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
+
+				store.dispatch(logout());
+				store.dispatch(setInfoUser(null));
+			}
+		},
+	});
 
 	return (
 		<div className={clsx(styles.container, {[styles.small]: small})}>
@@ -90,7 +120,7 @@ function Navbar({}: PropsNavbar) {
 							style={{borderRadius: '50%', border: '1px solid #20C874'}}
 						/>
 						<div className={styles.name}>
-							<h5>Nguyễn Văn A</h5>
+							<h5>{infoUser?.name}</h5>
 							<p>Admin</p>
 						</div>
 					</div>
@@ -105,7 +135,7 @@ function Navbar({}: PropsNavbar) {
 				note='Bạn có muốn đăng xuất khỏi hệ thống không?'
 				icon={<Danger size='76' color='#F46161' variant='Bold' />}
 				type='error'
-				onSubmit={() => {}}
+				onSubmit={funcLogout.mutate}
 			/>
 		</div>
 	);

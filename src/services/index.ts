@@ -1,51 +1,94 @@
 import axios from 'axios';
-import {getKeyCert} from '~/common/funcs/optionConvert';
-import {toastInfo, toastSuccess, toastWarn} from '~/common/funcs/toast';
-import {logout} from '~/redux/reducer/auth';
-import {setInfoUser} from '~/redux/reducer/user';
+import {getCookie, setCookie, deleteCookie} from 'cookies-next';
 import {store} from '~/redux/store';
+import {setAccessToken, setRefreshToken, logout, setStateLogin} from '~/redux/reducer/auth';
+import authServices from '~/services/authServices';
+import {COOKIE_KEY} from '~/constants/config/enum';
+import {toastInfo, toastSuccess, toastWarn} from '~/common/funcs/toast';
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+	failedQueue.forEach((prom) => {
+		if (error) prom.reject(error);
+		else prom.resolve(token);
+	});
+	failedQueue = [];
+};
 
 const axiosClient = axios.create({
-	headers: {
-		'content-type': 'application/json',
-	},
 	baseURL: process.env.NEXT_PUBLIC_API,
+	headers: {'Content-Type': 'application/json'},
 	timeout: 15000,
-	timeoutErrorMessage: 'Timeout error request',
 });
 
-axiosClient.interceptors.request.use(async (config) => {
-	const token = store.getState().auth.token;
-	config.headers.Authorization = token ? 'Bearer ' + token : null;
-
-	if (!(config.data instanceof FormData)) {
-		config.data = {
-			...getKeyCert(),
-			...config.data,
-		};
-	}
-
+axiosClient.interceptors.request.use((config) => {
+	const accessToken = getCookie(COOKIE_KEY.ACCESS_TOKEN);
+	if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
 	return config;
 });
 
 axiosClient.interceptors.response.use(
-	(response: any) => {
-		if (response && response.data) {
-			return response.data;
+	(response) => response.data,
+	async (error) => {
+		const originalRequest = error.config;
+
+		if (error.response?.status === 401 && !originalRequest._retry) {
+			if (isRefreshing) {
+				return new Promise((resolve, reject) => {
+					failedQueue.push({resolve, reject});
+				})
+					.then((token) => {
+						originalRequest.headers.Authorization = `Bearer ${token}`;
+						return axiosClient(originalRequest);
+					})
+					.catch((err) => Promise.reject(err));
+			}
+
+			originalRequest._retry = true;
+			isRefreshing = true;
+
+			try {
+				// Gọi api refresh token
+				const res = await authServices.refreshToken({});
+
+				const newAccessToken = res?.data?.data?.accessToken;
+				const newRefreshToken = res?.data?.data?.refreshToken;
+
+				if (newAccessToken && newRefreshToken) {
+					setCookie(COOKIE_KEY.ACCESS_TOKEN, newAccessToken, {maxAge: 60 * 60 * 24 * 7});
+					setCookie(COOKIE_KEY.REFRESH_TOKEN, newRefreshToken, {maxAge: 60 * 60 * 24 * 7});
+					store.dispatch(setAccessToken(newAccessToken));
+					store.dispatch(setRefreshToken(newRefreshToken));
+
+					processQueue(null, newAccessToken);
+					originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+					return axiosClient(originalRequest);
+				}
+			} catch (err) {
+				processQueue(err, null);
+				deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
+				deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
+
+				store.dispatch(logout());
+				store.dispatch(setStateLogin(false));
+
+				return Promise.reject(err);
+			} finally {
+				isRefreshing = false;
+			}
 		}
 
-		return response;
-	},
-	(error: any) => {
-		if (error.response && error.response.data) {
-			throw error.response.data;
-		}
-
-		if (!axios.isCancel(error)) throw error;
+		return Promise.reject(error);
 	}
 );
 
 export default axiosClient;
+
+async function delay(duration: number) {
+	return await new Promise((resolve) => setTimeout(resolve, duration));
+}
 
 export const httpRequest = async ({
 	http,
@@ -53,45 +96,49 @@ export const httpRequest = async ({
 	msgSuccess,
 	showMessageSuccess = false,
 	showMessageFailed = false,
-	onError,
 }: {
-	http: any;
-	setLoading?: (any: any) => void;
-	onError?: () => void;
+	http: Promise<any>;
+	setLoading?: (loading: boolean) => void;
 	showMessageSuccess?: boolean;
 	showMessageFailed?: boolean;
 	msgSuccess?: string;
 }) => {
-	setLoading && setLoading(() => true);
+	setLoading?.(true);
 
 	try {
+		await delay(500);
+
 		const res: any = await http;
 
-		if (res.error.code === 0) {
-			showMessageSuccess && toastSuccess({msg: msgSuccess || res?.error?.message});
-			setLoading && setLoading(() => false);
+		// Call API thành công
+		if (res?.error?.code === 1) {
+			if (showMessageSuccess) {
+				toastSuccess({msg: msgSuccess || res?.error?.message || 'Thành công!'});
+			}
 
-			return res.data || true;
+			return res?.data || true;
 		} else {
-			setLoading && setLoading(() => false);
-			onError && onError();
-			throw res?.error?.message;
+			throw res?.error?.message || 'Thất bại!';
 		}
 	} catch (err: any) {
-		if (err?.status === 401 || err?.status === 403) {
-			store.dispatch(logout());
-			store.dispatch(setInfoUser(null));
-		} else if (typeof err == 'string') {
-			showMessageFailed && toastWarn({msg: err || 'Có lỗi đã xảy ra!'});
-			setLoading && setLoading(() => false);
-		} else if (err.code == 'ERR_NETWORK' || err.code == 'ECONNABORTED') {
-			showMessageFailed && toastInfo({msg: 'Kiểm tra kết nối internet'});
-			setLoading && setLoading(() => false);
-		} else {
-			showMessageFailed && toastWarn({msg: err?.error?.message || 'Có lỗi đã xảy ra!'});
-			setLoading && setLoading(() => false);
+		console.error('Lỗi gọi api:', err);
+
+		if (typeof err == 'string') {
+			if (showMessageFailed) toastWarn({msg: err || 'Có lỗi đã xảy ra!'});
+			return;
 		}
+
+		if (err?.response?.status === 401) {
+			return Promise.reject(err);
+		}
+
+		if (err?.code === 'ERR_NETWORK' || err?.code === 'ECONNABORTED') {
+			if (showMessageFailed) toastInfo({msg: 'Kiểm tra kết nối Internet của bạn.'});
+			return;
+		}
+
+		throw err;
 	} finally {
-		setLoading && setLoading(() => false);
+		setLoading?.(false);
 	}
 };

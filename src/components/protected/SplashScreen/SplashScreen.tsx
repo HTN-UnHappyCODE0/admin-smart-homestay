@@ -1,61 +1,88 @@
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import Lottie from 'react-lottie';
+import {useSelector} from 'react-redux';
 import {RootState, store} from '~/redux/store';
-
-import {PropsSplashScreen} from './interfaces';
 import clsx from 'clsx';
 import styles from './SplashScreen.module.scss';
-import {useSelector} from 'react-redux';
-import {getItemStorage, setItemStorage} from '~/common/funcs/localStorage';
 import {KEY_STORE} from '~/constants/config';
 import {setLoading, setRememberPassword} from '~/redux/reducer/site';
-
-import {setDataLoginStorage, setStateLogin, setToken} from '~/redux/reducer/auth';
+import {setAccessToken, setRefreshToken, setStateLogin, setDataLoginStorage} from '~/redux/reducer/auth';
 import {setInfoUser} from '~/redux/reducer/user';
-
-import * as loading from '../../../../public/static/anim/loading_screen.json';
+import {getCookie, setCookie, deleteCookie} from 'cookies-next';
+import * as loadingAnim from '../../../../public/static/anim/loading_screen.json';
+import {getItemStorage, setItemStorage} from '~/common/funcs/localStorage';
+import {COOKIE_KEY} from '~/constants/config/enum';
+import userServices from '~/services/userServices';
 
 const defaultOptions = {
 	loop: true,
 	autoplay: true,
-	animationData: loading,
-	rendererSettings: {
-		preserveAspectRatio: 'xMidYMid slice',
-	},
+	animationData: loadingAnim,
+	rendererSettings: {preserveAspectRatio: 'xMidYMid slice'},
 };
 
-function SplashScreen({}: PropsSplashScreen) {
-	const {loading, isRememberPassword} = useSelector((state: RootState) => state.site);
+function SplashScreen() {
+	const hasFetchedUser = useRef(false);
+
 	const {infoUser} = useSelector((state: RootState) => state.user);
-	const {token, isLogin, dataLoginStorage} = useSelector((state: RootState) => state.auth);
+	const {loading, isRememberPassword} = useSelector((state: RootState) => state.site);
+	const {accessToken, refreshToken, isLogin, dataLoginStorage} = useSelector((state: RootState) => state.auth);
 
 	useEffect(() => {
 		(async () => {
-			const state = await getItemStorage(KEY_STORE);
+			try {
+				const accessToken = getCookie(COOKIE_KEY.ACCESS_TOKEN) as string | undefined;
+				const refreshToken = getCookie(COOKIE_KEY.REFRESH_TOKEN) as string | undefined;
 
-			if (!!state) {
-				store.dispatch(setToken(state.token));
-				store.dispatch(setStateLogin(state.isLogin));
-				store.dispatch(setInfoUser(state.infoUser));
-				store.dispatch(setRememberPassword(state.isRememberPassword));
-				store.dispatch(setDataLoginStorage(state.dataLoginStorage));
+				const state = await getItemStorage(KEY_STORE);
+
+				if (accessToken) store.dispatch(setAccessToken(accessToken));
+				if (refreshToken) store.dispatch(setRefreshToken(refreshToken));
+
+				if (state?.isLogin) store.dispatch(setStateLogin(state.isLogin));
+				if (state?.infoUser) store.dispatch(setInfoUser(state.infoUser));
+				if (state?.isRememberPassword) store.dispatch(setRememberPassword(state.isRememberPassword));
+				if (state?.dataLoginStorage) store.dispatch(setDataLoginStorage(state.dataLoginStorage));
+			} finally {
+				store.dispatch(setLoading(false));
 			}
-
-			store.dispatch(setLoading(false));
 		})();
 	}, []);
 
 	useEffect(() => {
+		const fetchUserInfo = async () => {
+			try {
+				const res = await userServices.getCurrentUser({});
+				if (res?.data) store.dispatch(setInfoUser(res.data));
+			} catch {
+				store.dispatch(setInfoUser(null));
+			} finally {
+				hasFetchedUser.current = false;
+			}
+		};
+
+		if (accessToken && !hasFetchedUser.current) {
+			hasFetchedUser.current = true;
+			fetchUserInfo();
+		}
+	}, [accessToken]);
+
+	useEffect(() => {
 		if (!loading) {
+			if (accessToken) setCookie(COOKIE_KEY.ACCESS_TOKEN, accessToken, {maxAge: 60 * 60 * 24 * 7});
+			else deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
+
+			if (refreshToken) setCookie(COOKIE_KEY.REFRESH_TOKEN, refreshToken, {maxAge: 60 * 60 * 24 * 7});
+			else deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
+
 			setItemStorage(KEY_STORE, {
-				isLogin: isLogin,
-				token: token,
-				infoUser: infoUser,
-				isRememberPassword: isRememberPassword,
-				dataLoginStorage: dataLoginStorage,
+				isLogin,
+				infoUser,
+				isRememberPassword,
+				dataLoginStorage,
 			});
 		}
-	}, [loading, isLogin, token, infoUser, isRememberPassword, dataLoginStorage]);
+	}, [loading, isLogin, accessToken, refreshToken, infoUser, isRememberPassword, dataLoginStorage]);
 
 	return (
 		<div className={clsx(styles.container, {[styles.close]: !loading})}>

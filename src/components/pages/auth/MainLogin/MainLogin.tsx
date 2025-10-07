@@ -12,6 +12,11 @@ import Link from 'next/link';
 import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button';
 import {useRouter} from 'next/router';
+import {useMutation} from '@tanstack/react-query';
+import {httpRequest} from '~/services';
+import authServices from '~/services/authServices';
+import {setAccessToken, setDataLoginStorage, setRefreshToken, setStateLogin} from '~/redux/reducer/auth';
+import Loading from '~/components/common/Loading';
 
 function MainLogin({}: PropsMainLogin) {
 	const router = useRouter();
@@ -41,12 +46,45 @@ function MainLogin({}: PropsMainLogin) {
 		}
 	}, []);
 
+	const funcLogin = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Đăng nhập thành công!',
+				http: authServices.login({
+					username: form.username,
+					password: form?.password,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				store.dispatch(setAccessToken(data.accessToken));
+				store.dispatch(setRefreshToken(data.refreshToken));
+				store.dispatch(setStateLogin(true));
+				router.replace(PATH.Home, undefined, {scroll: false});
+			}
+		},
+	});
+
 	const handleLogin = () => {
-		router.push(PATH.Home);
+		if (isRememberPassword) {
+			store.dispatch(
+				setDataLoginStorage({
+					usernameStorage: form.username,
+					passwordStorage: form.password,
+				})
+			);
+		} else {
+			store.dispatch(setDataLoginStorage(null));
+		}
+
+		return funcLogin.mutate();
 	};
 
 	return (
 		<div className={styles.login}>
+			<Loading loading={funcLogin.isLoading} />
 			<Form form={form} setForm={setForm} onSubmit={handleLogin}>
 				<Image alt='Logo' src={icons.logo} className={styles.logo} />
 				<h4 className={styles.title}>Mừng trở lại</h4>
