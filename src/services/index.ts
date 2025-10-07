@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {getCookie, setCookie, deleteCookie} from 'cookies-next';
 import {store} from '~/redux/store';
-import {setAccessToken, setRefreshToken, logout, setStateLogin} from '~/redux/reducer/auth';
+import {setInfoUser} from '~/redux/reducer/user';
+import {setAccessToken, setRefreshToken, logout} from '~/redux/reducer/auth';
 import authServices from '~/services/authServices';
 import {COOKIE_KEY} from '~/constants/config/enum';
 import {toastInfo, toastSuccess, toastWarn} from '~/common/funcs/toast';
@@ -72,7 +73,7 @@ axiosClient.interceptors.response.use(
 				deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
 
 				store.dispatch(logout());
-				store.dispatch(setStateLogin(false));
+				store.dispatch(setInfoUser(null));
 
 				return Promise.reject(err);
 			} finally {
