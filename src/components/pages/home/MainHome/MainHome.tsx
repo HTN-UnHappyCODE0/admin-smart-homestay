@@ -78,11 +78,25 @@ function MainHome({}: PropsMainHome) {
 					}
 				/>
 
-				<WrapperForm title='Thông tin căn hộ' actions={<p>Thêm loại phòng</p>}>
+				<WrapperForm
+					title='Thông tin căn hộ'
+					actions={
+						<Button p_4_8 outline maxContent textGreen textDecoration maxHeight bold>
+							+ Thêm loại phòng
+						</Button>
+					}
+				>
 					Main Form
 				</WrapperForm>
 
-				<WrapperForm title='Danh sách phòng trong căn hộ' actions={<p>Thêm loại phòng</p>}>
+				<WrapperForm
+					title='Danh sách phòng trong căn hộ'
+					actions={
+						<Button p_4_8 outline maxContent textGreen textDecoration maxHeight bold>
+							+ Thêm loại phòng
+						</Button>
+					}
+				>
 					Main Form
 				</WrapperForm>
 
