@@ -6,8 +6,12 @@ import Button from '~/components/common/Button';
 import {useState} from 'react';
 import Form, {Input, Select, TextArea} from '~/components/common/Form';
 import WrapperForm from '~/components/utils/WrapperForm';
+import UploadMultipleFile from '~/components/common/UploadMultipleFile';
+import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
 
 function MainDetail({}: PropsMainDetail) {
+	const [images, setImages] = useState<IDataUploadFile[]>([]);
+
 	const [form, setForm] = useState<{name: string; type: string; description: string}>({name: '', type: '', description: ''});
 
 	return (
@@ -98,6 +102,18 @@ function MainDetail({}: PropsMainDetail) {
 						showDone
 						unit='M2'
 					/>
+
+					<div style={{marginTop: '16px'}}>
+						<UploadMultipleFile
+							label={
+								<span>
+									Tên chủ hộ <span style={{color: 'red'}}>*</span>
+								</span>
+							}
+							images={images}
+							setImages={setImages}
+						/>
+					</div>
 				</WrapperForm>
 			</Form>
 		</WrapperFormPostion>
