@@ -20,6 +20,9 @@ import SwitchButton from '~/components/common/SwitchButton';
 import Popup from '~/components/common/Popup';
 import PositionContainer from '~/components/common/PositionContainer';
 import MainDetail from '../MainDetail';
+import Breadcrumb from '~/components/common/Breadcrumb';
+import {PATH} from '~/constants/config';
+import WrapperForm from '~/components/utils/WrapperForm';
 
 function MainHome({}: PropsMainHome) {
 	const [page, setPage] = useState<number>(1);
@@ -51,6 +54,38 @@ function MainHome({}: PropsMainHome) {
 						</FlexLayout>
 					}
 				/>
+
+				<Breadcrumb
+					listUrls={[
+						{
+							title: 'Danh sách căn hộ',
+							path: PATH.Home,
+						},
+						{
+							path: '',
+							title: 'Chi tiết căn hộ',
+						},
+					]}
+					actions={
+						<FlexLayout row gap-6>
+							<Button p_8_24 rounded_8 white bold>
+								Hủy bỏ
+							</Button>
+							<Button p_8_24 rounded_8 bright-cyan bold>
+								Lưu lại
+							</Button>
+						</FlexLayout>
+					}
+				/>
+
+				<WrapperForm title='Thông tin căn hộ' actions={<p>Thêm loại phòng</p>}>
+					Main Form
+				</WrapperForm>
+
+				<WrapperForm title='Danh sách phòng trong căn hộ' actions={<p>Thêm loại phòng</p>}>
+					Main Form
+				</WrapperForm>
+
 				<SearchBlock
 					keyword={keyword}
 					setKeyword={setKeyword}

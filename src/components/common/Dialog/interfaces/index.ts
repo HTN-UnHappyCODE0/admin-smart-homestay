@@ -3,9 +3,11 @@ export interface PropsDialog {
 	title: string;
 	note?: string | React.ReactNode;
 	icon?: React.ReactNode;
-	onClose: () => any;
-	onSubmit: () => any;
+	borderIconColor?: string;
+	backgroundIconColor?: string;
 	titleCancel?: string;
 	titleSubmit?: string;
 	type?: 'primary' | 'error' | 'warning';
+	onClose: () => void;
+	onSubmit: () => void;
 }

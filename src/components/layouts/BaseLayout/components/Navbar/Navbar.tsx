@@ -10,7 +10,7 @@ import {useRouter} from 'next/router';
 import clsx from 'clsx';
 import Tippy from '@tippyjs/react';
 import useWindowWidth from '~/common/hooks/useWindowWidth';
-import {Danger, Notification, UserEdit} from 'iconsax-react';
+import {Danger, Notification, UserEdit, Warning2} from 'iconsax-react';
 import {IoLogOutOutline} from 'react-icons/io5';
 import Dialog from '~/components/common/Dialog';
 import {useSelector} from 'react-redux';
@@ -133,7 +133,7 @@ function Navbar({}: PropsNavbar) {
 				onClose={() => setOpenLogout(false)}
 				title='Đăng xuất'
 				note='Bạn có muốn đăng xuất khỏi hệ thống không?'
-				icon={<Danger size='76' color='#F46161' variant='Bold' />}
+				icon={<Warning2 size='28' color='#EE0033' />}
 				type='error'
 				onSubmit={funcLogout.mutate}
 			/>

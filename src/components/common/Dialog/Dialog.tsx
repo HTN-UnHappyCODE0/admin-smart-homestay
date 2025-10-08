@@ -5,13 +5,15 @@ import styles from './Dialog.module.scss';
 import Popup from '../Popup';
 import Button from '../Button';
 import {IoClose} from 'react-icons/io5';
-import {Danger} from 'iconsax-react';
+import {Warning2} from 'iconsax-react';
 
 function Dialog({
 	open,
 	title,
 	note,
-	icon = <Danger size='32' color='#F46161' variant='Bold' />,
+	icon = <Warning2 size='28' color='#EE0033' />,
+	borderIconColor = '#fff0f3',
+	backgroundIconColor = '#ffdce4',
 	titleCancel = 'Hủy bỏ',
 	titleSubmit = 'Xác nhận',
 	onClose,
@@ -21,18 +23,25 @@ function Dialog({
 	return (
 		<Popup open={open} onClose={onClose}>
 			<div className={styles.container}>
-				{icon}
+				<div
+					style={{
+						background: backgroundIconColor,
+						border: `8px solid ${borderIconColor}`,
+					}}
+					className={styles.main_icon}
+				>
+					{icon}
+				</div>
 				<h4 className={styles.title}>{title}</h4>
 				<p className={styles.note}>{note}</p>
 				<div className={styles.groupBtn}>
-					<Button white rounded_8 bold maxContent p_12_32 onClick={onClose}>
+					<Button white rounded_20 bold p_8_24 onClick={onClose}>
 						{titleCancel}
 					</Button>
 					<Button
 						bold
-						rounded_8
-						maxContent
-						p_12_32
+						rounded_20
+						p_8_24
 						green={type == 'primary'}
 						red={type == 'error'}
 						orange={type == 'warning'}
@@ -43,7 +52,7 @@ function Dialog({
 				</div>
 
 				<div className={styles.close} onClick={onClose}>
-					<IoClose size={28} color='#8492A6' />
+					<IoClose size={24} color='#8492A6' />
 				</div>
 			</div>
 		</Popup>
