@@ -3,6 +3,12 @@ import 'moment/locale/vi';
 import 'react-toastify/dist/ReactToastify.css';
 import 'tippy.js/dist/tippy.css';
 
+import 'lightgallery/css/lightgallery.css';
+import 'lightgallery/css/lg-thumbnail.css';
+import 'lightgallery/css/lg-zoom.css';
+import 'lightgallery/css/lg-video.css';
+import 'lightgallery/css/lg-share.css';
+
 import '~/styles/_globals.scss';
 
 import Head from 'next/head';

@@ -14,6 +14,7 @@ function Input({
 	placeholder,
 	icon,
 	label,
+	action,
 	value,
 	unit,
 	note,
@@ -262,6 +263,11 @@ function Input({
 						{isPassword ? (
 							<div className={styles.icon_control} onClick={handleToggleShowPass}>
 								{showPass ? <RiEyeLine size={20} color='#29303c' /> : <RiEyeOffLine size={20} color='#29303c' />}
+							</div>
+						) : null}
+						{action ? (
+							<div onClick={(e) => e.preventDefault()} className={styles.icon_control}>
+								{action}
 							</div>
 						) : null}
 					</div>

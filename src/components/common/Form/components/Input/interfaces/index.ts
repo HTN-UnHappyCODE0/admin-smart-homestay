@@ -5,6 +5,7 @@ export interface PropsInput {
 
 	icon?: React.ReactNode;
 	label?: string | React.ReactNode;
+	action?: React.ReactNode;
 
 	value?: string | number;
 	unit?: string;

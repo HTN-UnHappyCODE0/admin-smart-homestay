@@ -17,12 +17,13 @@ import IconActionTable from '~/components/utils/IconActionTable';
 import StateActive from '~/components/utils/StateActive';
 import Pagination from '~/components/common/Pagination';
 import SwitchButton from '~/components/common/SwitchButton';
-import Popup from '~/components/common/Popup';
 import PositionContainer from '~/components/common/PositionContainer';
 import MainDetail from '../MainDetail';
 import Breadcrumb from '~/components/common/Breadcrumb';
 import {PATH} from '~/constants/config';
 import WrapperForm from '~/components/utils/WrapperForm';
+import TabNavLink from '~/components/common/TabNavLink';
+import Search from '~/components/common/Search';
 
 function MainHome({}: PropsMainHome) {
 	const [page, setPage] = useState<number>(1);
@@ -134,6 +135,122 @@ function MainHome({}: PropsMainHome) {
 						</FlexLayout>
 					}
 				/>
+
+				<MainTable>
+					<TabNavLink
+						query='_type'
+						listHref={[
+							{
+								pathname: '/',
+								query: null,
+								title: 'Danh sách thiết bị',
+							},
+							{
+								pathname: '/',
+								query: 'room',
+								title: 'Danh sách phòng',
+							},
+							{
+								pathname: '/',
+								query: 'interior',
+								title: 'Danh sách nội thất',
+							},
+							{
+								pathname: '/',
+								query: 'evaluate',
+								title: 'Danh sách đánh giá',
+							},
+						]}
+					/>
+					<div style={{width: '100%', height: '1px', background: '#EAEDF2', margin: '12px 0'}}></div>
+					<FlexLayout row gap-8 justify-space-between wrap fit-height>
+						<FlexItem>
+							<FlexLayout row gap-8 wrap>
+								<Search keyword={keyword} setKeyword={setKeyword} />
+								<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
+							</FlexLayout>
+						</FlexItem>
+						<FlexItem>
+							<FlexLayout row gap-8>
+								<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
+									Đặt lại
+								</Button>
+								<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
+									Đặt lại
+								</Button>
+							</FlexLayout>
+						</FlexItem>
+					</FlexLayout>
+
+					<div style={{marginTop: '20px'}}>
+						<DataWrapper data={[1]} loading={false} title='Thành viên trống!' note='Danh sách thành viên hiện đang trống!'>
+							<Table<{uuid: string; name: string}>
+								rowKey={(row) => row.uuid}
+								data={[
+									{uuid: '1', name: '1'},
+									{uuid: '2', name: '2'},
+									{uuid: '3', name: '3'},
+								]}
+								fixedHeader={true}
+								column={[
+									{
+										title: 'STT',
+										fixedLeft: true,
+										render: (_, index) => <>{index + 1}</>,
+									},
+									{
+										title: 'Tên',
+										render: (row, _) => (
+											<>
+												{row.name} - Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab minus, asperiores
+												dolores, non consequatur obcaecati voluptatibus reprehenderit laudantium sapiente minima
+												magnam fugit iure? Eos, quas. Impedit quod earum asperiores harum.
+											</>
+										),
+									},
+									{
+										title: 'Aptomat',
+										render: (row, _) => <SwitchButton checkOn={row.uuid == '1'} />,
+									},
+									{
+										title: 'Trạng thái',
+										render: (row, _) => (
+											<StateActive
+												stateActive={1}
+												listState={[
+													{
+														backgroundColor: '#06AED4',
+														state: 1,
+														text: 'Hoạt động',
+														textColor: '#fff',
+													},
+													{
+														backgroundColor: '#EE0033',
+														state: 2,
+														text: 'Bị khóa',
+														textColor: '#fff',
+													},
+												]}
+											/>
+										),
+									},
+									{
+										title: 'Tác vụ',
+										fixedRight: true,
+										render: (row, _) => (
+											<FlexLayout row>
+												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable icon={<Lock color='#292D32' size={24} />} tooltip='Khóa' />
+												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+											</FlexLayout>
+										),
+									},
+								]}
+							/>
+						</DataWrapper>
+					</div>
+				</MainTable>
+
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
 						<DataWrapper data={[1]} loading={false} title='Thành viên trống!' note='Danh sách thành viên hiện đang trống!'>

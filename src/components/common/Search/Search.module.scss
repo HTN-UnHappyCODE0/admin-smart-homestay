@@ -1,0 +1,38 @@
+.container {
+	min-width: 360px;
+	border-radius: 50px;
+	background-color: #f4f5f6;
+	border: 1px solid #f4f5f6;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	height: 40px;
+	padding: 0 16px;
+	cursor: text;
+	transition: 0.3s;
+
+	&.focus {
+		border: 1px solid #149343;
+		background-color: #fff;
+	}
+
+	&:hover {
+		border: 1px solid #149343;
+	}
+
+	input {
+		display: block;
+		flex: 1;
+		outline: none;
+		border: none;
+		background-color: transparent;
+		font-weight: 500;
+		font-size: 16px;
+		padding: 8px;
+
+		&::placeholder {
+			color: #777e90;
+			opacity: 1;
+		}
+	}
+}

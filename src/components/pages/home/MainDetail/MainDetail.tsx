@@ -8,6 +8,12 @@ import Form, {Input, Select, TextArea} from '~/components/common/Form';
 import WrapperForm from '~/components/utils/WrapperForm';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
+import InfoDetail from '~/components/utils/InfoDetail';
+import StateActive from '~/components/utils/StateActive';
+import GridColumn from '~/components/layouts/GridColumn';
+import {Copy} from 'iconsax-react';
+import Tippy from '@tippyjs/react';
+import {copy} from '~/common/funcs/copy';
 
 function MainDetail({}: PropsMainDetail) {
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
@@ -100,7 +106,13 @@ function MainDetail({}: PropsMainDetail) {
 						isRequired
 						isBlur
 						showDone
-						unit='M2'
+						action={
+							<Tippy content='Sao chép tên chủ hộ'>
+								<div className={styles.btn_copy} onClick={() => copy('Đặng Bá Trường', 'Sao chép tên chủ hộ thành công!')}>
+									<Copy size={24} color='#06AED4' />
+								</div>
+							</Tippy>
+						}
 					/>
 
 					<div style={{marginTop: '16px'}}>
@@ -114,6 +126,86 @@ function MainDetail({}: PropsMainDetail) {
 							setImages={setImages}
 						/>
 					</div>
+				</WrapperForm>
+
+				<WrapperForm
+					title='Thông tin căn hộ'
+					actions={
+						<FlexLayout row gap-6 items-center>
+							<p
+								style={{
+									color: '#202939',
+									fontSize: '14px',
+									fontWeight: '500',
+								}}
+							>
+								24/08/2025
+							</p>
+							<div
+								style={{
+									width: '8px',
+									height: '8px',
+									borderRadius: '50%',
+									background: '#9AA4B2',
+								}}
+							></div>
+							<StateActive
+								isSmall={true}
+								stateActive={1}
+								listState={[
+									{
+										backgroundColor: '#06AED4',
+										state: 1,
+										text: 'Hoạt động',
+										textColor: '#fff',
+									},
+									{
+										backgroundColor: '#EE0033',
+										state: 2,
+										text: 'Bị khóa',
+										textColor: '#fff',
+									},
+								]}
+							/>
+						</FlexLayout>
+					}
+				>
+					<GridColumn col_3>
+						<InfoDetail name='Mã căn hộ' value={235532} />
+						<InfoDetail name='Tên căn hộ' value='TH3-042024' />
+						<InfoDetail
+							name='Trạng thái'
+							value={
+								<StateActive
+									isSmall={true}
+									stateActive={1}
+									listState={[
+										{
+											backgroundColor: '#06AED4',
+											state: 1,
+											text: 'Hoạt động',
+											textColor: '#fff',
+										},
+										{
+											backgroundColor: '#EE0033',
+											state: 2,
+											text: 'Bị khóa',
+											textColor: '#fff',
+										},
+									]}
+								/>
+							}
+						/>
+						<InfoDetail
+							name='Ảnh căn hộ'
+							value=''
+							images={[
+								'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
+								'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
+								'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
+							]}
+						/>
+					</GridColumn>
 				</WrapperForm>
 			</Form>
 		</WrapperFormPostion>

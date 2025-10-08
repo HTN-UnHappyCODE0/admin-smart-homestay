@@ -2,8 +2,9 @@ import React, {Fragment} from 'react';
 
 import {PropsStateActive} from './interfaces';
 import styles from './StateActive.module.scss';
+import clsx from 'clsx';
 
-function StateActive({isBox = true, stateActive, listState}: PropsStateActive) {
+function StateActive({isBox = true, isSmall = false, stateActive, listState}: PropsStateActive) {
 	return (
 		<Fragment>
 			{isBox ? (
@@ -11,9 +12,8 @@ function StateActive({isBox = true, stateActive, listState}: PropsStateActive) {
 					style={{
 						color: listState.find((v) => v.state == stateActive)?.textColor,
 						background: listState.find((v) => v.state == stateActive)?.backgroundColor,
-						padding: listState.find((v) => v.state == stateActive)?.backgroundColor ? '6px 12px' : undefined,
 					}}
-					className={styles.container}
+					className={clsx(styles.container, {[styles.small]: isSmall})}
 				>
 					{listState.find((v) => v.state == stateActive)?.text || '---'}
 				</div>

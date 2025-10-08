@@ -1913,6 +1913,11 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
+jquery@>=1.7.0:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.7.1.tgz#083ef98927c9a6a74d05a6af02806566d16274de"
+  integrity sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==
+
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -1983,6 +1988,25 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+lg-thumbnail@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/lg-thumbnail/-/lg-thumbnail-1.2.1.tgz#9cb90c36896c51159ea36592fa4ba9bcf164504b"
+  integrity sha512-Z4LUYJgz/CeTgyruLNN4FGHmS21KAIk9lOVjq3kDDNNncgc74Tul9Mp9mvXfbO36SrJVNyfTQWnHzAEvYDv3aQ==
+  dependencies:
+    jquery ">=1.7.0"
+
+lg-zoom@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/lg-zoom/-/lg-zoom-1.3.0.tgz#52e466a487f8b53cd3fe6e853152a042e2fca6cd"
+  integrity sha512-+hZmeZ3DQslAA19tpKSA3kpiwrbB/weRC7b7GiCQEqDaEon1mp1RDQKHfx32gbbeQNGVhBFAiSvB3OHbimVmbg==
+  dependencies:
+    jquery ">=1.7.0"
+
+lightgallery@^2.8.3:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/lightgallery/-/lightgallery-2.9.0.tgz#b3b6e15169eb9b840f70e14d67b9ec0a213cc612"
+  integrity sha512-58Ud1DyhD2ao58t+kPEqSZrjFxg23tGd5ZKr75erm7q31g5xhUtWUJH3sTUkhHzlyJAKHj5eTrJ37HQRXG4Wbg==
 
 locate-path@^6.0.0:
   version "6.0.0"
