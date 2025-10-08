@@ -60,6 +60,9 @@ const Table = <T,>({
 		});
 	}, [data, sortConfig]);
 
+	console.log('123');
+	
+
 	useEffect(() => {
 		const element = tableRef.current;
 		if (!element) return;
