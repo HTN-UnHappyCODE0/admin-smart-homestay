@@ -60,7 +60,7 @@ const Table = <T,>({
 		});
 	}, [data, sortConfig]);
 
-	console.log('123');
+	
 	
 
 	useEffect(() => {
