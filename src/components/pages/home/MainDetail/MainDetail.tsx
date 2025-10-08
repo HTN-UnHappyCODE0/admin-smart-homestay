@@ -30,7 +30,7 @@ function MainDetail({}: PropsMainDetail) {
 			}
 		>
 			<Form form={form} setForm={setForm}>
-				<WrapperForm title='Thông tin căn hộ' actions={<p>Thêm loại phòng</p>}>
+				<WrapperForm title='Thông tin căn hộ' actions={<p>Thêm loại phòng </p>}>
 					<Input
 						label={
 							<span>
