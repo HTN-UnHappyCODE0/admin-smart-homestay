@@ -4,8 +4,8 @@ import {IApartmentType, PropsMainApartmentType} from './interfaces';
 import {statusConfigs, tabsCatalogs} from '~/constants/config/data';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
-import {AddCircle, Edit, Eye, Lock} from 'iconsax-react';
-import {useState} from 'react';
+import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
+import {Fragment, useState} from 'react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -18,15 +18,24 @@ import PositionContainer from '~/components/common/PositionContainer';
 import {useRouter} from 'next/router';
 import FormCreateApartmentType from '../FormCreateApartmentType';
 import FormDetailApartmentType from '../FormDetailApartmentType';
-import {useQuery} from '@tanstack/react-query';
-import {QUERY_KEY} from '~/constants/config/enum';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
+import Pagination from '~/components/common/Pagination';
+import Dialog from '~/components/common/Dialog';
+import Loading from '~/components/common/Loading';
 
 function MainApartmentType({}: PropsMainApartmentType) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
+
+	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
+
+	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number} | null>(null);
 
 	const resetFilter = () => {
 		setKeyword('');
@@ -35,10 +44,29 @@ function MainApartmentType({}: PropsMainApartmentType) {
 
 	const {_open, _uuid} = router.query;
 
-	const {data: apartmentTypes = [], isLoading} = useQuery<IApartmentType[]>([QUERY_KEY.table_apartment_type, keyword, status], {
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IApartmentType[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_apartment_type, page, pageSize, keyword, status], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentTypeServices.getListApartmentType({
+				http: apartmentTypeServices.listApartmentType({
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					page: page,
+					pageSize: pageSize,
 					keyword: keyword,
 					status: status,
 				}),
@@ -48,120 +76,166 @@ function MainApartmentType({}: PropsMainApartmentType) {
 		},
 	});
 
-	return (
-		<LayoutMainPage
-			title='Quản lý danh mục'
-			tabs={tabsCatalogs}
-			actions={
-				<FlexLayout row gap-6>
-					<Button
-						icon={<AddCircle />}
-						p_8_24
-						rounded_40
-						bright-cyan
-						bold
-						onClick={() =>
-							router.replace({
-								pathname: router.pathname,
-								query: {
-									...router.query,
-									_open: 'create',
-								},
-							})
-						}
-					>
-						Thêm mới
-					</Button>
-				</FlexLayout>
+	const funcChangeStatus = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess:
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE
+						? 'Khóa loại hình căn hộ thành công!'
+						: 'Mở khóa loại hình căn hộ thành công!',
+				http: apartmentTypeServices.changeStatusApartmentType({
+					uuid: dataChangeStatus?.uuid!,
+					status: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? STATUS_CONFIG.LOCKED : STATUS_CONFIG.ACTIVE,
+					description: '',
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setDataChangeStatus(null);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_type],
+				});
 			}
-		>
-			<FlexLayout column gap-12>
-				<SearchBlock
-					keyword={keyword}
-					setKeyword={setKeyword}
-					placeholder='Tìm kiếm theo tên danh mục'
-					action={
-						<FlexLayout row gap-8 fit-height>
-							<FlexItem flex-1 overflow-y scrollbar>
-								<FlexLayout row gap-8>
-									<FilterCustom
-										name='Trạng thái'
-										value={status}
-										setValue={setStatus}
-										listOption={statusConfigs?.map((v) => ({
-											uuid: v?.state,
-											name: v?.text,
-										}))}
-									/>
-								</FlexLayout>
-							</FlexItem>
-							<FlexLayout row gap-8>
-								<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
-									Đặt lại
-								</Button>
-							</FlexLayout>
-						</FlexLayout>
-					}
-				/>
-				<FlexItem flex-1 overflow-x>
-					<MainTable>
-						<DataWrapper
-							data={apartmentTypes}
-							loading={isLoading}
-							title='Dữ liệu trống!'
-							note='Danh mục loại hình căn hộ hiện đang trống!'
+		},
+	});
+
+	return (
+		<Fragment>
+			<Loading loading={funcChangeStatus.isLoading} />
+			<LayoutMainPage
+				title='Quản lý danh mục'
+				tabs={tabsCatalogs}
+				actions={
+					<FlexLayout row gap-6>
+						<Button
+							icon={<AddCircle />}
+							p_8_24
+							rounded_40
+							bright-cyan
+							bold
+							onClick={() =>
+								router.replace({
+									pathname: router.pathname,
+									query: {
+										...router.query,
+										_open: 'create',
+									},
+								})
+							}
 						>
-							<Table<IApartmentType>
-								rowKey={(row) => row.uuid}
-								data={apartmentTypes}
-								fixedHeader={true}
-								column={[
-									{
-										title: 'STT',
-										fixedLeft: true,
-										render: (_, index) => <>{index + 1}</>,
-									},
-									{
-										title: 'Tên loại hình căn hộ',
-										render: (row, _) => <>{row?.name}</>,
-									},
-									{
-										title: 'Ghi chú',
-										render: (row, _) => <>{row?.name}</>,
-									},
-									{
-										title: 'Trạng thái',
-										render: (row, _) => <StateActive stateActive={row?.status} listState={statusConfigs} />,
-									},
-									{
-										title: 'Hành động',
-										fixedRight: true,
-										render: (row, _) => (
-											<FlexLayout row>
-												<IconActionTable
-													icon={<Eye color='#292D32' size={24} />}
-													onClick={() =>
-														router.replace({
-															pathname: router.pathname,
-															query: {
-																...router.query,
-																_uuid: row?.uuid,
-															},
-														})
-													}
-													tooltip='Xem chi tiết'
-												/>
-												<IconActionTable icon={<Lock color='#292D32' size={24} />} tooltip='Khóa' />
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
-											</FlexLayout>
-										),
-									},
-								]}
+							Thêm mới
+						</Button>
+					</FlexLayout>
+				}
+			>
+				<FlexLayout column gap-12>
+					<SearchBlock
+						keyword={keyword}
+						setKeyword={setKeyword}
+						placeholder='Tìm kiếm theo tên danh mục'
+						action={
+							<FlexLayout row gap-8 fit-height>
+								<FlexItem flex-1 overflow-y scrollbar>
+									<FlexLayout row gap-8>
+										<FilterCustom
+											name='Trạng thái'
+											value={status}
+											setValue={setStatus}
+											listOption={statusConfigs?.map((v) => ({
+												uuid: v?.state,
+												name: v?.text,
+											}))}
+										/>
+									</FlexLayout>
+								</FlexItem>
+								<FlexLayout row gap-8>
+									<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
+										Đặt lại
+									</Button>
+								</FlexLayout>
+							</FlexLayout>
+						}
+					/>
+					<FlexItem flex-1 overflow-x>
+						<MainTable>
+							<DataWrapper
+								data={data?.items || []}
+								loading={isLoading}
+								title='Dữ liệu trống!'
+								note='Danh mục loại hình căn hộ hiện đang trống!'
+							>
+								<Table<IApartmentType>
+									rowKey={(row) => row.uuid}
+									data={data?.items || []}
+									fixedHeader={true}
+									column={[
+										{
+											title: 'STT',
+											fixedLeft: true,
+											render: (_, index) => <>{index + 1}</>,
+										},
+										{
+											title: 'Tên loại hình căn hộ',
+											render: (row, _) => <>{row?.name}</>,
+										},
+										{
+											title: 'Ghi chú',
+											render: (row, _) => <>{row?.name}</>,
+										},
+										{
+											title: 'Trạng thái',
+											render: (row, _) => <StateActive stateActive={row?.status} listState={statusConfigs} />,
+										},
+										{
+											title: 'Hành động',
+											fixedRight: true,
+											render: (row, _) => (
+												<FlexLayout row>
+													<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+
+													<IconActionTable
+														icon={
+															row?.status == STATUS_CONFIG.ACTIVE ? (
+																<Lock color='#292D32' size={24} />
+															) : (
+																<Unlock color='#292D32' size={24} />
+															)
+														}
+														tooltip={
+															row?.status == STATUS_CONFIG.ACTIVE
+																? 'Khóa loại hình căn hộ'
+																: 'Mở khóa loại hình căn hộ'
+														}
+														onClick={() =>
+															setDataChangeStatus({
+																uuid: row?.uuid,
+																status: row?.status,
+															})
+														}
+													/>
+													<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+												</FlexLayout>
+											),
+										},
+									]}
+								/>
+							</DataWrapper>
+
+							<Pagination
+								page={page}
+								onSetPage={setPage}
+								pageSize={pageSize}
+								onSetPageSize={setPageSize}
+								total={data?.pagination.totalCount || 0}
+								dependencies={[pageSize, keyword, status]}
 							/>
-						</DataWrapper>
-					</MainTable>
-				</FlexItem>
-			</FlexLayout>
+						</MainTable>
+					</FlexItem>
+				</FlexLayout>
+			</LayoutMainPage>
+
 			<PositionContainer
 				open={_open == 'create'}
 				onClose={() => {
@@ -177,6 +251,7 @@ function MainApartmentType({}: PropsMainApartmentType) {
 			>
 				<FormCreateApartmentType />
 			</PositionContainer>
+
 			<PositionContainer
 				open={!!_uuid}
 				onClose={() => {
@@ -192,7 +267,29 @@ function MainApartmentType({}: PropsMainApartmentType) {
 			>
 				<FormDetailApartmentType />
 			</PositionContainer>
-		</LayoutMainPage>
+
+			<Dialog
+				open={!!dataChangeStatus}
+				type={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'error' : 'primary'}
+				backgroundIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#ffdce4' : '#b5f4d4ff'}
+				borderIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#fff0f3' : '#d6f6e6ff'}
+				title={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khoá loại hình căn hộ' : 'Mở khóa loại hình căn hộ'}
+				note={
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE
+						? 'Bạn có chắc chắn muốn khóa loại hình căn hộ không?'
+						: 'Bạn có chắc chắn muốn mở khóa loại hình căn hộ không?'
+				}
+				icon={
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? (
+						<Warning2 size='28' color='#EE0033' />
+					) : (
+						<Warning2 size='28' color='#25C173' />
+					)
+				}
+				onClose={() => setDataChangeStatus(null)}
+				onSubmit={funcChangeStatus.mutate}
+			/>
+		</Fragment>
 	);
 }
 

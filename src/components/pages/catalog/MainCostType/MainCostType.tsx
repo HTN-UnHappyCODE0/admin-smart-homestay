@@ -17,6 +17,8 @@ import IconActionTable from '~/components/utils/IconActionTable';
 import PositionContainer from '~/components/common/PositionContainer';
 import {useRouter} from 'next/router';
 import FormCreateCostType from '../FormCreateCostType';
+import FormDetailRoomType from '../FormDetailRoomType';
+import FormDetailCostType from '../FormDetailCostType';
 
 function MainCostType({}: PropsMainCostType) {
 	const router = useRouter();
@@ -28,7 +30,7 @@ function MainCostType({}: PropsMainCostType) {
 		setStatus(null);
 	};
 
-	const {_open} = router.query;
+	const {_open, _uuid} = router.query;
 
 	return (
 		<LayoutMainPage
@@ -143,7 +145,19 @@ function MainCostType({}: PropsMainCostType) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable
+													icon={<Eye color='#292D32' size={24} />}
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuid: row?.uuid,
+															},
+														})
+													}
+													tooltip='Xem chi tiết'
+												/>
 												<IconActionTable icon={<Lock color='#292D32' size={24} />} tooltip='Khóa' />
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 											</FlexLayout>
@@ -169,6 +183,21 @@ function MainCostType({}: PropsMainCostType) {
 				}}
 			>
 				<FormCreateCostType />
+			</PositionContainer>
+			<PositionContainer
+				open={!!_uuid}
+				onClose={() => {
+					const {_uuid, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormDetailCostType />
 			</PositionContainer>
 		</LayoutMainPage>
 	);
