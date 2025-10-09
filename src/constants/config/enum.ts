@@ -1,4 +1,6 @@
-export enum QUERY_KEY {}
+export enum QUERY_KEY {
+	table_apartment,
+}
 
 export enum TYPE_DATE {
 	ALL = -1,
@@ -17,3 +19,25 @@ export const COOKIE_KEY = {
 	ACCESS_TOKEN: 'accessToken',
 	REFRESH_TOKEN: 'refreshToken',
 };
+
+export enum CONFIG_PAGING {
+	NO_PAGING,
+	IS_PAGING,
+}
+
+export enum CONFIG_TYPE_FIND {
+	DROPDOWN,
+	TABLE,
+}
+
+export enum CONFIG_STATUS {
+	LOCKED = 0,
+	ACTIVE,
+}
+
+export enum STATUS_APARTMENT {
+	INACTIVE, // ngừng hoạt động
+	VACANT, // trống
+	DEPOSITED, // đã đặt cọc
+	RENTED, // đang cho thuê
+}

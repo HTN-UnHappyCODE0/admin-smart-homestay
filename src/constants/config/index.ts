@@ -11,6 +11,8 @@ export enum PATH {
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
 	CatalogCostType = '/catalog/cost-type',
+
+	Apartment = '/apartment',
 }
 
 export const Menus: {
