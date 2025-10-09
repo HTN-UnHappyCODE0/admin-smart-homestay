@@ -9,7 +9,8 @@ export enum PATH {
 	ForgotPassword = '/auth/forgot-password',
 
 	Catalog = '/catalog',
-	Apartment = '/apartment',
+	CatalogRoomType = '/catalog/room-type',
+	CatalogCostType = '/catalog/cost-type',
 }
 
 export const Menus: {
