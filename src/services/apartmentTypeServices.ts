@@ -1,7 +1,13 @@
 import axiosClient from '.';
 
 const apartmentTypeServices = {
-	getListApartmentType: (data: {}, tokenAxios?: any) => {
+	getListApartmentType: (
+		data: {
+			keyword: string;
+			status: number | null;
+		},
+		tokenAxios?: any
+	) => {
 		return axiosClient.post(`/ApartmentType/get-list-apartment-type`, data, {
 			cancelToken: tokenAxios,
 		});

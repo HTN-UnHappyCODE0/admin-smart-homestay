@@ -1,7 +1,7 @@
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import styles from './MainApartmentType.module.scss';
 import {IApartmentType, PropsMainApartmentType} from './interfaces';
-import {tabsCatalogs} from '~/constants/config/data';
+import {statusConfigs, tabsCatalogs} from '~/constants/config/data';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import {AddCircle, Edit, Eye, Lock} from 'iconsax-react';
@@ -35,10 +35,13 @@ function MainApartmentType({}: PropsMainApartmentType) {
 
 	const {_open, _uuid} = router.query;
 
-	const {data: apartmentTypes = [], isLoading} = useQuery<IApartmentType[]>([QUERY_KEY.table_apartment_type], {
+	const {data: apartmentTypes = [], isLoading} = useQuery<IApartmentType[]>([QUERY_KEY.table_apartment_type, keyword, status], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentTypeServices.getListApartmentType({}),
+				http: apartmentTypeServices.getListApartmentType({
+					keyword: keyword,
+					status: status,
+				}),
 			}),
 		select(data) {
 			return data;
@@ -85,16 +88,10 @@ function MainApartmentType({}: PropsMainApartmentType) {
 										name='Trạng thái'
 										value={status}
 										setValue={setStatus}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
+										listOption={statusConfigs?.map((v) => ({
+											uuid: v?.state,
+											name: v?.text,
+										}))}
 									/>
 								</FlexLayout>
 							</FlexItem>
@@ -134,25 +131,7 @@ function MainApartmentType({}: PropsMainApartmentType) {
 									},
 									{
 										title: 'Trạng thái',
-										render: (row, _) => (
-											<StateActive
-												stateActive={1}
-												listState={[
-													{
-														backgroundColor: '#06AED4',
-														state: 1,
-														text: 'Hoạt động',
-														textColor: '#fff',
-													},
-													{
-														backgroundColor: '#EE0033',
-														state: 2,
-														text: 'Bị khóa',
-														textColor: '#fff',
-													},
-												]}
-											/>
-										),
+										render: (row, _) => <StateActive stateActive={row?.status} listState={statusConfigs} />,
 									},
 									{
 										title: 'Hành động',
