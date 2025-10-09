@@ -11,6 +11,8 @@ export enum PATH {
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
 	CatalogCostType = '/catalog/cost-type',
+
+	Apartment = '/apartment',
 }
 
 export const Menus: {
@@ -50,8 +52,8 @@ export const Menus: {
 			{
 				title: 'Căn hộ',
 				icon: House2,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.Apartment,
+				pathActive: PATH.Apartment,
 			},
 			{
 				title: 'Bài đăng & quảng cáo',
