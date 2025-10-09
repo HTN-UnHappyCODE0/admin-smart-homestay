@@ -1,6 +1,6 @@
 import {Fragment, useState} from 'react';
 import styles from './MainPageApartment.module.scss';
-import {PropsMainPageApartment} from './interfaces';
+import {IApartment, PropsMainPageApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
@@ -8,7 +8,7 @@ import {AddCircle, Edit, Eye, Lock} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
-import {TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_STATUS, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -16,8 +16,17 @@ import SwitchButton from '~/components/common/SwitchButton';
 import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {httpRequest} from '~/services';
+import apartmentServices from '~/services/apartmentServices';
+import Dialog from '~/components/common/Dialog';
+import {HiOutlineLockClosed, HiOutlineLockOpen} from 'react-icons/hi';
+import {convertCoin} from '~/common/funcs/convertCoin';
+import {statusApartments} from '~/constants/config/data';
 
 function MainPageApartment({}: PropsMainPageApartment) {
+	const queryClient = useQueryClient();
+
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
@@ -30,6 +39,8 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const [open, setOpen] = useState<boolean>(false);
+	const [uuidOpen, setUuidOpen] = useState<string>('');
+	const [uuidLocked, setUuidLocked] = useState<string>('');
 
 	const resetFilter = () => {
 		setKeyword('');
@@ -37,6 +48,86 @@ function MainPageApartment({}: PropsMainPageApartment) {
 		setTypeDate(TYPE_DATE.ALL);
 		setDate(null);
 	};
+
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IApartment[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_apartment, page, pageSize, keyword, status], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.getListApartments({
+					page: page,
+					pageSize: pageSize,
+					keyword: keyword,
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					status: status,
+					province: '',
+					ward: '',
+					sizeFrom: null,
+					sizeTo: null,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
+
+	const funcLocked = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: 'Khóa xe thành công!',
+				http: apartmentServices.changeStatus({
+					uuid: uuidLocked,
+					status: CONFIG_STATUS.LOCKED,
+					description: 'Khóa Aptomat',
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setUuidLocked('');
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment],
+				});
+			}
+		},
+	});
+
+	const funcOpen = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: 'Mở khóa xe thành công!',
+				http: apartmentServices.changeStatus({
+					uuid: uuidOpen,
+					status: CONFIG_STATUS.ACTIVE,
+					description: 'Mở khóa Aptomat',
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setUuidOpen('');
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment],
+				});
+			}
+		},
+	});
 
 	return (
 		<Fragment>
@@ -64,18 +155,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										name='Trạng thái căn hộ'
 										value={status}
 										setValue={setStatus}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
+										listOption={statusApartments.map((item) => ({
+											uuid: item.state,
+											name: item.text,
+										}))}
 									/>
-
 									<FilterCustom
 										name='Trạng thái thiết bị'
 										value={statusDevice}
@@ -152,66 +236,15 @@ function MainPageApartment({}: PropsMainPageApartment) {
 
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
-						<DataWrapper data={[1]} loading={false} title='Thành viên trống!' note='Danh sách thành viên hiện đang trống!'>
-							<Table<{
-								uuid: string;
-								code: string;
-								typeApartment: string;
-								lockCode: string;
-								name: string;
-								area: number;
-								province: string;
-								ward: string;
-								viewRequest1: number;
-								viewRequest2?: number;
-								rentPrice?: number;
-								advertisingPrice?: number;
-							}>
+						<DataWrapper
+							data={data?.items || []}
+							loading={isLoading}
+							title='Căn hộ trống!'
+							note='Danh sách căn hộ hiện đang trống!'
+						>
+							<Table<IApartment>
 								rowKey={(row) => row.uuid}
-								data={[
-									{
-										uuid: '1',
-										code: 'MH24040',
-										typeApartment: 'Chung cư mini',
-										lockCode: '245502',
-										name: 'Căn hộ số 1',
-										area: 45,
-										province: 'Hà Nội',
-										ward: 'Phường A',
-										viewRequest1: 5,
-										viewRequest2: 1,
-										rentPrice: 5000000,
-										advertisingPrice: 1000000,
-									},
-									{
-										uuid: '2',
-										code: 'MH24041',
-										typeApartment: 'Chung cư mini',
-										lockCode: '245502',
-										name: 'Căn hộ số 2',
-										area: 50,
-										province: 'Hà Nội',
-										ward: 'Phường B',
-										viewRequest1: 2,
-										viewRequest2: 0,
-										rentPrice: 6000000,
-										advertisingPrice: 2000000,
-									},
-									{
-										uuid: '3',
-										code: 'MH24042',
-										typeApartment: 'Chung cư mini',
-										lockCode: '245502',
-										name: 'Căn hộ số 3',
-										area: 60,
-										province: 'Hà Nội',
-										ward: 'Phường C',
-										viewRequest1: 3,
-										viewRequest2: 1,
-										rentPrice: 7000000,
-										advertisingPrice: 3000000,
-									},
-								]}
+								data={data?.items || []}
 								fixedHeader={true}
 								column={[
 									{
@@ -220,78 +253,60 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Mã căn hộ',
-										render: (row, _) => <>{row.code}</>,
-									},
-									{
 										title: 'Loại hình căn hộ',
-										render: (row, _) => <>{row.typeApartment}</>,
+										render: (row, _) => <>{row?.apartmentTypeUu?.name}</>,
 									},
 									{
 										title: 'ID ổ khóa',
-										render: (row, _) => <>{row.lockCode}</>,
+										render: (row, _) => <>{row?.lock?.code}</>,
 									},
 									{
 										title: 'Tên căn hộ',
-										render: (row, _) => <>{row.name}</>,
+										render: (row, _) => <>{row?.name}</>,
 									},
 									{
 										title: 'Diện tích (m2)',
-										render: (row, _) => <>{row.area}</>,
+										render: (row, _) => <>{row?.apartmentSize}</>,
 									},
 									{
 										title: 'Địa chỉ (Tỉnh - xã)',
 										render: (row, _) => (
 											<>
-												{row.province} - {row.ward}
+												{row?.province?.fullName} - {row?.ward?.fullName}
 											</>
 										),
 									},
 									{
 										title: 'Yêu cầu xem căn hộ',
-										render: (row, _) => <>{row.viewRequest1}</>,
+										render: (row, _) => <>{row?.numVisitRequest}</>,
 									},
 									{
 										title: 'Yêu cầu xử lý sự cố',
-										render: (row, _) => <>{row.viewRequest2}</>,
+										render: (row, _) => <>{row?.numIncidentRequest}</>,
 									},
 									{
 										title: 'Giá cho thuê (VND)',
-										render: (row, _) => <>{row.rentPrice}</>,
+										render: (row, _) => <>{convertCoin(row?.rentPrice)}</>,
 									},
 									{
 										title: 'Giá quảng cáo(VND)',
-										render: (row, _) => <>{row.advertisingPrice}</>,
+										render: (row, _) => <>{convertCoin(row?.adPrice)}</>,
 									},
 									{
 										title: 'Aptomat',
-										render: (row, _) => <SwitchButton checkOn={row.uuid == '1'} />,
+										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
 									},
 									{
 										title: 'Đồng hồ nước',
-										render: (row, _) => <SwitchButton checkOn={row.uuid == '1'} />,
+										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
 									},
 									{
-										title: 'Trạng thái',
-										render: (row, _) => (
-											<StateActive
-												stateActive={1}
-												listState={[
-													{
-														backgroundColor: '#06AED4',
-														state: 1,
-														text: 'Hoạt động',
-														textColor: '#fff',
-													},
-													{
-														backgroundColor: '#EE0033',
-														state: 2,
-														text: 'Bị khóa',
-														textColor: '#fff',
-													},
-												]}
-											/>
-										),
+										title: 'Người quản lý',
+										render: (row, _) => <>{row?.managerUu?.name}</>,
+									},
+									{
+										title: 'Trạng thái căn hộ',
+										render: (row, _) => <StateActive stateActive={row?.status} listState={statusApartments} />,
 									},
 									{
 										title: 'Tác vụ',
@@ -299,7 +314,21 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										render: (row, _) => (
 											<FlexLayout row>
 												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
-												<IconActionTable icon={<Lock color='#292D32' size={24} />} tooltip='Khóa' />
+												{row?.status === CONFIG_STATUS.ACTIVE && (
+													<IconActionTable
+														icon={<HiOutlineLockClosed color='#EE0033' size={24} />}
+														tooltip='Khóa'
+														onClick={() => setUuidLocked(row?.uuid)}
+													/>
+												)}
+												{row?.status === CONFIG_STATUS.LOCKED && (
+													<IconActionTable
+														icon={<HiOutlineLockOpen color='#33C041' size={24} />}
+														tooltip='Mở'
+														onClick={() => setUuidOpen(row?.uuid)}
+													/>
+												)}
+
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 											</FlexLayout>
 										),
@@ -313,12 +342,35 @@ function MainPageApartment({}: PropsMainPageApartment) {
 							onSetPage={setPage}
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
-							total={100}
+							total={data?.pagination.totalCount || 0}
 							dependencies={[keyword, status]}
 						/>
 					</MainTable>
 				</FlexItem>
 			</FlexLayout>
+
+			<Dialog
+				type='primary'
+				backgroundIconColor='#25C173'
+				borderIconColor='#25C173'
+				icon={<HiOutlineLockOpen size={28} color='#fff' />}
+				open={!!uuidOpen}
+				onClose={() => setUuidOpen('')}
+				title='Mở khóa căn hộ'
+				note='Bạn có chắc chắn muốn mở khóa căn hộ không?'
+				onSubmit={funcOpen.mutate}
+			/>
+
+			<Dialog
+				type='error'
+				backgroundIconColor='#fff0f3'
+				borderIconColor='#fff0f3'
+				open={!!uuidLocked}
+				onClose={() => setUuidLocked('')}
+				title='Khóa căn hộ'
+				note='Bạn có chắc chắn muốn khóa căn hộ không?'
+				onSubmit={funcLocked.mutate}
+			/>
 		</Fragment>
 	);
 }
