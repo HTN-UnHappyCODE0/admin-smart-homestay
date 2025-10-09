@@ -35,8 +35,6 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	const [area, setArea] = useState<number | null>(null);
 	const [province, setProvince] = useState<string>('');
 	const [ward, setWard] = useState<string>('');
-	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
-	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const [open, setOpen] = useState<boolean>(false);
 	const [uuidOpen, setUuidOpen] = useState<string>('');
@@ -45,8 +43,6 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	const resetFilter = () => {
 		setKeyword('');
 		setStatus(null);
-		setTypeDate(TYPE_DATE.ALL);
-		setDate(null);
 	};
 
 	const {
@@ -90,11 +86,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Khóa xe thành công!',
+				msgSuccess: 'Khóa căn hộ thành công!',
 				http: apartmentServices.changeStatus({
 					uuid: uuidLocked,
 					status: CONFIG_STATUS.LOCKED,
-					description: 'Khóa Aptomat',
+					description: '',
 				}),
 			}),
 		onSuccess(data) {
@@ -112,11 +108,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Mở khóa xe thành công!',
+				msgSuccess: 'Mở khóa căn hộ thành công!',
 				http: apartmentServices.changeStatus({
 					uuid: uuidOpen,
 					status: CONFIG_STATUS.ACTIVE,
-					description: 'Mở khóa Aptomat',
+					description: '',
 				}),
 			}),
 		onSuccess(data) {
