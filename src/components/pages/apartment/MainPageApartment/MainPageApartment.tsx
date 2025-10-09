@@ -4,7 +4,7 @@ import {IApartment, PropsMainPageApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
-import {AddCircle, Edit, Eye, Lock} from 'iconsax-react';
+import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -32,9 +32,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	const [keyword, setKeyword] = useState<string>('');
 	const [stateApartment, setStateApartment] = useState<number | null>(null);
 	const [status, setStatus] = useState<number | null>(null);
-
-	const [uuidOpen, setUuidOpen] = useState<string>('');
-	const [uuidLocked, setUuidLocked] = useState<string>('');
+	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number} | null>(null);
 
 	const resetFilter = () => {
 		setPage(1);
@@ -81,43 +79,21 @@ function MainPageApartment({}: PropsMainPageApartment) {
 		},
 	});
 
-	const funcLocked = useMutation({
+	const funcChangeStatus = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Khóa căn hộ thành công!',
+				msgSuccess: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khóa căn hộ thành công!' : 'Mở khóa căn hộ thành công!',
 				http: apartmentServices.changeStatus({
-					uuid: uuidLocked,
-					status: STATUS_CONFIG.LOCKED,
+					uuid: dataChangeStatus?.uuid!,
+					status: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? STATUS_CONFIG.LOCKED : STATUS_CONFIG.ACTIVE,
 					description: '',
 				}),
 			}),
 		onSuccess(data) {
 			if (data) {
-				setUuidLocked('');
-				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment],
-				});
-			}
-		},
-	});
-
-	const funcOpen = useMutation({
-		mutationFn: () =>
-			httpRequest({
-				showMessageSuccess: true,
-				showMessageFailed: true,
-				msgSuccess: 'Mở khóa căn hộ thành công!',
-				http: apartmentServices.changeStatus({
-					uuid: uuidOpen,
-					status: STATUS_CONFIG.ACTIVE,
-					description: '',
-				}),
-			}),
-		onSuccess(data) {
-			if (data) {
-				setUuidOpen('');
+				setDataChangeStatus(null);
 				queryClient.invalidateQueries({
 					queryKey: [QUERY_KEY.table_apartment],
 				});
@@ -259,23 +235,24 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
-												{row?.status === STATUS_CONFIG.ACTIVE && (
-													<IconActionTable
-														icon={<HiOutlineLockClosed color='#EE0033' size={24} />}
-														tooltip='Khóa căn hộ'
-														onClick={() => setUuidLocked(row?.uuid)}
-													/>
-												)}
-												{row?.status === STATUS_CONFIG.LOCKED && (
-													<IconActionTable
-														icon={<HiOutlineLockOpen color='#33C041' size={24} />}
-														tooltip='Mở khóa căn hộ'
-														onClick={() => setUuidOpen(row?.uuid)}
-													/>
-												)}
-
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable icon={<Eye color='#303229ff' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable
+													icon={
+														row?.status == STATUS_CONFIG.ACTIVE ? (
+															<Lock color='#292D32' size={24} />
+														) : (
+															<Unlock color='#292D32' size={24} />
+														)
+													}
+													tooltip={row?.status == STATUS_CONFIG.ACTIVE ? 'Khóa căn hộ' : 'Mở khóa căn hộ'}
+													onClick={() =>
+														setDataChangeStatus({
+															uuid: row?.uuid,
+															status: row?.status,
+														})
+													}
+												/>
+												<IconActionTable icon={<Edit color='#065dbbff' size={24} />} tooltip='Chỉnh sửa' />
 											</FlexLayout>
 										),
 									},
@@ -296,26 +273,25 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			</FlexLayout>
 
 			<Dialog
-				type='primary'
-				backgroundIconColor='#25C173'
-				borderIconColor='#25C173'
-				icon={<HiOutlineLockOpen size={28} color='#fff' />}
-				open={!!uuidOpen}
-				onClose={() => setUuidOpen('')}
-				title='Mở khóa căn hộ'
-				note='Bạn có chắc chắn muốn mở khóa căn hộ không?'
-				onSubmit={funcOpen.mutate}
-			/>
-
-			<Dialog
-				type='error'
-				backgroundIconColor='#fff0f3'
-				borderIconColor='#fff0f3'
-				open={!!uuidLocked}
-				onClose={() => setUuidLocked('')}
-				title='Khóa căn hộ'
-				note='Bạn có chắc chắn muốn khóa căn hộ không?'
-				onSubmit={funcLocked.mutate}
+				open={!!dataChangeStatus}
+				type={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'error' : 'primary'}
+				backgroundIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#ffdce4' : '#b5f4d4ff'}
+				borderIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#fff0f3' : '#d6f6e6ff'}
+				title={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khoá căn hộ' : 'Mở khóa căn hộ'}
+				note={
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE
+						? 'Bạn có chắc chắn muốn khóa căn hộ không?'
+						: 'Bạn có chắc chắn muốn mở khóa căn hộ không?'
+				}
+				icon={
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? (
+						<Warning2 size='28' color='#EE0033' />
+					) : (
+						<Warning2 size='28' color='#25C173' />
+					)
+				}
+				onClose={() => setDataChangeStatus(null)}
+				onSubmit={funcChangeStatus.mutate}
 			/>
 		</Fragment>
 	);
