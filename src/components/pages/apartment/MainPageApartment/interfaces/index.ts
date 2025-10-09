@@ -49,5 +49,6 @@ export interface IApartment {
 	apartmentSize: number;
 	id: number;
 	uuid: string;
+	state: number;
 	status: number;
 }

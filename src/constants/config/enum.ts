@@ -36,7 +36,7 @@ export enum STATUS_CONFIG {
 	ACTIVE,
 }
 
-export enum STATUS_APARTMENT {
+export enum STATE_APARTMENT {
 	INACTIVE, // ngừng hoạt động
 	VACANT, // trống
 	DEPOSITED, // đã đặt cọc
