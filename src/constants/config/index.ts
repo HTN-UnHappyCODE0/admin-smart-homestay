@@ -8,6 +8,8 @@ export enum PATH {
 	Login = '/auth/login',
 	ForgotPassword = '/auth/forgot-password',
 
+	Apartment = '/apartment',
+
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
 	CatalogCostType = '/catalog/cost-type',

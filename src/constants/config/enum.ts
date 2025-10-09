@@ -1,4 +1,6 @@
-export enum QUERY_KEY {}
+export enum QUERY_KEY {
+	table_apartment_type,
+}
 
 export enum TYPE_DATE {
 	ALL = -1,

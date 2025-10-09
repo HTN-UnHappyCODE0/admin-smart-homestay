@@ -1,0 +1,13 @@
+.info {
+	& > p:nth-child(1) {
+		color: #697586;
+		font-size: 14px;
+		font-weight: 500;
+		margin-bottom: 2px;
+	}
+	& > p:nth-child(2) {
+		color: #202939;
+		font-size: 15px;
+		font-weight: 500;
+	}
+}
