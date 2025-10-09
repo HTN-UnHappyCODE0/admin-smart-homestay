@@ -4,4 +4,5 @@ export interface IApartmentType {
 	uuid: string;
 	code: string;
 	name: string;
+	status: number;
 }

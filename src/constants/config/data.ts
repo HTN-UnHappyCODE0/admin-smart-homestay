@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATUS_APARTMENT} from './enum';
+import {STATUS_APARTMENT, STATUS_CONFIG} from './enum';
 
 export const tabsCatalogs: {
 	title: string;
@@ -16,6 +16,26 @@ export const tabsCatalogs: {
 	{
 		title: 'Loại chi phí',
 		path: PATH.CatalogCostType,
+	},
+];
+
+export const statusConfigs: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATUS_CONFIG.LOCKED,
+		text: 'Đã khóa',
+		backgroundColor: '#E03',
+		textColor: '#FFF',
+	},
+	{
+		state: STATUS_CONFIG.ACTIVE,
+		text: 'Đang hoạt động',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
 	},
 ];
 

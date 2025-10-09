@@ -31,7 +31,7 @@ export enum CONFIG_TYPE_FIND {
 	TABLE,
 }
 
-export enum CONFIG_STATUS {
+export enum STATUS_CONFIG {
 	LOCKED = 0,
 	ACTIVE,
 }
