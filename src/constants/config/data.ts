@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATUS_APARTMENT, STATUS_CONFIG} from './enum';
+import {STATE_APARTMENT, STATUS_CONFIG} from './enum';
 
 export const tabsCatalogs: {
 	title: string;
@@ -39,32 +39,32 @@ export const statusConfigs: {
 	},
 ];
 
-export const statusApartments: {
+export const stateApartments: {
 	state: number;
 	text: string;
 	backgroundColor?: string;
 	textColor?: string;
 }[] = [
 	{
-		state: STATUS_APARTMENT.INACTIVE,
+		state: STATE_APARTMENT.INACTIVE,
 		text: 'Ngừng kinh doanh',
 		backgroundColor: '#E03',
 		textColor: '#FFF',
 	},
 	{
-		state: STATUS_APARTMENT.VACANT,
+		state: STATE_APARTMENT.VACANT,
 		text: 'Trống',
 		backgroundColor: '#06AED4',
 		textColor: '#FFF',
 	},
 	{
-		state: STATUS_APARTMENT.DEPOSITED,
+		state: STATE_APARTMENT.DEPOSITED,
 		text: 'Đặt cọc',
 		backgroundColor: '#F79009',
 		textColor: '#FFF',
 	},
 	{
-		state: STATUS_APARTMENT.RENTED,
+		state: STATE_APARTMENT.RENTED,
 		text: 'Đang thuê',
 		backgroundColor: '#17B26A',
 		textColor: '#FFF',

@@ -8,6 +8,7 @@ const apartmentServices = {
 			pageSize: number;
 			page: number;
 			typeFinding: number | null;
+			state: number | null;
 			status: number | null;
 			sizeFrom: number | null;
 			sizeTo: number | null;

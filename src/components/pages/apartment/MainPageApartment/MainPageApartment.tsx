@@ -8,7 +8,7 @@ import {AddCircle, Edit, Eye, Lock} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
-import {CONFIG_PAGING, CONFIG_STATUS, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -22,7 +22,7 @@ import apartmentServices from '~/services/apartmentServices';
 import Dialog from '~/components/common/Dialog';
 import {HiOutlineLockClosed, HiOutlineLockOpen} from 'react-icons/hi';
 import {convertCoin} from '~/common/funcs/convertCoin';
-import {statusApartments} from '~/constants/config/data';
+import {stateApartments, statusConfigs} from '~/constants/config/data';
 
 function MainPageApartment({}: PropsMainPageApartment) {
 	const queryClient = useQueryClient();
@@ -30,23 +30,18 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
+	const [stateApartment, setStateApartment] = useState<number | null>(null);
 	const [status, setStatus] = useState<number | null>(null);
-	const [statusDevice, setStatusDevice] = useState<number | null>(null);
-	const [area, setArea] = useState<number | null>(null);
-	const [province, setProvince] = useState<string>('');
-	const [ward, setWard] = useState<string>('');
-	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
-	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
-	const [open, setOpen] = useState<boolean>(false);
 	const [uuidOpen, setUuidOpen] = useState<string>('');
 	const [uuidLocked, setUuidLocked] = useState<string>('');
 
 	const resetFilter = () => {
+		setPage(1);
+		setPageSize(20);
 		setKeyword('');
+		setStateApartment(null);
 		setStatus(null);
-		setTypeDate(TYPE_DATE.ALL);
-		setDate(null);
 	};
 
 	const {
@@ -64,15 +59,16 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment, page, pageSize, keyword, status], {
+	}>([QUERY_KEY.table_apartment, page, pageSize, keyword, stateApartment, status], {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.getListApartments({
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					state: stateApartment,
 					status: status,
 					province: '',
 					ward: '',
@@ -90,11 +86,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Khóa xe thành công!',
+				msgSuccess: 'Khóa căn hộ thành công!',
 				http: apartmentServices.changeStatus({
 					uuid: uuidLocked,
-					status: CONFIG_STATUS.LOCKED,
-					description: 'Khóa Aptomat',
+					status: STATUS_CONFIG.LOCKED,
+					description: '',
 				}),
 			}),
 		onSuccess(data) {
@@ -112,11 +108,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Mở khóa xe thành công!',
+				msgSuccess: 'Mở khóa căn hộ thành công!',
 				http: apartmentServices.changeStatus({
 					uuid: uuidOpen,
-					status: CONFIG_STATUS.ACTIVE,
-					description: 'Mở khóa Aptomat',
+					status: STATUS_CONFIG.ACTIVE,
+					description: '',
 				}),
 			}),
 		onSuccess(data) {
@@ -136,7 +132,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 					title='Danh sách căn hộ'
 					actions={
 						<FlexLayout row gap-6>
-							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold onClick={() => setOpen(true)}>
+							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold>
 								Thêm mới
 							</Button>
 						</FlexLayout>
@@ -153,75 +149,21 @@ function MainPageApartment({}: PropsMainPageApartment) {
 								<FlexLayout row gap-8>
 									<FilterCustom
 										name='Trạng thái căn hộ'
-										value={status}
-										setValue={setStatus}
-										listOption={statusApartments.map((item) => ({
+										value={stateApartment}
+										setValue={setStateApartment}
+										listOption={stateApartments.map((item) => ({
 											uuid: item.state,
 											name: item.text,
 										}))}
 									/>
 									<FilterCustom
-										name='Trạng thái thiết bị'
-										value={statusDevice}
-										setValue={setStatusDevice}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
-									/>
-
-									<FilterCustom
-										name='Diện tích'
-										value={area}
-										setValue={setArea}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
-									/>
-
-									<FilterCustom
-										name='Tỉnh'
-										value={province}
-										setValue={setProvince}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
-									/>
-
-									<FilterCustom
-										name='Xã'
-										value={ward}
-										setValue={setWard}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
+										name='Trạng thái hoạt động'
+										value={status}
+										setValue={setStatus}
+										listOption={statusConfigs.map((item) => ({
+											uuid: item.state,
+											name: item.text,
+										}))}
 									/>
 								</FlexLayout>
 							</FlexItem>
@@ -306,7 +248,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Trạng thái căn hộ',
-										render: (row, _) => <StateActive stateActive={row?.status} listState={statusApartments} />,
+										render: (row, _) => <StateActive stateActive={row?.state} listState={stateApartments} />,
+									},
+									{
+										title: 'Trạng thái hoạt động',
+										render: (row, _) => <StateActive stateActive={row?.status} listState={statusConfigs} />,
 									},
 									{
 										title: 'Tác vụ',
@@ -314,17 +260,17 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										render: (row, _) => (
 											<FlexLayout row>
 												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
-												{row?.status === CONFIG_STATUS.ACTIVE && (
+												{row?.status === STATUS_CONFIG.ACTIVE && (
 													<IconActionTable
 														icon={<HiOutlineLockClosed color='#EE0033' size={24} />}
-														tooltip='Khóa'
+														tooltip='Khóa căn hộ'
 														onClick={() => setUuidLocked(row?.uuid)}
 													/>
 												)}
-												{row?.status === CONFIG_STATUS.LOCKED && (
+												{row?.status === STATUS_CONFIG.LOCKED && (
 													<IconActionTable
 														icon={<HiOutlineLockOpen color='#33C041' size={24} />}
-														tooltip='Mở'
+														tooltip='Mở khóa căn hộ'
 														onClick={() => setUuidOpen(row?.uuid)}
 													/>
 												)}
@@ -343,7 +289,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination.totalCount || 0}
-							dependencies={[keyword, status]}
+							dependencies={[pageSize, keyword, stateApartment, status]}
 						/>
 					</MainTable>
 				</FlexItem>
