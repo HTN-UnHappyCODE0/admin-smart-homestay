@@ -85,8 +85,6 @@ function MainPageApartment({}: PropsMainPageApartment) {
 		},
 	});
 
-	console.log('');
-
 	const funcLocked = useMutation({
 		mutationFn: () =>
 			httpRequest({
