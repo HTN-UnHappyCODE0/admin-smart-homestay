@@ -259,7 +259,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable icon={<Eye color='#303229ff' size={24} />} tooltip='Xem chi tiết' />
 												{row?.status === STATUS_CONFIG.ACTIVE && (
 													<IconActionTable
 														icon={<HiOutlineLockClosed color='#EE0033' size={24} />}
@@ -274,8 +274,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 														onClick={() => setUuidOpen(row?.uuid)}
 													/>
 												)}
-
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable icon={<Edit color='#065dbbff' size={24} />} tooltip='Chỉnh sửa' />
 											</FlexLayout>
 										),
 									},
