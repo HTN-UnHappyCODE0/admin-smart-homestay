@@ -1,4 +1,5 @@
 export enum QUERY_KEY {
+	table_apartment_type,
 	table_apartment,
 }
 
