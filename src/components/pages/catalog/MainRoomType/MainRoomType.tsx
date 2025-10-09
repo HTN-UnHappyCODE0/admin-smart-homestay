@@ -17,6 +17,8 @@ import IconActionTable from '~/components/utils/IconActionTable';
 import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateRoomType from '../FormCreateRoomType';
+import {useQuery} from '@tanstack/react-query';
+import FormDetailRoomType from '../FormDetailRoomType';
 
 function MainRoomType({}: PropsMainRoomType) {
 	const router = useRouter();
@@ -28,7 +30,7 @@ function MainRoomType({}: PropsMainRoomType) {
 		setStatus(null);
 	};
 
-	const {_open} = router.query;
+	const {_open, _uuid} = router.query;
 
 	return (
 		<LayoutMainPage
@@ -143,7 +145,19 @@ function MainRoomType({}: PropsMainRoomType) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable
+													icon={<Eye color='#292D32' size={24} />}
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuid: row?.uuid,
+															},
+														})
+													}
+													tooltip='Xem chi tiết'
+												/>
 												<IconActionTable icon={<Lock color='#292D32' size={24} />} tooltip='Khóa' />
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 											</FlexLayout>
@@ -169,6 +183,21 @@ function MainRoomType({}: PropsMainRoomType) {
 				}}
 			>
 				<FormCreateRoomType />
+			</PositionContainer>
+			<PositionContainer
+				open={!!_uuid}
+				onClose={() => {
+					const {_uuid, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormDetailRoomType />
 			</PositionContainer>
 		</LayoutMainPage>
 	);

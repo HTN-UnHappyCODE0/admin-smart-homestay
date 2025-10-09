@@ -1,7 +1,6 @@
 import {Fragment} from 'react';
 import {PropsLoading} from './interfaces';
 import styles from './Loading.module.scss';
-import clsx from 'clsx';
 import Portal from '../Portal';
 
 function Loading({loading}: PropsLoading) {
