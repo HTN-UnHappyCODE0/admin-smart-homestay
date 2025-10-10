@@ -182,7 +182,7 @@ function MainApartmentType({}: PropsMainApartmentType) {
 										},
 										{
 											title: 'Ghi chú',
-											render: (row, _) => <>{row?.name}</>,
+											render: (row, _) => <>{row?.description || '---'} </>,
 										},
 										{
 											title: 'Trạng thái',
@@ -249,7 +249,18 @@ function MainApartmentType({}: PropsMainApartmentType) {
 					});
 				}}
 			>
-				<FormCreateApartmentType />
+				<FormCreateApartmentType
+					onClose={() => {
+						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
 			</PositionContainer>
 
 			<PositionContainer

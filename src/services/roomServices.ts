@@ -1,7 +1,7 @@
 import axiosClient from '.';
 
-const apartmentTypeServices = {
-	listApartmentType: (
+const roomServices = {
+	listRoom: (
 		data: {
 			isPaging: number;
 			typeFinding: number;
@@ -12,11 +12,11 @@ const apartmentTypeServices = {
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/ApartmentType/get-list-apartment-type`, data, {
+		return axiosClient.post(`/Room/get-list-rooms`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
-	changeStatusApartmentType: (
+	changeStatusRoom: (
 		data: {
 			uuid: string;
 			status: number;
@@ -24,21 +24,21 @@ const apartmentTypeServices = {
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/ApartmentType/change-apartment-type-status`, data, {
+		return axiosClient.post(`/Room/change-room-status`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
-	createApartmentType: (
+	createRoom: (
 		data: {
 			name: string;
 			description: string;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/ApartmentType/create-apartment-type`, data, {
+		return axiosClient.post(`/Room/create-room`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
 };
 
-export default apartmentTypeServices;
+export default roomServices;
