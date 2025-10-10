@@ -39,6 +39,28 @@ const roomServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	detailRoom: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Room/room-detail`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateRoom: (
+		data: {
+			name: string;
+			description: string;
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Room/update-room`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default roomServices;

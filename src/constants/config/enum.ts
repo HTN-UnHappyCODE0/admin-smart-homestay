@@ -3,6 +3,9 @@ export enum QUERY_KEY {
 	table_apartment,
 	table_room_type,
 	table_cost_type,
+	detail_apartment_type,
+	detail_room_type,
+	detail_cost_type,
 }
 
 export enum TYPE_DATE {
