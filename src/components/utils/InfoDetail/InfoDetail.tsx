@@ -9,7 +9,7 @@ import LightGallery from 'lightgallery/react';
 import lgZoom from 'lightgallery/plugins/zoom';
 import {useRef} from 'react';
 
-function InfoDetail({name, value, images = []}: PropsInfoDetail) {
+function InfoDetail({name, value, images = [], actions}: PropsInfoDetail) {
 	const refLightGallery = useRef<any>(null);
 
 	return (
@@ -41,7 +41,7 @@ function InfoDetail({name, value, images = []}: PropsInfoDetail) {
 					</FlexLayout>
 				</LightGallery>
 			) : (
-				<div className={styles.value}>{value}</div>
+				<div className={styles.value}>{actions || value}</div>
 			)}
 		</div>
 	);

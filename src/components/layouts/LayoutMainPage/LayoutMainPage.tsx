@@ -8,14 +8,14 @@ import {useRouter} from 'next/router';
 import {useCallback} from 'react';
 import clsx from 'clsx';
 
-function LayoutMainPage({title, actions, tabs, children}: PropsLayoutMainPage) {
+function LayoutMainPage({title, breadcrumb, actions, tabs, children}: PropsLayoutMainPage) {
 	const router = useRouter();
 
 	const checkActive = useCallback(
-		(pathname: string) => {
+		(path: string) => {
 			const currentRoute = router.pathname;
 
-			return pathname == currentRoute;
+			return path == currentRoute;
 		},
 		[router]
 	);
@@ -24,9 +24,15 @@ function LayoutMainPage({title, actions, tabs, children}: PropsLayoutMainPage) {
 		<FlexLayout column gap-12>
 			<Header title={title} actions={actions} />
 
+			{breadcrumb && breadcrumb}
+
 			<div className={styles.tabs}>
 				{tabs?.map((tab, index) => (
-					<Link key={index} href={tab.path} className={clsx(styles.tab, {[styles.active]: checkActive(tab.path)})}>
+					<Link
+						key={index}
+						href={tab.path}
+						className={clsx(styles.tab, {[styles.active]: checkActive(tab.pathActive || tab.path)})}
+					>
 						{tab.title}
 					</Link>
 				))}

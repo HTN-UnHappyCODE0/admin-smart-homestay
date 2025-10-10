@@ -1,6 +1,60 @@
 import {PATH} from '.';
 import {STATE_APARTMENT, STATUS_CONFIG} from './enum';
 
+export function tabsDetailApartments(uuid: string): {
+	title: string;
+	path: string;
+	pathActive: string;
+}[] {
+	return [
+		{
+			title: 'Thông tin căn hộ',
+			path: `${PATH.InfoApartment}?_uuid=${uuid}`,
+			pathActive: PATH.InfoApartment,
+		},
+		{
+			title: 'Yêu cầu xem căn hộ',
+			path: `${PATH.RequestViewApartment}?_uuid=${uuid}`,
+			pathActive: PATH.RequestViewApartment,
+		},
+		{
+			title: 'Yêu cầu sửa chữa',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Danh sách phòng',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Danh sách thiết bị',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Danh sách nội thất',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Danh sách đánh giá',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Lịch sử thanh toán',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+		{
+			title: 'Danh sách hợp đồng',
+			path: PATH.Any,
+			pathActive: PATH.Any,
+		},
+	];
+}
+
 export const tabsCatalogs: {
 	title: string;
 	path: string;

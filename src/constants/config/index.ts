@@ -10,6 +10,9 @@ export enum PATH {
 
 	Apartment = '/apartment',
 	CreateApartment = '/apartment/create',
+	ApartmentDetail = '/apartment/detail',
+	InfoApartment = '/apartment/detail',
+	RequestViewApartment = '/apartment/detail/request-view',
 
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
