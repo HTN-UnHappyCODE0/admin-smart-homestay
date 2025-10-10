@@ -236,7 +236,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#303229ff' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable
+													icon={<Eye color='#303229ff' size={24} />}
+													tooltip='Xem chi tiết'
+													href={`${PATH.ApartmentDetail}?_uuid=${row?.uuid}`}
+												/>
 												<IconActionTable
 													icon={
 														row?.status == STATUS_CONFIG.ACTIVE ? (

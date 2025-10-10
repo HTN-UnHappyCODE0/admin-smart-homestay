@@ -14,6 +14,7 @@ import GridColumn from '~/components/layouts/GridColumn';
 import {Copy} from 'iconsax-react';
 import Tippy from '@tippyjs/react';
 import {copy} from '~/common/funcs/copy';
+import SwitchButton from '~/components/common/SwitchButton';
 
 function MainDetail({}: PropsMainDetail) {
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
@@ -170,9 +171,10 @@ function MainDetail({}: PropsMainDetail) {
 						</FlexLayout>
 					}
 				>
-					<GridColumn col_3>
+					<GridColumn col_4>
 						<InfoDetail name='Mã căn hộ' value={235532} />
 						<InfoDetail name='Tên căn hộ' value='TH3-042024' />
+						<InfoDetail name='Aptomat' value='Căn hộ dịch vụ' actions={<SwitchButton checkOn={true} />} />
 						<InfoDetail
 							name='Trạng thái'
 							value={
@@ -196,6 +198,7 @@ function MainDetail({}: PropsMainDetail) {
 								/>
 							}
 						/>
+
 						<InfoDetail
 							name='Ảnh căn hộ'
 							value=''
