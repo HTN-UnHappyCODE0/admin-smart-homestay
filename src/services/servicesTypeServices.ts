@@ -40,6 +40,29 @@ const servicesTypeServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	detailServicesType: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Service/service-detail`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateServicesType: (
+		data: {
+			name: string;
+			description: string;
+			uuid: string;
+			state: number;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Service/update-service`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default servicesTypeServices;

@@ -39,6 +39,28 @@ const apartmentTypeServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	detailApartmentType: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/ApartmentType/apartment-type-detail`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateApartmentType: (
+		data: {
+			name: string;
+			description: string;
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/ApartmentType/update-apartment-type`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default apartmentTypeServices;

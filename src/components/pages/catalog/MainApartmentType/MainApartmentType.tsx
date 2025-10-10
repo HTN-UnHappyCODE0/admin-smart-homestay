@@ -17,7 +17,6 @@ import IconActionTable from '~/components/utils/IconActionTable';
 import PositionContainer from '~/components/common/PositionContainer';
 import {useRouter} from 'next/router';
 import FormCreateApartmentType from '../FormCreateApartmentType';
-import FormDetailApartmentType from '../FormDetailApartmentType';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
@@ -25,10 +24,13 @@ import apartmentTypeServices from '~/services/apartmentTypeServices';
 import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
 import Loading from '~/components/common/Loading';
+import FormUpdateApartmentType from '../FormUpdateApartmentType';
 
 function MainApartmentType({}: PropsMainApartmentType) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+
+	const {_open, _uuidUpdate} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -41,8 +43,6 @@ function MainApartmentType({}: PropsMainApartmentType) {
 		setKeyword('');
 		setStatus(null);
 	};
-
-	const {_open, _uuid} = router.query;
 
 	const {
 		data = {
@@ -193,8 +193,6 @@ function MainApartmentType({}: PropsMainApartmentType) {
 											fixedRight: true,
 											render: (row, _) => (
 												<FlexLayout row>
-													<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
-
 													<IconActionTable
 														icon={
 															row?.status == STATUS_CONFIG.ACTIVE ? (
@@ -215,7 +213,20 @@ function MainApartmentType({}: PropsMainApartmentType) {
 															})
 														}
 													/>
-													<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+
+													<IconActionTable
+														icon={<Edit color='#292D32' size={24} />}
+														tooltip='Chỉnh sửa'
+														onClick={() =>
+															router.replace({
+																pathname: router.pathname,
+																query: {
+																	...router.query,
+																	_uuidUpdate: row?.uuid,
+																},
+															})
+														}
+													/>
 												</FlexLayout>
 											),
 										},
@@ -264,9 +275,9 @@ function MainApartmentType({}: PropsMainApartmentType) {
 			</PositionContainer>
 
 			<PositionContainer
-				open={!!_uuid}
+				open={!!_uuidUpdate}
 				onClose={() => {
-					const {_uuid, ...rest} = router.query;
+					const {_uuidUpdate, ...rest} = router.query;
 
 					router.replace({
 						pathname: router.pathname,
@@ -276,7 +287,18 @@ function MainApartmentType({}: PropsMainApartmentType) {
 					});
 				}}
 			>
-				<FormDetailApartmentType />
+				<FormUpdateApartmentType
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
 			</PositionContainer>
 
 			<Dialog

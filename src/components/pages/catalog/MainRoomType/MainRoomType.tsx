@@ -18,17 +18,19 @@ import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateRoomType from '../FormCreateRoomType';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import FormDetailRoomType from '../FormDetailRoomType';
 import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import roomServices from '~/services/roomServices';
 import {httpRequest} from '~/services';
 import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
 import Loading from '~/components/common/Loading';
+import PropsFormUpdateRoomType from '../FormUpdateRoomType';
 
 function MainRoomType({}: PropsMainRoomType) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+
+	const {_open, _uuidUpdate} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -41,8 +43,6 @@ function MainRoomType({}: PropsMainRoomType) {
 		setKeyword('');
 		setStatus(null);
 	};
-
-	const {_open, _uuid} = router.query;
 
 	const {
 		data = {
@@ -192,20 +192,6 @@ function MainRoomType({}: PropsMainRoomType) {
 											render: (row, _) => (
 												<FlexLayout row>
 													<IconActionTable
-														icon={<Eye color='#292D32' size={24} />}
-														onClick={() =>
-															router.replace({
-																pathname: router.pathname,
-																query: {
-																	...router.query,
-																	_uuid: row?.uuid,
-																},
-															})
-														}
-														tooltip='Xem chi tiết'
-													/>
-
-													<IconActionTable
 														icon={
 															row?.status == STATUS_CONFIG.ACTIVE ? (
 																<Lock color='#292D32' size={24} />
@@ -223,7 +209,20 @@ function MainRoomType({}: PropsMainRoomType) {
 															})
 														}
 													/>
-													<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+
+													<IconActionTable
+														icon={<Edit color='#292D32' size={24} />}
+														tooltip='Chỉnh sửa'
+														onClick={() =>
+															router.replace({
+																pathname: router.pathname,
+																query: {
+																	...router.query,
+																	_uuidUpdate: row?.uuid,
+																},
+															})
+														}
+													/>
 												</FlexLayout>
 											),
 										},
@@ -271,9 +270,9 @@ function MainRoomType({}: PropsMainRoomType) {
 				</PositionContainer>
 
 				<PositionContainer
-					open={!!_uuid}
+					open={!!_uuidUpdate}
 					onClose={() => {
-						const {_uuid, ...rest} = router.query;
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,
@@ -283,7 +282,18 @@ function MainRoomType({}: PropsMainRoomType) {
 						});
 					}}
 				>
-					<FormDetailRoomType />
+					<PropsFormUpdateRoomType
+						onClose={() => {
+							const {_uuidUpdate, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
 				</PositionContainer>
 
 				<Dialog
