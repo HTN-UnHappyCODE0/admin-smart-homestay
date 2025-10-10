@@ -1,8 +1,9 @@
 export interface PropsMainApartmentType {}
 
 export interface IApartmentType {
-	uuid: string;
-	code: string;
 	name: string;
+	description: string;
+	id: number;
+	uuid: string;
 	status: number;
 }

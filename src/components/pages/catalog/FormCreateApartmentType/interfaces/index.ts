@@ -1,1 +1,3 @@
-export interface PropsFormCreateApartmentType {}
+export interface PropsFormCreateApartmentType {
+	onClose: () => void;
+}

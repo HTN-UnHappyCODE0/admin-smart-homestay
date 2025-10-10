@@ -8,7 +8,7 @@ import {IoArrowBackOutline, IoArrowForwardOutline} from 'react-icons/io5';
 import {MdArrowDropDown} from 'react-icons/md';
 
 function Pagination({total, page, pageSize, onSetPage, onSetPageSize, dependencies = []}: PropsPagination) {
-	const pageSizes: number[] = [50, 100, 200];
+	const pageSizes: number[] = [20, 50, 100, 200];
 
 	const [openLimit, setOpenLimit] = useState<boolean>(false);
 

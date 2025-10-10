@@ -1,1 +1,3 @@
-export interface PropsFormCreateCostType {}
+export interface PropsFormCreateCostType {
+	onClose: () => void;
+}
