@@ -5,4 +5,5 @@ export interface PropsForm<T extends Record<string, any>> {
 	form: T;
 	setForm: Dispatch<SetStateAction<T>>;
 	onSubmit?: () => void;
+	heightFull?: boolean;
 }

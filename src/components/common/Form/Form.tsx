@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {PropsForm} from './interfaces';
 import {ContextForm} from './contexts';
 
-function Form<T extends Record<string, any>>({form, setForm, onSubmit, children}: PropsForm<T>) {
+function Form<T extends Record<string, any>>({form, setForm, onSubmit, heightFull = false, children}: PropsForm<T>) {
 	const convertForm = Object.fromEntries(Object.entries(form).map(([key]) => [key, null])) as Record<keyof T, string | null>;
 
 	const [countValidate, setCountValidate] = useState<number>(0);
@@ -50,7 +50,9 @@ function Form<T extends Record<string, any>>({form, setForm, onSubmit, children}
 				isDone,
 			}}
 		>
-			<form onSubmit={handleSubmit}>{children}</form>
+			<form onSubmit={handleSubmit} style={{height: heightFull ? '100%' : 'auto'}}>
+				{children}
+			</form>
 		</ContextForm.Provider>
 	);
 }

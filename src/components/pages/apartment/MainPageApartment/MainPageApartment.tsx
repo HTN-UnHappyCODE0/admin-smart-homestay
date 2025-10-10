@@ -23,6 +23,7 @@ import Dialog from '~/components/common/Dialog';
 import {HiOutlineLockClosed, HiOutlineLockOpen} from 'react-icons/hi';
 import {convertCoin} from '~/common/funcs/convertCoin';
 import {stateApartments, statusConfigs} from '~/constants/config/data';
+import {PATH} from '~/constants/config';
 
 function MainPageApartment({}: PropsMainPageApartment) {
 	const queryClient = useQueryClient();
@@ -108,7 +109,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 					title='Danh sách căn hộ'
 					actions={
 						<FlexLayout row gap-6>
-							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold>
+							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold href={PATH.CreateApartment}>
 								Thêm mới
 							</Button>
 						</FlexLayout>
