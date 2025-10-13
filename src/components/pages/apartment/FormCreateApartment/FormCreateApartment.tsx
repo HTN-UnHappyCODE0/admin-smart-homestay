@@ -7,7 +7,7 @@ import Breadcrumb from '~/components/common/Breadcrumb';
 import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button';
 import WrapperForm from '~/components/utils/WrapperForm';
-import Form, {Input, Select, TextArea} from '~/components/common/Form';
+import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
 import GridColumn from '~/components/layouts/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
@@ -76,9 +76,13 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 							<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
 								Hủy bỏ
 							</Button>
-							<Button p_8_24 rounded_8 bright-cyan bold>
-								Lưu lại
-							</Button>
+							<ContextForm.Consumer>
+								{({isDone}) => (
+									<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
+										Lưu lại
+									</Button>
+								)}
+							</ContextForm.Consumer>
 						</FlexLayout>
 					}
 				/>

@@ -4,6 +4,8 @@ export enum QUERY_KEY {
 	table_room_type,
 	table_cost_type,
 	table_lock,
+	table_unlock_history,
+	table_device,
 
 	detail_apartment_type,
 	detail_room_type,

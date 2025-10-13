@@ -19,6 +19,9 @@ export enum PATH {
 	CatalogCostType = '/catalog/cost-type',
 
 	Locks = '/locks',
+	Device = '/device',
+
+	UnlockHistory = '/unlock-history',
 }
 
 export const Menus: {
@@ -105,19 +108,25 @@ export const Menus: {
 			{
 				title: 'Lịch sử mở khóa',
 				icon: FingerScan,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.UnlockHistory,
+				pathActive: PATH.UnlockHistory,
 			},
 		],
 	},
 	{
-		title: 'QUẢN LÝ NỘI THẤT',
+		title: 'QUẢN LÝ NỘI THẤT & THIẾT BỊ',
 		group: [
 			{
 				title: 'Danh sách nội thất',
 				icon: Lamp,
 				path: PATH.Any,
 				pathActive: PATH.Any,
+			},
+			{
+				title: 'Danh sách thiết bị',
+				icon: Cpu,
+				path: PATH.Device,
+				pathActive: PATH.Device,
 			},
 		],
 	},
