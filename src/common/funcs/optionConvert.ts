@@ -61,3 +61,23 @@ export function removeVietnameseTones(str: string): string {
 		.replace(/đ/g, 'd')
 		.replace(/Đ/g, 'D');
 }
+
+export function getDetailAddress({
+	address,
+	provinceName,
+	districtName,
+	wardName,
+}: {
+	address: string;
+	provinceName: string;
+	districtName: string;
+	wardName: string;
+}): string {
+	if (!provinceName && !districtName && !wardName && !address) {
+		return '---';
+	}
+
+	const parts = [address, wardName, districtName, provinceName].filter(Boolean);
+
+	return parts.length ? parts.join(', ') : '---';
+}

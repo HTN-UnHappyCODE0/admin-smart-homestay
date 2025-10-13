@@ -1,0 +1,55 @@
+import axiosClient from '.';
+
+const lockServices = {
+	listLock: (
+		data: {
+			isPaging: number;
+			keyword: string;
+			page: number;
+			pageSize: number;
+			status: number | null;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/get-list-lock`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	resetUserPassword: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/reset-user-password`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	changeDefaultPassword: (
+		data: {
+			lockUuid: string;
+			oldPassword: string;
+			newPassword: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/change-default-password`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	createLock: (
+		data: {
+			serialNumber: string;
+			apartmentUuid: string;
+			defaultPassword: string;
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/create-lock`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+};
+
+export default lockServices;
