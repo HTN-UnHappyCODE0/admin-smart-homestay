@@ -3,6 +3,8 @@ export enum QUERY_KEY {
 	table_apartment,
 	table_room_type,
 	table_cost_type,
+	table_lock,
+
 	detail_apartment_type,
 	detail_room_type,
 	detail_cost_type,
@@ -46,4 +48,9 @@ export enum STATE_APARTMENT {
 	VACANT, // trống
 	DEPOSITED, // đã đặt cọc
 	RENTED, // đang cho thuê
+}
+
+export enum STATE_LOCK {
+	ONLINE = 1,
+	OFFLINE,
 }

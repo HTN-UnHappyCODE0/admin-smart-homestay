@@ -17,6 +17,8 @@ export enum PATH {
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
 	CatalogCostType = '/catalog/cost-type',
+
+	Locks = '/locks',
 }
 
 export const Menus: {
@@ -97,8 +99,8 @@ export const Menus: {
 			{
 				title: 'Danh sách khóa',
 				icon: Lock,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.Locks,
+				pathActive: PATH.Locks,
 			},
 			{
 				title: 'Lịch sử mở khóa',

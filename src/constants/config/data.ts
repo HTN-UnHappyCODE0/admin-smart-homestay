@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATE_APARTMENT, STATUS_CONFIG} from './enum';
+import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG} from './enum';
 
 export function tabsDetailApartments(uuid: string): {
 	title: string;
@@ -121,6 +121,26 @@ export const stateApartments: {
 		state: STATE_APARTMENT.RENTED,
 		text: 'Đang thuê',
 		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+];
+
+export const stateLocks: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATE_LOCK.ONLINE,
+		text: 'Online',
+		backgroundColor: '#06AED4',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_LOCK.OFFLINE,
+		text: 'Offline',
+		backgroundColor: '#F79009',
 		textColor: '#FFF',
 	},
 ];
