@@ -123,7 +123,7 @@ function FormChangePassword({uuidLock, onClose}: PropsFormChangePassword) {
 				</div>
 
 				<div className={styles.close} onClick={onClose}>
-					<IoClose size={28} color='#353945' />
+					<IoClose size={28} color='#8492A6' />
 				</div>
 			</div>
 		</Form>
