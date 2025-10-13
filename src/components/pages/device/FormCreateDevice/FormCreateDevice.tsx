@@ -23,7 +23,7 @@ function FormCreateDevice({onClose}: PropsFormCreateDevice) {
 	return (
 		<Form form={form} setForm={setForm} onSubmit={() => {}}>
 			<WrapperFormPostion
-				width={1200}
+				width={1400}
 				title='Thêm thiết bị'
 				actions={
 					<FlexLayout row gap-8>
@@ -40,7 +40,7 @@ function FormCreateDevice({onClose}: PropsFormCreateDevice) {
 					</FlexLayout>
 				}
 			>
-				<WrapperForm title='Thông tin nội thất'>
+				<WrapperForm title='Thông tin thiết bị'>
 					<GridColumn col_2>
 						<Select
 							placeholder='Nhập'
