@@ -128,7 +128,7 @@ function MainDevice({}: PropsMainDevice) {
 					<MainTable>
 						<DataWrapper
 							data={data?.items || []}
-							loading={false}
+							loading={isLoading}
 							title='Thiết bị trống!'
 							note='Danh sách thiết bị hiện đang trống!'
 						>

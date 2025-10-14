@@ -1,17 +1,20 @@
 import axiosClient from '.';
 
 const unlockHistoryServices = {
-	getListUnlockHistory: (
+	getLockHistory: (
 		data: {
 			keyword: string;
 			isPaging: number;
-			pageSize: number;
 			page: number;
-			typeFinding: number | null;
+			pageSize: number;
+			lockUuid: string;
+			type: number | null;
+			startTime: string | null;
+			endTime: string | null;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/UnlockHistory/get-list-unlock-history`, data, {
+		return axiosClient.post(`/Lock/get-lock-history`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
