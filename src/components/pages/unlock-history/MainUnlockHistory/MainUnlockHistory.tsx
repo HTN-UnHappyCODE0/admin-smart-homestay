@@ -8,7 +8,7 @@ import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
 import FilterDateRange from '~/components/common/FilterDateRange';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -19,51 +19,59 @@ import {httpRequest} from '~/services';
 import unlockHistoryServices from '~/services/unlockHistoryServices';
 import Link from 'next/link';
 import {PATH} from '~/constants/config';
+import {typeLocks} from '~/constants/config/data';
+import Moment from 'react-moment';
 
 function MainUnlockHistory({}: PropsMainUnlockHistory) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [status, setStatus] = useState<number | null>(null);
-	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
+	const [type, setType] = useState<number | null>(null);
+	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.THIS_MONTH);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const resetFilter = () => {
 		setPage(1);
 		setPageSize(20);
 		setKeyword('');
+		setTypeDate(TYPE_DATE.THIS_MONTH);
+		setType(null);
 	};
 
-	// const {
-	// 	data = {
-	// 		items: [],
-	// 		pagination: {
-	// 			totalCount: 0,
-	// 			totalPage: 0,
-	// 		},
-	// 	},
-	// 	isLoading,
-	// } = useQuery<{
-	// 	items: IUnlockHistory[];
-	// 	pagination: {
-	// 		totalCount: number;
-	// 		totalPage: number;
-	// 	};
-	// }>([QUERY_KEY.table_unlock_history, page, pageSize, keyword, status], {
-	// 	queryFn: () =>
-	// 		httpRequest({
-	// 			http: unlockHistoryServices.getListUnlockHistory({
-	// 				isPaging: CONFIG_PAGING.IS_PAGING,
-	// 				typeFinding: CONFIG_TYPE_FIND.TABLE,
-	// 				page: page,
-	// 				pageSize: pageSize,
-	// 				keyword: keyword,
-	// 			}),
-	// 		}),
-	// 	select(data) {
-	// 		return data;
-	// 	},
-	// });
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IUnlockHistory[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_unlock_history, page, pageSize, keyword, date?.from, date?.to, type], {
+		queryFn: () =>
+			httpRequest({
+				http: unlockHistoryServices.getLockHistory({
+					keyword: keyword,
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					page: page,
+					pageSize: pageSize,
+					lockUuid: '',
+					type: type,
+					startTime: date?.from ? moment(date.from).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+					endTime: date?.to ? moment(date.to).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		enabled: !!date?.from && !!date?.to,
+	});
 
 	return (
 		<Fragment>
@@ -78,21 +86,21 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 						<FlexLayout row gap-8 fit-height>
 							<FlexItem flex-1 overflow-y scrollbar>
 								<FlexLayout row gap-8>
-									<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
 									<FilterCustom
 										name='Phương thức mở'
-										value={status}
-										setValue={setStatus}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
+										value={type}
+										setValue={setType}
+										listOption={typeLocks?.map((v) => ({
+											uuid: v?.state,
+											name: v?.text,
+										}))}
+									/>
+									<FilterDateRange
+										hiddenOptionAll={true}
+										date={date}
+										setDate={setDate}
+										typeDate={typeDate}
+										setTypeDate={setTypeDate}
 									/>
 								</FlexLayout>
 							</FlexItem>
@@ -108,38 +116,14 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
 						<DataWrapper
-							// data={data?.items || []}
-							data={[1]}
-							loading={false}
+							data={data?.items || []}
+							loading={isLoading}
 							title='Lịch sử mở khóa trống!'
 							note='Danh sách lịch sử mở khóa hiện đang trống!'
 						>
 							<Table<IUnlockHistory>
 								rowKey={(row) => row.uuid}
-								// data={data?.items || []}
-								data={[
-									{
-										uuid: '666666',
-										name: '14A chung cư Mĩ Lệ',
-										openMethod: 'Mở bằng app',
-										openAccount: 'Nguyễn Đăng Hoàng Giang',
-										date: '01/01/2024 12:00:00',
-									},
-									{
-										uuid: '666667',
-										name: '14A chung cư Mĩ Lệ',
-										openMethod: 'Mở bằng khóa tạm thời',
-										openAccount: 'Nguyễn Minh Anh',
-										date: '01/01/2024 12:00:00',
-									},
-									{
-										uuid: '666668',
-										name: '14A chung cư Mĩ Lệ',
-										openMethod: 'Mở bằng mật khẩu',
-										openAccount: 'Hoàng Tuấn Nam',
-										date: '01/01/2024 12:00:00',
-									},
-								]}
+								data={data?.items || []}
 								fixedHeader={true}
 								column={[
 									{
@@ -151,25 +135,25 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 										title: 'ID ổ khóa',
 										render: (row, _) => (
 											<div className={styles.link}>
-												<Link href={PATH.UnlockHistory}>{row.uuid}</Link>
+												<Link href={`${PATH.Locks}?_uuidHistory=${row?.lock?.uuid}`}>{row?.lock?.code}</Link>
 											</div>
 										),
 									},
 									{
 										title: 'Tên căn hộ',
-										render: (row, _) => <>{row?.name}</>,
+										render: (row, _) => <>{row?.apartment?.name}</>,
 									},
 									{
 										title: 'Phương thức mở',
-										render: (row, _) => <>{row?.openMethod}</>,
+										render: (row, _) => <>{typeLocks?.find((v) => v?.state == row?.type)?.text}</>,
 									},
 									{
-										title: 'Tài khoản mở',
-										render: (row, _) => <>{row?.openAccount}</>,
+										title: 'Tài khoản',
+										render: (row, _) => <>{row?.user?.name || '---'}</>,
 									},
 									{
 										title: 'Thời gian',
-										render: (row, _) => <>{moment(row?.date).format('DD/MM/YYYY HH:mm:ss')}</>,
+										render: (row, _) => <Moment date={row?.created} format='HH:mm, DD/MM/YYYY' />,
 									},
 								]}
 							/>
@@ -180,8 +164,8 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 							onSetPage={setPage}
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
-							total={100}
-							dependencies={[keyword, status]}
+							total={data?.pagination?.totalCount || 0}
+							dependencies={[pageSize, keyword, status]}
 						/>
 					</MainTable>
 				</FlexItem>
