@@ -1,4 +1,5 @@
 export interface PropsDateOption {
+	hiddenOptionAll?: boolean;
 	date: {
 		from: Date | null;
 		to: Date | null;

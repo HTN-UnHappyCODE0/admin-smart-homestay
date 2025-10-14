@@ -207,6 +207,7 @@ function MainLocks({}: PropsMainLocks) {
 									},
 									{
 										title: 'Hành động',
+										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
 												<IconActionTable
@@ -240,60 +241,6 @@ function MainLocks({}: PropsMainLocks) {
 							/>
 						</DataWrapper>
 
-						<PositionContainer
-							open={_open == 'create'}
-							onClose={() => {
-								const {_open, ...rest} = router.query;
-
-								router.replace({
-									pathname: router.pathname,
-									query: {
-										...rest,
-									},
-								});
-							}}
-						>
-							<FormCreateLock
-								onClose={() => {
-									const {_open, ...rest} = router.query;
-
-									router.replace({
-										pathname: router.pathname,
-										query: {
-											...rest,
-										},
-									});
-								}}
-							/>
-						</PositionContainer>
-
-						<PositionContainer
-							open={!!_uuidHistory}
-							onClose={() => {
-								const {_uuidHistory, ...rest} = router.query;
-
-								router.replace({
-									pathname: router.pathname,
-									query: {
-										...rest,
-									},
-								});
-							}}
-						>
-							<MainHistoryUnlock
-								onClose={() => {
-									const {_uuidHistory, ...rest} = router.query;
-
-									router.replace({
-										pathname: router.pathname,
-										query: {
-											...rest,
-										},
-									});
-								}}
-							/>
-						</PositionContainer>
-
 						<Pagination
 							page={page}
 							onSetPage={setPage}
@@ -305,6 +252,60 @@ function MainLocks({}: PropsMainLocks) {
 					</MainTable>
 				</FlexItem>
 			</FlexLayout>
+
+			<PositionContainer
+				open={_open == 'create'}
+				onClose={() => {
+					const {_open, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormCreateLock
+					onClose={() => {
+						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidHistory}
+				onClose={() => {
+					const {_uuidHistory, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<MainHistoryUnlock
+					onClose={() => {
+						const {_uuidHistory, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
 
 			<Popup open={!!uuidChangePassword} onClose={() => setUuidChangePassword('')}>
 				<FormChangePassword uuidLock={uuidChangePassword} onClose={() => setUuidChangePassword('')} />

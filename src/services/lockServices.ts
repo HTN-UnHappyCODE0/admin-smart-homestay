@@ -50,6 +50,33 @@ const lockServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getDetailLock: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/get-detail-lock`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	getLockHistory: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			page: number;
+			pageSize: number;
+			lockUuid: string;
+			type: number | null;
+			startTime: string | null;
+			endTime: string | null;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/get-lock-history`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default lockServices;

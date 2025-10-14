@@ -11,7 +11,7 @@ import {IoIosArrowDown} from 'react-icons/io';
 import DateOption from './components/DateOption';
 import {getDateRange} from '~/common/funcs/selectData';
 
-function FilterDateRange({date, setDate, typeDate, setTypeDate}: PropsFilterDateRange) {
+function FilterDateRange({hiddenOptionAll = false, date, setDate, typeDate, setTypeDate}: PropsFilterDateRange) {
 	const [openDate, setOpenDate] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -42,6 +42,7 @@ function FilterDateRange({date, setDate, typeDate, setTypeDate}: PropsFilterDate
 					setTypeDate={setTypeDate}
 					show={openDate}
 					setShow={setOpenDate}
+					hiddenOptionAll={hiddenOptionAll}
 				/>
 			)}
 		>
