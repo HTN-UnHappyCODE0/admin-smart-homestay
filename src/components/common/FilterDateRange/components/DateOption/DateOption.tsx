@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import TippyHeadless from '@tippyjs/react/headless';
 import {PropsDateOption} from './interfaces';
 
@@ -9,7 +9,15 @@ import {ListOptionFilterDate} from '~/constants/config';
 import RangeDatePicker from '../RangeDatePicker';
 import {getDateRange} from '~/common/funcs/selectData';
 
-function DateOption({date, setDate, typeDate, setTypeDate, show, setShow}: PropsDateOption) {
+function DateOption({hiddenOptionAll = false, date, setDate, typeDate, setTypeDate, show, setShow}: PropsDateOption) {
+	const options = useMemo(() => {
+		if (!hiddenOptionAll) {
+			return ListOptionFilterDate;
+		} else {
+			return ListOptionFilterDate.filter((v) => v?.value != TYPE_DATE.ALL);
+		}
+	}, [hiddenOptionAll]);
+
 	return (
 		<TippyHeadless
 			maxWidth={'100%'}
@@ -28,7 +36,7 @@ function DateOption({date, setDate, typeDate, setTypeDate, show, setShow}: Props
 			)}
 		>
 			<div className={styles.mainOption}>
-				{ListOptionFilterDate.map((v, i) => (
+				{options.map((v, i) => (
 					<div
 						key={i}
 						className={clsx(styles.option, {

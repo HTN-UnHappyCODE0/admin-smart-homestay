@@ -6,6 +6,7 @@ export enum QUERY_KEY {
 	table_lock,
 	table_unlock_history,
 	table_device,
+	table_detail_lock_history,
 
 	detail_apartment_type,
 	detail_room_type,
@@ -55,4 +56,11 @@ export enum STATE_APARTMENT {
 export enum STATE_LOCK {
 	ONLINE = 1,
 	OFFLINE,
+}
+
+export enum TYPE_LOCK {
+	DEVICE_PASS = 1,
+	USER_PASS,
+	TEMP_PASS,
+	APP_PASS,
 }

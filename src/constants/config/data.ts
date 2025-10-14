@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG} from './enum';
+import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK} from './enum';
 
 export function tabsDetailApartments(uuid: string): {
 	title: string;
@@ -141,6 +141,38 @@ export const stateLocks: {
 		state: STATE_LOCK.OFFLINE,
 		text: 'Offline',
 		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+];
+
+export const typeLocks: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: TYPE_LOCK.DEVICE_PASS,
+		text: 'Mở bằng mật khẩu',
+		backgroundColor: '#E03',
+		textColor: '#FFF',
+	},
+	{
+		state: TYPE_LOCK.APP_PASS,
+		text: 'Mở bằng app',
+		backgroundColor: '#06AED4',
+		textColor: '#FFF',
+	},
+	{
+		state: TYPE_LOCK.TEMP_PASS,
+		text: 'Mở bằng mã tạm thời',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+	{
+		state: TYPE_LOCK.USER_PASS,
+		text: 'Mở bằng mã người dùng',
+		backgroundColor: '#17B26A',
 		textColor: '#FFF',
 	},
 ];

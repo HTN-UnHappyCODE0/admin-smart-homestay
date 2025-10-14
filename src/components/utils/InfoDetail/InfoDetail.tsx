@@ -42,7 +42,7 @@ function InfoDetail({name, value, textColor, images = [], actions}: PropsInfoDet
 				</LightGallery>
 			) : (
 				<div style={{color: !!textColor && !actions ? textColor : ''}} className={styles.value}>
-					{actions || value}
+					{actions || value || '---'}
 				</div>
 			)}
 		</div>
