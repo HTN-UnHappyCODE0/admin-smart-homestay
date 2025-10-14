@@ -8,6 +8,9 @@ import {PATH} from '~/constants/config';
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import {useRouter} from 'next/router';
 import {tabsDetailApartments} from '~/constants/config/data';
+import WrapperForm from '~/components/utils/WrapperForm';
+import StateActive from '~/components/utils/StateActive';
+import GridColumn from '~/components/layouts/GridColumn';
 
 function MainInfoApartment({}: PropsMainInfoApartment) {
 	const router = useRouter();
@@ -44,7 +47,52 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 				title='Chi tiết căn hộ'
 				tabs={tabsDetailApartments(_uuid as string)}
 			>
-				MainInfoApartment
+				<GridColumn col_2>
+					<WrapperForm
+						title='Thông tin căn hộ'
+						actions={
+							<FlexLayout row gap-6 items-center>
+								<p
+									style={{
+										color: '#202939',
+										fontSize: '14px',
+										fontWeight: '500',
+									}}
+								>
+									24/08/2025
+								</p>
+								<div
+									style={{
+										width: '8px',
+										height: '8px',
+										borderRadius: '50%',
+										background: '#9AA4B2',
+									}}
+								></div>
+								<StateActive
+									isSmall={true}
+									stateActive={1}
+									listState={[
+										{
+											backgroundColor: '#06AED4',
+											state: 1,
+											text: 'Hoạt động',
+											textColor: '#fff',
+										},
+										{
+											backgroundColor: '#EE0033',
+											state: 2,
+											text: 'Bị khóa',
+											textColor: '#fff',
+										},
+									]}
+								/>
+							</FlexLayout>
+						}
+					>
+						MainInfoApartment
+					</WrapperForm>
+				</GridColumn>
 			</LayoutMainPage>
 		</FlexLayout>
 	);
