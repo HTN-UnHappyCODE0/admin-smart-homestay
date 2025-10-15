@@ -66,6 +66,19 @@ const furnitureServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	updateFurniture: (
+		data: {
+			name: string;
+			description: string;
+			uuid: string;
+			lastAdded: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Furniture/update-furniture`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default furnitureServices;
