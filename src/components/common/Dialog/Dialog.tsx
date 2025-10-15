@@ -19,6 +19,8 @@ function Dialog({
 	onClose,
 	onSubmit,
 	type = 'primary',
+	form,
+	isDisabledBtnSubmit,
 }: PropsDialog) {
 	return (
 		<Popup open={open} onClose={onClose}>
@@ -34,6 +36,7 @@ function Dialog({
 				</div>
 				<h4 className={styles.title}>{title}</h4>
 				<p className={styles.note}>{note}</p>
+				{form && <div className={styles.form}>{form}</div>}
 				<div className={styles.groupBtn}>
 					<Button white rounded_20 bold p_8_24 onClick={onClose}>
 						{titleCancel}
@@ -46,6 +49,7 @@ function Dialog({
 						red={type == 'error'}
 						orange={type == 'warning'}
 						onClick={onSubmit}
+						disable={isDisabledBtnSubmit}
 					>
 						{titleSubmit}
 					</Button>
