@@ -149,9 +149,9 @@ function MainDevice({}: PropsMainDevice) {
 									{
 										title: 'Mã kết nối',
 										render: (row, _) => (
-											<div className={styles.link}>
-												<Link href={PATH.Device}>{row.name}</Link>
-											</div>
+											<Link className={styles.link} href={PATH.Device}>
+												{row.name}
+											</Link>
 										),
 									},
 									{

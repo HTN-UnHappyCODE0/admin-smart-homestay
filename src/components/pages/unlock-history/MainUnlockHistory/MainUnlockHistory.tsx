@@ -141,7 +141,7 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 									},
 									{
 										title: 'Tên căn hộ',
-										render: (row, _) => <>{row?.apartment?.name}</>,
+										render: (row, _) => <>{row?.apartment?.name || '---'}</>,
 									},
 									{
 										title: 'Phương thức mở',
