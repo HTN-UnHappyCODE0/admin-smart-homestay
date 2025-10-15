@@ -15,10 +15,9 @@ import Loading from '~/components/common/Loading';
 function FormCreateFurniture({onClose}: PropsFormCreateFurniture) {
 	const queryClient = useQueryClient();
 
-	const [form, setForm] = useState<{name: string; description: string; lastAdded: string}>({
+	const [form, setForm] = useState<{name: string; description: string}>({
 		name: '',
 		description: '',
-		lastAdded: '',
 	});
 
 	const funcCreateFurniture = useMutation({
@@ -26,11 +25,11 @@ function FormCreateFurniture({onClose}: PropsFormCreateFurniture) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: 'Thêm ổ nội thất thành công!',
+				msgSuccess: 'Thêm nội thất thành công!',
 				http: furnitureServices.createFurniture({
 					name: form?.name,
 					description: form?.description,
-					lastAdded: form?.lastAdded,
+					lastAdded: '',
 				}),
 			}),
 		onSuccess(data) {
@@ -39,7 +38,6 @@ function FormCreateFurniture({onClose}: PropsFormCreateFurniture) {
 				setForm({
 					name: '',
 					description: '',
-					lastAdded: '',
 				});
 				queryClient.invalidateQueries({
 					queryKey: [QUERY_KEY.table_furniture],
@@ -52,7 +50,7 @@ function FormCreateFurniture({onClose}: PropsFormCreateFurniture) {
 		<Form form={form} setForm={setForm} onSubmit={funcCreateFurniture.mutate}>
 			<Loading loading={funcCreateFurniture.isLoading} />
 			<WrapperFormPostion
-				width={840}
+				width={540}
 				title='Thêm nội thất'
 				actions={
 					<FlexLayout row gap-8>

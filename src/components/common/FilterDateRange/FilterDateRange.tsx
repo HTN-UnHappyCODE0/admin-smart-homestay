@@ -11,7 +11,7 @@ import {IoIosArrowDown} from 'react-icons/io';
 import DateOption from './components/DateOption';
 import {getDateRange} from '~/common/funcs/selectData';
 
-function FilterDateRange({hiddenOptionAll = false, date, setDate, typeDate, setTypeDate}: PropsFilterDateRange) {
+function FilterDateRange({name, hiddenOptionAll = false, date, setDate, typeDate, setTypeDate}: PropsFilterDateRange) {
 	const [openDate, setOpenDate] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -48,7 +48,7 @@ function FilterDateRange({hiddenOptionAll = false, date, setDate, typeDate, setT
 		>
 			<div className={clsx(styles.container, {[styles.active]: openDate})} onClick={() => setOpenDate(!openDate)}>
 				<div className={styles.value}>
-					<p className={styles.name}>Thời gian:</p>
+					<p className={styles.name}>{name || 'Thời gian'}: </p>
 					<p className={styles.text}>
 						{typeDate == TYPE_DATE.LUA_CHON ? (
 							<span>

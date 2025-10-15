@@ -20,7 +20,6 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import apartmentServices from '~/services/apartmentServices';
 import Dialog from '~/components/common/Dialog';
-import {HiOutlineLockClosed, HiOutlineLockOpen} from 'react-icons/hi';
 import {convertCoin} from '~/common/funcs/convertCoin';
 import {stateApartments, statusConfigs} from '~/constants/config/data';
 import {PATH} from '~/constants/config';
@@ -181,11 +180,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Tên căn hộ',
-										render: (row, _) => <>{row?.name}</>,
+										render: (row, _) => <>{row?.name || '---'}</>,
 									},
 									{
 										title: 'Diện tích (m2)',
-										render: (row, _) => <>{row?.apartmentSize}</>,
+										render: (row, _) => <>{row?.apartmentSize || '---'}</>,
 									},
 									{
 										title: 'Địa chỉ (Tỉnh - xã)',
@@ -197,11 +196,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Yêu cầu xem căn hộ',
-										render: (row, _) => <>{row?.numVisitRequest}</>,
+										render: (row, _) => <>{row?.numVisitRequest || '---'}</>,
 									},
 									{
 										title: 'Yêu cầu xử lý sự cố',
-										render: (row, _) => <>{row?.numIncidentRequest}</>,
+										render: (row, _) => <>{row?.numIncidentRequest || '---'}</>,
 									},
 									{
 										title: 'Giá cho thuê (VND)',
@@ -221,7 +220,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Người quản lý',
-										render: (row, _) => <>{row?.managerUu?.name}</>,
+										render: (row, _) => <>{row?.managerUu?.name || '---'}</>,
 									},
 									{
 										title: 'Trạng thái căn hộ',

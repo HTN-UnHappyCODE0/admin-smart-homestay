@@ -8,7 +8,7 @@ export enum QUERY_KEY {
 	table_device,
 	table_detail_lock_history,
 	table_furniture,
-	table_detail_furniture,
+	table_using_department,
 
 	detail_apartment_type,
 	detail_room_type,

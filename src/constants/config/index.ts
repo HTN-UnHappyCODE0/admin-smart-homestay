@@ -90,12 +90,6 @@ export const Menus: {
 				path: PATH.Any,
 				pathActive: PATH.Any,
 			},
-			{
-				title: 'Danh sách thiết bị',
-				icon: Cpu,
-				path: PATH.Any,
-				pathActive: PATH.Any,
-			},
 		],
 	},
 	{

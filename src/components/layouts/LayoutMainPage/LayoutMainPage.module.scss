@@ -4,12 +4,24 @@
 	overflow: auto;
 	white-space: nowrap;
 	padding-bottom: 4px;
+	display: flex;
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: nowrap;
+	padding-bottom: 4px;
+	scroll-behavior: smooth;
 
 	&::-webkit-scrollbar {
-		height: 3px;
+		height: 6px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #aaa;
+		border-radius: 3px;
 	}
 
 	.tab {
+		flex-shrink: 0;
 		min-width: 60px;
 		cursor: pointer;
 		user-select: none;
