@@ -5,7 +5,7 @@
 	background-color: #fff;
 }
 
-.head {
+.top {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -21,8 +21,12 @@
 	font-weight: 600;
 }
 
+.nodes {
+	margin-top: 4px;
+}
+
 @media (max-width: $widthTablet) {
-	.head {
+	.top {
 		padding: 8px 16px;
 	}
 	.title {

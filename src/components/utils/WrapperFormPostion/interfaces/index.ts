@@ -3,4 +3,5 @@ export interface PropsWrapperFormPostion {
 	width: number;
 	title: string;
 	actions?: React.ReactNode;
+	nodes?: React.ReactNode;
 }

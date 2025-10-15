@@ -8,12 +8,13 @@ import lgHash from 'lightgallery/plugins/hash';
 import LightGallery from 'lightgallery/react';
 import lgZoom from 'lightgallery/plugins/zoom';
 import {useRef} from 'react';
+import clsx from 'clsx';
 
-function InfoDetail({name, value, textColor, images = [], actions}: PropsInfoDetail) {
+function InfoDetail({name, value, textColor, images = [], actions, isMarginTop}: PropsInfoDetail) {
 	const refLightGallery = useRef<any>(null);
 
 	return (
-		<div className={styles.info_detail}>
+		<div className={clsx(styles.info_detail, {[styles.margin_top]: isMarginTop})}>
 			<p className={styles.name}>{name}</p>
 
 			{images?.length > 0 ? (

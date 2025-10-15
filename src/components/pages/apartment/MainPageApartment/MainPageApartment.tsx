@@ -23,9 +23,13 @@ import Dialog from '~/components/common/Dialog';
 import {convertCoin} from '~/common/funcs/convertCoin';
 import {stateApartments, statusConfigs} from '~/constants/config/data';
 import {PATH} from '~/constants/config';
+import Form, {TextArea} from '~/components/common/Form';
 
 function MainPageApartment({}: PropsMainPageApartment) {
 	const queryClient = useQueryClient();
+	const [form, setForm] = useState<{note: string}>({
+		note: '',
+	});
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);

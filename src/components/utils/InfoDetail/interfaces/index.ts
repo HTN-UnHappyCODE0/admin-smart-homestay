@@ -4,4 +4,5 @@ export interface PropsInfoDetail {
 	textColor?: string;
 	images?: string[];
 	actions?: React.ReactNode;
+	isMarginTop?: boolean;
 }
