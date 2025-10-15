@@ -35,6 +35,11 @@ function MainDetail({}: PropsMainDetail) {
 					</Button>
 				</FlexLayout>
 			}
+			nodes={
+				<FlexLayout row gap-8>
+					<p>Trạng thái yêu cầu:</p>
+				</FlexLayout>
+			}
 		>
 			<Form form={form} setForm={setForm}>
 				<WrapperForm title='Thông tin căn hộ' actions={<p>Thêm loại phòng </p>}>

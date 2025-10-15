@@ -10,4 +10,6 @@ export interface PropsDialog {
 	type?: 'primary' | 'error' | 'warning';
 	onClose: () => void;
 	onSubmit: () => void;
+	form?: React.ReactNode;
+	isDisabledBtnSubmit?: boolean;
 }
