@@ -22,6 +22,8 @@ export enum PATH {
 	Device = '/device',
 
 	UnlockHistory = '/unlock-history',
+
+	Furniture = '/furniture',
 }
 
 export const Menus: {
@@ -119,8 +121,8 @@ export const Menus: {
 			{
 				title: 'Danh sách nội thất',
 				icon: Lamp,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.Furniture,
+				pathActive: PATH.Furniture,
 			},
 			{
 				title: 'Danh sách thiết bị',
