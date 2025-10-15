@@ -28,12 +28,13 @@ import StateActive from '~/components/utils/StateActive';
 import Dialog from '~/components/common/Dialog';
 import Loading from '~/components/common/Loading';
 import FilterDateRange from '~/components/common/FilterDateRange';
+import FormUpdateFurniture from '../FormUpdateFurniture';
 
 function MainFurniture({}: PropsMainFurniture) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_open, _uuid} = router.query;
+	const {_open, _uuid, _uuidUpdate} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -248,7 +249,19 @@ function MainFurniture({}: PropsMainFurniture) {
 													}
 												/>
 
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa nội thất' />
+												<IconActionTable
+													icon={<Edit color='#292D32' size={24} />}
+													tooltip='Chỉnh sửa nội thất'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
+												/>
 											</FlexLayout>
 										),
 									},
@@ -311,6 +324,33 @@ function MainFurniture({}: PropsMainFurniture) {
 				<DetailFurniture
 					onClose={() => {
 						const {_uuid, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidUpdate}
+				onClose={() => {
+					const {_uuidUpdate, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormUpdateFurniture
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,
