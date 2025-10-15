@@ -10,4 +10,5 @@ export interface PropsFilterDateRange {
 	setDate: Dispatch<SetStateAction<{from: Date | null; to: Date | null} | null>>;
 	typeDate: TYPE_DATE;
 	setTypeDate: Dispatch<SetStateAction<TYPE_DATE>>;
+	name?: string;
 }

@@ -2,7 +2,7 @@ export interface PropsDetailFurniture {
 	onClose: () => void;
 }
 
-export interface IListoffurnishedapartments {
+export interface IUsingDepartment {
 	apartmentUu: {
 		province: {
 			code: string;

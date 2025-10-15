@@ -27,6 +27,7 @@ import DetailFurniture from '../DetailFurniture';
 import StateActive from '~/components/utils/StateActive';
 import Dialog from '~/components/common/Dialog';
 import Loading from '~/components/common/Loading';
+import FilterDateRange from '~/components/common/FilterDateRange';
 
 function MainFurniture({}: PropsMainFurniture) {
 	const router = useRouter();
@@ -38,8 +39,7 @@ function MainFurniture({}: PropsMainFurniture) {
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
-	const [type, setType] = useState<number | null>(null);
-	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.THIS_MONTH);
+	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number} | null>(null);
@@ -64,15 +64,15 @@ function MainFurniture({}: PropsMainFurniture) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_furniture, page, pageSize, keyword, status, date?.from, date?.to, type], {
+	}>([QUERY_KEY.table_furniture, page, pageSize, keyword, status, date?.from, date?.to], {
 		queryFn: () =>
 			httpRequest({
 				http: furnitureServices.getListFurnitures({
 					keyword: keyword,
 					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
 					page: page,
 					pageSize: pageSize,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
 					status: status,
 					addedDateFrom: date?.from ? moment(date.from).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
 					addedDateTo: date?.to ? moment(date.to).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
@@ -143,6 +143,13 @@ function MainFurniture({}: PropsMainFurniture) {
 						<FlexLayout row gap-8 fit-height>
 							<FlexItem flex-1 overflow-y scrollbar>
 								<FlexLayout row gap-8>
+									<FilterDateRange
+										name='Ngày bổ sung'
+										date={date}
+										setDate={setDate}
+										typeDate={typeDate}
+										setTypeDate={setTypeDate}
+									/>
 									<FilterCustom
 										name='Trạng thái'
 										value={status}
@@ -165,7 +172,12 @@ function MainFurniture({}: PropsMainFurniture) {
 
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
-						<DataWrapper data={[1]} loading={false} title='Dữ liệu trống!' note='Danh sách nội thất hiện đang trống!'>
+						<DataWrapper
+							data={data.items || []}
+							loading={isLoading}
+							title='Dữ liệu trống!'
+							note='Danh sách nội thất hiện đang trống!'
+						>
 							<Table<IFurniture>
 								rowKey={(row) => row.uuid}
 								data={data.items || []}
@@ -178,7 +190,7 @@ function MainFurniture({}: PropsMainFurniture) {
 									},
 									{
 										title: 'Tên nội thất',
-										render: (row, _) => <>{row?.name}</>,
+										render: (row, _) => <>{row?.name || '---'}</>,
 									},
 									{
 										title: 'Số lượng',
@@ -186,11 +198,13 @@ function MainFurniture({}: PropsMainFurniture) {
 									},
 									{
 										title: 'Ngày bổ sung',
-										render: (row, _) => <Moment date={row?.lastAdded} format='HH:mm, DD/MM/YYYY' />,
+										render: (row, _) => (
+											<>{row?.lastAdded ? <Moment date={row?.lastAdded} format='DD/MM/YYYY' /> : '---'}</>
+										),
 									},
 									{
 										title: 'Ghi chú',
-										render: (row, _) => <>{row?.description}</>,
+										render: (row, _) => <>{row?.description || '---'}</>,
 									},
 
 									{
@@ -248,7 +262,7 @@ function MainFurniture({}: PropsMainFurniture) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[keyword, status]}
+							dependencies={[pageSize, keyword, status, date?.from, date?.to]}
 						/>
 					</MainTable>
 				</FlexItem>
