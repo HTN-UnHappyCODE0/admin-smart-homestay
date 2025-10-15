@@ -7,10 +7,14 @@ export enum QUERY_KEY {
 	table_unlock_history,
 	table_device,
 	table_detail_lock_history,
+	table_furniture,
+	table_detail_furniture,
 
 	detail_apartment_type,
 	detail_room_type,
 	detail_cost_type,
+	detail_lock,
+	detail_furniture,
 }
 
 export enum TYPE_DATE {
@@ -42,6 +46,11 @@ export enum CONFIG_TYPE_FIND {
 }
 
 export enum STATUS_CONFIG {
+	LOCKED = 0,
+	ACTIVE,
+}
+
+export enum STATUS_FURNITURE {
 	LOCKED = 0,
 	ACTIVE,
 }

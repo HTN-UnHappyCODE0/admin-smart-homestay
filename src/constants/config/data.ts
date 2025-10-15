@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK} from './enum';
+import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK, STATUS_FURNITURE} from './enum';
 
 export function tabsDetailApartments(uuid: string): {
 	title: string;
@@ -88,6 +88,26 @@ export const statusConfigs: {
 	{
 		state: STATUS_CONFIG.ACTIVE,
 		text: 'Đang hoạt động',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+];
+
+export const statusFurniture: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATUS_FURNITURE.LOCKED,
+		text: 'Không sử dụng',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+	{
+		state: STATUS_FURNITURE.ACTIVE,
+		text: 'Đang sử dụng',
 		backgroundColor: '#17B26A',
 		textColor: '#FFF',
 	},

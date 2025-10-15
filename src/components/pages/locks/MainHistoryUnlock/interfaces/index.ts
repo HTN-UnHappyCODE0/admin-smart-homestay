@@ -108,7 +108,3 @@ export interface IDetailLock {
 	uuid: string;
 	status: number;
 }
-
-export interface IHistoryLock {
-	uuid: string;
-}

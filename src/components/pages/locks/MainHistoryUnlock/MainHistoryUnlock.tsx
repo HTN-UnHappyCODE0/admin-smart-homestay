@@ -8,7 +8,7 @@ import GridColumn from '~/components/layouts/GridColumn';
 import InfoDetail from '~/components/utils/InfoDetail';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {CONFIG_PAGING, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import {useState} from 'react';
 import {httpRequest} from '~/services';
@@ -33,7 +33,7 @@ function MainHistoryUnlock({onClose}: PropsMainHistoryUnlock) {
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.THIS_MONTH);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
-	const {data: lock} = useQuery<IDetailLock>([QUERY_KEY.table_unlock_history, _uuidHistory], {
+	const {data: lock} = useQuery<IDetailLock>([QUERY_KEY.detail_lock, _uuidHistory], {
 		queryFn: () =>
 			httpRequest({
 				http: lockServices.getDetailLock({uuid: _uuidHistory as string}),
