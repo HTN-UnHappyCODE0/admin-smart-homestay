@@ -19,16 +19,16 @@ export function tabsDetailApartments(uuid: string): {
 		},
 		{
 			title: 'Yêu cầu sửa chữa',
-			path: PATH.Any,
-			pathActive: PATH.Any,
-		},
-		{
-			title: 'Danh sách phòng',
-			path: PATH.Any,
-			pathActive: PATH.Any,
+			path: `${PATH.RequestRepairApartment}?_uuid=${uuid}`,
+			pathActive: PATH.RequestRepairApartment,
 		},
 		{
 			title: 'Danh sách thiết bị',
+			path: `${PATH.ListDeviceApartment}?_uuid=${uuid}`,
+			pathActive: PATH.ListDeviceApartment,
+		},
+		{
+			title: 'Danh sách quảng cáo',
 			path: PATH.Any,
 			pathActive: PATH.Any,
 		},
