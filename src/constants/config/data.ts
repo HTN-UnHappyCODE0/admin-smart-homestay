@@ -1,5 +1,5 @@
 import {PATH} from '.';
-import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK, STATUS_FURNITURE} from './enum';
+import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK, STATUS_FURNITURE, STATUS_TEMPORARILY_ABSENT, STATUS_CONTRACT} from './enum';
 
 export function tabsDetailApartments(uuid: string): {
 	title: string;
@@ -11,6 +11,11 @@ export function tabsDetailApartments(uuid: string): {
 			title: 'Thông tin căn hộ',
 			path: `${PATH.InfoApartment}?_uuid=${uuid}`,
 			pathActive: PATH.InfoApartment,
+		},
+		{
+			title: 'Hợp đồng thuê',
+			path: `${PATH.RentalContractApartment}?_uuid=${uuid}`,
+			pathActive: PATH.RentalContractApartment,
 		},
 		{
 			title: 'Yêu cầu xem căn hộ',
@@ -142,6 +147,41 @@ export const stateApartments: {
 		text: 'Đang thuê',
 		backgroundColor: '#17B26A',
 		textColor: '#FFF',
+	},
+];
+
+// Tạm trú tạm vắng
+export const statusRentalContract: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATUS_TEMPORARILY_ABSENT.NO,
+		text: 'Chưa có',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+	{
+		state: STATUS_TEMPORARILY_ABSENT.YES,
+		text: 'Đã có',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+];
+
+export const statusContract: {
+	state: number;
+	text: string;
+}[] = [
+	{
+		state: STATUS_CONTRACT.OCCUPANT,
+		text: 'Người ở',
+	},
+	{
+		state: STATUS_CONTRACT.OWNER,
+		text: 'Chủ hợp đồng',
 	},
 ];
 
