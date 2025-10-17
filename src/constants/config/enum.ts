@@ -1,6 +1,7 @@
 export enum QUERY_KEY {
 	table_apartment_type,
 	table_apartment,
+	table_rental_contract,
 	table_room_type,
 	table_cost_type,
 	table_lock,
@@ -10,7 +11,9 @@ export enum QUERY_KEY {
 	table_furniture,
 	table_using_department,
 
+	detail_info_apartment,
 	detail_apartment_type,
+	detail_user_contract,
 	detail_room_type,
 	detail_cost_type,
 	detail_lock,
@@ -55,9 +58,27 @@ export enum CONFIG_TYPE_FIND {
 	TABLE,
 }
 
+export enum CONFIG_TYPE_FINDING {
+	CATALOG = 0,
+	DTO,
+	DETAIL,
+	SIMPLE,
+	CUSTOM,
+}
+
 export enum STATUS_CONFIG {
 	LOCKED = 0,
 	ACTIVE,
+}
+
+export enum STATUS_TEMPORARILY_ABSENT {
+	NO = 0, // chưa có tạm trú tạm vắng
+	YES, // có tạm trú tạm vắng
+}
+
+export enum STATUS_CONTRACT {
+	OCCUPANT = 0, // người ở
+	OWNER, // chủ hợp đồng
 }
 
 export enum STATUS_FURNITURE {
@@ -101,4 +122,9 @@ export enum PURPOSE_UPLOAD {
 	BILL,
 	RECEIPT,
 	AGREEMENT,
+}
+
+export enum STATE_SWITCH {
+	OFF,
+	ON,
 }

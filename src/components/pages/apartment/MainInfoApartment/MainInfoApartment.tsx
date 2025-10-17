@@ -1,6 +1,6 @@
-import {Fragment, useState} from 'react';
+import {useState} from 'react';
 import styles from './MainInfoApartment.module.scss';
-import {PropsMainInfoApartment} from './interfaces';
+import {IDetailInfoApartment, PropsMainInfoApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import Breadcrumb from '~/components/common/Breadcrumb';
@@ -13,23 +13,61 @@ import StateActive from '~/components/utils/StateActive';
 import GridColumn from '~/components/layouts/GridColumn';
 import InfoDetail from '~/components/utils/InfoDetail';
 import SwitchButton from '~/components/common/SwitchButton';
-import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
-import DataWrapper from '~/components/utils/DataWrapper';
-import Table from '~/components/common/Table';
-import Pagination from '~/components/common/Pagination';
-import Moment from 'react-moment';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {httpRequest} from '~/services';
+import apartmentServices from '~/services/apartmentServices';
+import {QUERY_KEY, STATE_SWITCH} from '~/constants/config/enum';
+import {getDetailAddress} from '~/common/funcs/optionConvert';
+import Dialog from '~/components/common/Dialog';
+import {Warning2} from 'iconsax-react';
+import Loading from '~/components/common/Loading';
+import Image from 'next/image';
 
 function MainInfoApartment({}: PropsMainInfoApartment) {
 	const router = useRouter();
 	const {_uuid} = router.query;
+	const queryClient = useQueryClient();
 
-	const [page, setPage] = useState<number>(1);
-	const [pageSize, setPageSize] = useState<number>(20);
-	const [keyword, setKeyword] = useState<string>('');
-	const [type, setType] = useState<number | null>(null);
+	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{apartmentMeterUuid: string; state: number; type: 1 | 2} | null>(
+		null
+	);
+
+	const {data: apartmentInfo} = useQuery<IDetailInfoApartment>([QUERY_KEY.detail_info_apartment, _uuid], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.getApartmentDetail({uuid: _uuid as string}),
+			}),
+
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuid,
+	});
+
+	const funcChangeSwitch = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt aptomat thành công!' : 'Bật aptomat thành công!',
+				http: apartmentServices.changeStatusMeter({
+					apartmentMeterUuid: dataChangeStateSwitch?.apartmentMeterUuid!,
+					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setDataChangeStateSwitch(null);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.detail_info_apartment],
+				});
+			}
+		},
+	});
 
 	return (
 		<FlexLayout column gap-12>
+			<Loading loading={funcChangeSwitch.isLoading} />
 			<LayoutMainPage
 				breadcrumb={
 					<Breadcrumb
@@ -39,8 +77,8 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 								path: PATH.Apartment,
 							},
 							{
-								path: '',
 								title: 'Chi tiết căn hộ',
+								path: PATH.ApartmentDetail,
 							},
 						]}
 						actions={
@@ -96,110 +134,167 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 						>
 							<FlexLayout column gap-16>
 								<GridColumn col_3>
-									<InfoDetail name='Tên căn hộ' value='TH3-042024' />
-									<InfoDetail name='Loại căn hộ' value='Chung cư mini' />
-									<InfoDetail name='Diện tích' value='82 m2' />
-									<InfoDetail name='ID ổ khóa' value='M2H55020' />
-									<InfoDetail name='Phòng' value={'Phòng ngủ *3, Phòng khách *1, Phòng vệ sinh*2'} />
-									<InfoDetail name='Nội thất' value='0' />
-									<InfoDetail name='Giá cho thuê' value='5.6000.000/tháng' />
-									<InfoDetail name='Giá quảng cáo' value='5.6000.000/tháng' />
+									<InfoDetail name='Tên căn hộ' value={apartmentInfo?.name} />
+									<InfoDetail name='Loại căn hộ' value={apartmentInfo?.apartmentTypeUu?.name} />
+									<InfoDetail name='Diện tích' value={`${apartmentInfo?.apartmentSize} m2`} />
+									<InfoDetail name='ID ổ khóa' value={apartmentInfo?.lock?.code} />
+									<InfoDetail
+										name='Phòng'
+										value={
+											<>
+												{apartmentInfo?.apartmentRooms.flatMap((room, index, array) => (
+													<span key={index}>
+														{room.item} * <span style={{color: '#2970FF'}}>{room.count}</span>
+														{index < array.length - 1 && <span key={`sep-${room.uuid}`}> , </span>}
+													</span>
+												))}
+											</>
+										}
+									/>
+									<InfoDetail
+										name='Nội thất'
+										value={apartmentInfo?.apartmentFurnitures.map((item, index) => (
+											<div key={index}>{item.count}</div>
+										))}
+									/>
+									<InfoDetail name='Giá cho thuê' value={apartmentInfo?.rentPrice} />
+									<InfoDetail name='Giá quảng cáo' value={apartmentInfo?.adPrice} />
 								</GridColumn>
 
-								<InfoDetail name='Địa chỉ chi tiết' value='quận Long Biên, TP Hà Nội' />
-								<InfoDetail name='Mô tả chi tiết' value='Công trình hải Dương số 34' />
+								<InfoDetail
+									name='Địa chỉ chi tiết'
+									value={getDetailAddress({
+										address: apartmentInfo?.address!,
+										provinceName: apartmentInfo?.province?.fullName!,
+										districtName: '',
+										wardName: apartmentInfo?.ward?.fullName!,
+									})}
+								/>
+
+								<InfoDetail name='Mô tả chi tiết' value={apartmentInfo?.description} />
 								<InfoDetail
 									name='Hình ảnh'
 									value=''
-									images={[
-										'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
-										'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
-										'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
-									]}
+									images={apartmentInfo?.attachments?.map((item) => `${process.env.NEXT_PUBLIC_IMAGE}/${item}`)}
 								/>
 							</FlexLayout>
 						</WrapperForm>
 
 						<FlexLayout column gap-16>
 							<WrapperForm title='Thông tin chủ căn hộ'>
-								<InfoDetail isMarginTop={true} name='Tên chủ hộ' value='Nguyễn Ngọc Minh' />
-								<InfoDetail isMarginTop={true} name='Số điện thoại' value='096996888' />
-								<InfoDetail isMarginTop={true} name='Số tài khoản' value='Nguyễn Ngọc Minh' />
-								<InfoDetail isMarginTop={true} name='Ngân hàng' value='Vietcombank' />
+								<InfoDetail isMarginTop={true} name='Tên chủ hộ' value={apartmentInfo?.ownerUu?.name} />
+								<InfoDetail isMarginTop={true} name='Số điện thoại' value={apartmentInfo?.ownerUu?.phoneNumber} />
+								<InfoDetail isMarginTop={true} name='Số tài khoản' value={apartmentInfo?.ownerUu?.bankNumber} />
+								<InfoDetail isMarginTop={true} name='Ngân hàng' value={apartmentInfo?.ownerUu?.bankName} />
 							</WrapperForm>
 
 							<WrapperForm title='Thông tin quản lý'>
-								<InfoDetail isMarginTop={true} name='Tên người quản lý' value='Nguyễn Ngọc Minh' />
-								<InfoDetail isMarginTop={true} name='Số điện thoại' value='096996888' />
+								<InfoDetail isMarginTop={true} name='Tên người quản lý' value={apartmentInfo?.managerUu?.name} />
+								<InfoDetail isMarginTop={true} name='Số điện thoại' value={apartmentInfo?.managerUu?.phoneNumber} />
 							</WrapperForm>
 						</FlexLayout>
 					</div>
 					<WrapperForm title='Quản lý điện nước'>
 						<GridColumn col_4>
-							<InfoDetail name='Số điện đầu tháng' value='842' />
-							<InfoDetail name='Số điện hiện tại' value='900' />
-							<InfoDetail name='Số điện đã tiêu thụ' value='58' />
-							<InfoDetail name='Aptomat' value='' actions={<SwitchButton checkOn={true} />} />
-							<InfoDetail name='Số nước đầu tháng' value='2466' />
-							<InfoDetail name='Số nước hiện tại' value='2478' />
-							<InfoDetail name='Số nước đã tiêu thụ' value='12' />
-							<InfoDetail name='Đồng hồ nước' value='' actions={<SwitchButton checkOn={true} />} />
-						</GridColumn>
-					</WrapperForm>
-
-					<WrapperForm title='Thông tin hợp đồng'>
-						<GridColumn col_4>
-							<InfoDetail name='Mã hợp đồng' value='MHĐ04242' />
-							<InfoDetail name='Người thuê' value='Đặng Linh Trang' />
-							<InfoDetail name='Số người ở ' value='58' />
-							<InfoDetail name='Số nước đầu tháng' value='2466' />
-							<InfoDetail name='Số nước hiện tại' value='2478' />
-							<InfoDetail name='Số nước đã tiêu thụ' value='12' />
-						</GridColumn>
-					</WrapperForm>
-
-					<WrapperForm title='Thông tin người thuê'>
-						<DataWrapper
-							data={[1]}
-							loading={false}
-							title='Thông tin người thuê trống!'
-							note='Danh sách thông tin người thuê hiện đang trống!'
-						>
-							<Table<any>
-								rowKey={(row) => row.uuid}
-								data={[1]}
-								fixedHeader={true}
-								column={[
-									{
-										title: 'STT',
-										fixedLeft: true,
-										render: (_, index) => <>{index + 1}</>,
-									},
-									{
-										title: 'Tên căn hộ',
-										render: (row, _) => <>{row?.apartment?.name || '---'}</>,
-									},
-									{
-										title: 'Tài khoản',
-										render: (row, _) => <>{row?.user?.name || '---'}</>,
-									},
-									{
-										title: 'Thời gian',
-										render: (row, _) => <Moment date={row?.created} format='HH:mm, DD/MM/YYYY' />,
-									},
-								]}
+							<InfoDetail name='Số điện đầu tháng' value={apartmentInfo?.waterMeter?.initialValue || 0} />
+							<InfoDetail name='Số điện hiện tại' value={apartmentInfo?.waterMeter?.currentValue || 0} />
+							<InfoDetail
+								name='Số điện đã tiêu thụ'
+								value={
+									apartmentInfo?.waterMeter
+										? apartmentInfo.waterMeter.currentValue - apartmentInfo.waterMeter.initialValue
+										: 0
+								}
 							/>
-						</DataWrapper>
 
-						<Pagination
-							page={page}
-							onSetPage={setPage}
-							pageSize={pageSize}
-							onSetPageSize={setPageSize}
-							total={1}
-							dependencies={[pageSize, keyword, status]}
-						/>
+							<InfoDetail
+								name='Aptomat'
+								value=''
+								actions={
+									<SwitchButton
+										checkOn={apartmentInfo?.electricMeter?.onState === STATE_SWITCH.ON}
+										onClick={() =>
+											setDataChangeStateSwitch({
+												apartmentMeterUuid: apartmentInfo?.electricMeter?.uuid!,
+												state: apartmentInfo?.electricMeter?.onState!,
+												type: 1,
+											})
+										}
+									/>
+								}
+							/>
+							<InfoDetail name='Số nước đầu tháng' value={apartmentInfo?.waterMeter?.initialValue || 0} />
+							<InfoDetail name='Số nước hiện tại' value={apartmentInfo?.waterMeter?.currentValue || 0} />
+							<InfoDetail
+								name='Số nước đã tiêu thụ'
+								value={
+									apartmentInfo?.waterMeter
+										? apartmentInfo.waterMeter.currentValue - apartmentInfo.waterMeter.initialValue
+										: 0
+								}
+							/>
+							<InfoDetail
+								name='Đồng hồ nước'
+								value=''
+								actions={
+									<SwitchButton
+										checkOn={apartmentInfo?.waterMeter?.onState === STATE_SWITCH.ON}
+										onClick={() =>
+											setDataChangeStateSwitch({
+												apartmentMeterUuid: apartmentInfo?.waterMeter?.uuid!,
+												state: apartmentInfo?.waterMeter?.onState!,
+												type: 2,
+											})
+										}
+									/>
+								}
+							/>
+						</GridColumn>
 					</WrapperForm>
+
+					<Dialog
+						open={!!dataChangeStateSwitch && dataChangeStateSwitch.type === 1}
+						type={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'error' : 'primary'}
+						backgroundIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#ffdce4' : '#b5f4d4ff'}
+						borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
+						title={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt Aptomat' : 'Bật Aptomat'}
+						note={
+							dataChangeStateSwitch?.state == STATE_SWITCH.ON
+								? 'Bạn có chắc chắn muốn tắt aptopmat không?'
+								: 'Bạn có chắc chắn muốn bật aptomat không?'
+						}
+						icon={
+							dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (
+								<Warning2 size='28' color='#EE0033' />
+							) : (
+								<Warning2 size='28' color='#25C173' />
+							)
+						}
+						onClose={() => setDataChangeStateSwitch(null)}
+						onSubmit={funcChangeSwitch.mutate}
+					/>
+
+					<Dialog
+						open={!!dataChangeStateSwitch && dataChangeStateSwitch.type === 2}
+						type={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'error' : 'primary'}
+						backgroundIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#ffdce4' : '#b5f4d4ff'}
+						borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
+						title={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt đồng hồ nước' : 'Bật đồng hồ nước'}
+						note={
+							dataChangeStateSwitch?.state == STATE_SWITCH.ON
+								? 'Bạn có chắc chắn muốn tắt đồng hồ nước không?'
+								: 'Bạn có chắc chắn muốn bật đồng hồ nước không?'
+						}
+						icon={
+							dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (
+								<Warning2 size='28' color='#EE0033' />
+							) : (
+								<Warning2 size='28' color='#25C173' />
+							)
+						}
+						onClose={() => setDataChangeStateSwitch(null)}
+						onSubmit={funcChangeSwitch.mutate}
+					/>
 				</FlexLayout>
 			</LayoutMainPage>
 		</FlexLayout>

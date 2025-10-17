@@ -60,6 +60,27 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getApartmentDetail: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/get-apartment-detailed`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	changeStatusMeter: (
+		data: {
+			apartmentMeterUuid: string;
+			state: number;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/change-state-meter`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default apartmentServices;

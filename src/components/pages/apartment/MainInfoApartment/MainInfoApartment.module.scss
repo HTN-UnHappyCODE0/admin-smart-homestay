@@ -12,3 +12,22 @@
 		gap: 8px;
 	}
 }
+
+.item {
+	display: flex;
+
+	p {
+		color: #2970ff;
+	}
+}
+
+.imageList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.image {
+	object-fit: cover;
+	border-radius: 8px;
+}

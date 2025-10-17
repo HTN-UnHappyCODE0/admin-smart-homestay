@@ -25,59 +25,59 @@ import FormCreateDevice from '../FormCreateDevice';
 import Link from 'next/link';
 
 function MainDevice({}: PropsMainDevice) {
-	const router = useRouter();
-	const queryClient = useQueryClient();
+	// const router = useRouter();
+	// const queryClient = useQueryClient();
 
-	const {_open, _uuidUpdate} = router.query;
+	// const {_open, _uuidUpdate} = router.query;
 
-	const [page, setPage] = useState<number>(1);
-	const [pageSize, setPageSize] = useState<number>(20);
-	const [keyword, setKeyword] = useState<string>('');
-	const [status, setStatus] = useState<number | null>(null);
-	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
-	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
+	// const [page, setPage] = useState<number>(1);
+	// const [pageSize, setPageSize] = useState<number>(20);
+	// const [keyword, setKeyword] = useState<string>('');
+	// const [status, setStatus] = useState<number | null>(null);
+	// const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
+	// const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
-	const resetFilter = () => {
-		setPage(1);
-		setPageSize(20);
-		setKeyword('');
-	};
+	// const resetFilter = () => {
+	// 	setPage(1);
+	// 	setPageSize(20);
+	// 	setKeyword('');
+	// };
 
-	const {
-		data = {
-			items: [],
-			pagination: {
-				totalCount: 0,
-				totalPage: 0,
-			},
-		},
-		isLoading,
-	} = useQuery<{
-		items: IDevice[];
-		pagination: {
-			totalCount: number;
-			totalPage: number;
-		};
-	}>([QUERY_KEY.table_device, page, pageSize, keyword, status], {
-		queryFn: () =>
-			httpRequest({
-				http: deviceServices.getListDevices({
-					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
-					page: page,
-					pageSize: pageSize,
-					keyword: keyword,
-					status: status,
-				}),
-			}),
-		select(data) {
-			return data;
-		},
-	});
+	// const {
+	// 	data = {
+	// 		items: [],
+	// 		pagination: {
+	// 			totalCount: 0,
+	// 			totalPage: 0,
+	// 		},
+	// 	},
+	// 	isLoading,
+	// } = useQuery<{
+	// 	items: IDevice[];
+	// 	pagination: {
+	// 		totalCount: number;
+	// 		totalPage: number;
+	// 	};
+	// }>([QUERY_KEY.table_device, page, pageSize, keyword, status], {
+	// 	queryFn: () =>
+	// 		httpRequest({
+	// 			http: deviceServices.getListDevices({
+	// 				isPaging: CONFIG_PAGING.IS_PAGING,
+	// 				typeFinding: CONFIG_TYPE_FIND.TABLE,
+	// 				page: page,
+	// 				pageSize: pageSize,
+	// 				keyword: keyword,
+	// 				status: status,
+	// 			}),
+	// 		}),
+	// 	select(data) {
+	// 		return data;
+	// 	},
+	// });
 
 	return (
 		<Fragment>
-			<FlexLayout column gap-12>
+			{/* <FlexLayout column gap-12>
 				<Header
 					title='Danh sách thiết bị'
 					actions={
@@ -216,7 +216,7 @@ function MainDevice({}: PropsMainDevice) {
 						});
 					}}
 				/>
-			</PositionContainer>
+			</PositionContainer> */}
 		</Fragment>
 	);
 }
