@@ -12,6 +12,7 @@ export enum PATH {
 	CreateApartment = '/apartment/create',
 	ApartmentDetail = '/apartment/detail',
 	InfoApartment = '/apartment/detail',
+	RentalContractApartment = '/apartment/detail/rental-contract',
 	RequestViewApartment = '/apartment/detail/request-view',
 	RequestRepairApartment = '/apartment/detail/request-repair',
 	ListDeviceApartment = '/apartment/detail/list-device',
