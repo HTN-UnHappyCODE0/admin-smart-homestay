@@ -21,6 +21,10 @@ export enum QUERY_KEY {
 	dropdown_lock,
 	dropdown_province,
 	dropdown_ward,
+
+	list_room,
+	list_furniture,
+	list_meter,
 }
 
 export enum TYPE_DATE {
@@ -78,4 +82,23 @@ export enum TYPE_LOCK {
 	USER_PASS,
 	TEMP_PASS,
 	APP_PASS,
+}
+
+export enum IS_USED {
+	NOT_USED,
+	USED,
+}
+
+export enum PURPOSE_UPLOAD {
+	IDENTIFICATION = 1,
+	CONTRACT,
+	OTHER,
+	ALL,
+	LICENSE,
+	CERTIFICATE,
+	REGISTRATION,
+	INVOICE,
+	BILL,
+	RECEIPT,
+	AGREEMENT,
 }

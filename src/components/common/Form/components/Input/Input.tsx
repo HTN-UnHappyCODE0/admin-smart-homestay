@@ -24,6 +24,7 @@ function Input({
 	isBlur = true,
 	onClean,
 	showDone,
+	showError = true,
 	readOnly,
 	max,
 	min,
@@ -220,7 +221,7 @@ function Input({
 		<div
 			className={clsx(styles.container, {
 				[styles.focus]: isFocus,
-				[styles.error]: errorText[name] !== null,
+				[styles.error]: showError && errorText[name] !== null,
 				[styles.readOnly]: readOnly,
 				[styles.done]: showDone && isDone,
 			})}
@@ -236,7 +237,7 @@ function Input({
 					id={`input_${name}`}
 					className={styles.input}
 					name={name}
-					value={value ? value : `${form[name]}`}
+					value={value != undefined || value !== null ? value : `${form[name]}`}
 					type={showPass ? 'text' : type}
 					placeholder={placeholder}
 					autoComplete='off'
@@ -273,7 +274,7 @@ function Input({
 					</div>
 				)}
 			</div>
-			<p className={styles.errorText}>{errorText[name]}</p>
+			{showError && <p className={styles.errorText}>{errorText[name]}</p>}
 			{note ? <small className={styles.note}>{note}</small> : null}
 		</div>
 	);

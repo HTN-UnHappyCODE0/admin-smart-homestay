@@ -17,6 +17,7 @@ export interface PropsInput {
 	isBlur?: boolean;
 	onClean?: boolean;
 	showDone?: boolean;
+	showError?: boolean;
 	readOnly?: boolean;
 
 	max?: number;

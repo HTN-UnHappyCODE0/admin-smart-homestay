@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {Fragment, useState} from 'react';
 import styles from './FormCreateApartment.module.scss';
 import {IDataUploadFile, PropsFormCreateApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
@@ -7,18 +7,49 @@ import Breadcrumb from '~/components/common/Breadcrumb';
 import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button';
 import WrapperForm from '~/components/utils/WrapperForm';
-import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
+import Form, {ContextForm, Input, Select, SelectMany, TextArea} from '~/components/common/Form';
 import GridColumn from '~/components/layouts/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import {useRouter} from 'next/router';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
-import {useQuery} from '@tanstack/react-query';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, IS_USED, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
 import userServices from '~/services/userServices';
 import lockServices from '~/services/lockServices';
 import provinceServiecs from '~/services/provinceServices';
+import PositionContainer from '~/components/common/PositionContainer';
+import FormChooseRoom from './components/FormChooseRoom';
+import roomServices from '~/services/roomServices';
+import {price} from '~/common/funcs/convertCoin';
+import furnitureServices from '~/services/furnitureServices';
+import FormChooseFurniture from './components/FormChooseFurniture';
+import meterServices from '~/services/meterServices';
+import DataWrapper from '~/components/utils/DataWrapper';
+import apartmentServices from '~/services/apartmentServices';
+import Loading from '~/components/common/Loading';
+import {toastWarn} from '~/common/funcs/toast';
+
+export interface IRoom {
+	assetUuid: string;
+	name: string;
+	count: string;
+	description: string;
+}
+
+export interface IFurniture {
+	assetUuid: string;
+	name: string;
+	count: string;
+	description: string;
+}
+
+export interface IMeter {
+	meterUuid: string;
+	name: string;
+	serialNumber: string;
+}
 
 export interface IFormCreateApartment {
 	name: string;
@@ -30,6 +61,10 @@ export interface IFormCreateApartment {
 	provinceId: string;
 	wardId: string;
 	address: string;
+	rooms: IRoom[];
+	furnitures: IFurniture[];
+	meters: IMeter[];
+	description: string;
 }
 
 const initForm: IFormCreateApartment = {
@@ -42,6 +77,10 @@ const initForm: IFormCreateApartment = {
 	provinceId: '',
 	wardId: '',
 	address: '',
+	rooms: [],
+	furnitures: [],
+	meters: [],
+	description: '',
 };
 
 function FormCreateApartment({}: PropsFormCreateApartment) {
@@ -49,6 +88,9 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
 	const [form, setForm] = useState<IFormCreateApartment>(initForm);
+
+	const [openChooseRoom, setOpenChooseRoom] = useState<boolean>(false);
+	const [openChooseFurnitures, setOpenChooseFurnitures] = useState<boolean>(false);
 
 	const {data: apartmentTypes = []} = useQuery<
 		{
@@ -156,252 +198,540 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 		enabled: !!form.provinceId,
 	});
 
+	const {isLoading: loadingFurnitures} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.list_furniture], {
+		queryFn: () =>
+			httpRequest({
+				http: furnitureServices.getListFurnitures({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: STATUS_CONFIG.ACTIVE,
+					addedDateFrom: null,
+					addedDateTo: null,
+				}),
+			}),
+		onSuccess(data) {
+			setForm((prev) => ({
+				...prev,
+				furnitures: data?.map((v) => ({
+					assetUuid: v?.uuid,
+					name: v?.name,
+					description: '',
+					count: '0',
+				})),
+			}));
+		},
+		select(data) {
+			return data;
+		},
+	});
+
+	const {isLoading: loadingRooms} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.list_room], {
+		queryFn: () =>
+			httpRequest({
+				http: roomServices.listRoom({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: STATUS_CONFIG.ACTIVE,
+				}),
+			}),
+		onSuccess(data) {
+			setForm((prev) => ({
+				...prev,
+				rooms: data?.map((v) => ({
+					assetUuid: v?.uuid,
+					name: v?.name,
+					description: '',
+					count: '0',
+				})),
+			}));
+		},
+		select(data) {
+			return data;
+		},
+	});
+
+	const {isLoading: loadingMeters} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.list_meter], {
+		queryFn: () =>
+			httpRequest({
+				http: meterServices.listmeter({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: STATUS_CONFIG.ACTIVE,
+					installDateFrom: null,
+					installDateTo: null,
+					isUsed: IS_USED.NOT_USED,
+				}),
+			}),
+		onSuccess(data) {
+			setForm((prev) => ({
+				...prev,
+				meters: data?.map((v) => ({
+					meterUuid: v?.uuid,
+					name: v?.name,
+					serialNumber: '',
+				})),
+			}));
+		},
+		select(data) {
+			return data;
+		},
+	});
+
+	const handleChangeSerialNumber = (uuid: string, value: string | number) => {
+		const updatedMeters = form?.meters?.map((meter) =>
+			meter.meterUuid === uuid ? {...meter, serialNumber: (value as string) || ''} : meter
+		);
+
+		setForm((prev) => ({
+			...prev,
+			meters: updatedMeters,
+		}));
+	};
+
+	const funcCreateApartment = useMutation({
+		mutationFn: (body: {path: string[]}) =>
+			httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Thêm căn hộ thành công!',
+				http: apartmentServices.createApartment({
+					name: form?.name,
+					apartmentTypeUuid: form?.apartmentTypeUuid,
+					apartmentSize: price(form?.apartmentSize),
+					lockUuid: form?.lockUuid,
+					managerUuid: form?.managerUuid,
+					ownerUuid: form?.ownerUuid,
+					provinceId: form?.provinceId,
+					wardId: form?.wardId,
+					address: form?.address,
+					description: form?.description,
+					rooms: form?.rooms?.map((room) => ({
+						assetUuid: room?.assetUuid,
+						count: price(room?.count),
+						description: room?.description,
+					})),
+					furnitures: form?.furnitures?.map((furniture) => ({
+						assetUuid: furniture?.assetUuid,
+						count: price(furniture?.count),
+						description: furniture?.description,
+					})),
+					meters: form?.meters?.map((meter) => ({
+						meterUuid: meter?.meterUuid,
+						serialNumber: meter?.serialNumber,
+					})),
+					attachments: body?.path,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setForm(initForm);
+				router.back();
+			}
+		},
+	});
+
+	const handleCreateApartment = async () => {
+		if (!form.apartmentTypeUuid) {
+			return toastWarn({msg: 'Chọn loại hình căn hộ!'});
+		}
+		if (!form.ownerUuid) {
+			return toastWarn({msg: 'Chọn chủ căn hộ!'});
+		}
+		if (!form.managerUuid) {
+			return toastWarn({msg: 'Chọn người quản lý căn hộ!'});
+		}
+		if (!form.lockUuid) {
+			return toastWarn({msg: 'Chọn ổ khóa căn hộ!'});
+		}
+		if (!form.provinceId) {
+			return toastWarn({msg: 'Chọn tỉnh/thành phố!'});
+		}
+		if (!form.wardId) {
+			return toastWarn({msg: 'Chọn xã/phường!'});
+		}
+		if (form.rooms.filter((room) => price(room.count) > 0).length == 0) {
+			return toastWarn({msg: 'Chọn danh sách phòng!'});
+		}
+		if (form.furnitures.filter((furniture) => price(furniture.count) > 0).length == 0) {
+			return toastWarn({msg: 'Chọn danh sách nội thất!'});
+		}
+		if (form.meters.some((meter) => !meter.serialNumber)) {
+			return toastWarn({msg: 'Chọn mã kết nối thiết bị!'});
+		}
+		if (images?.length == 0) {
+			return toastWarn({msg: 'Chọn hình ảnh đính kèm!'});
+		}
+	};
+
 	return (
-		<Form heightFull={true} form={form} setForm={setForm} onSubmit={() => {}}>
-			<FlexLayout column gap-12>
-				<Header title='Thêm mới căn hộ' />
-				<Breadcrumb
-					listUrls={[
-						{
-							title: 'Danh sách căn hộ',
-							path: PATH.Home,
-						},
-						{
-							path: '',
-							title: 'Chi tiết căn hộ',
-						},
-					]}
-					actions={
-						<FlexLayout row gap-6>
-							<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
-								Hủy bỏ
-							</Button>
-							<ContextForm.Consumer>
-								{({isDone}) => (
-									<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
-										Lưu lại
-									</Button>
-								)}
-							</ContextForm.Consumer>
-						</FlexLayout>
-					}
-				/>
+		<Fragment>
+			<Loading loading={funcCreateApartment.isLoading} />
+			<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleCreateApartment}>
+				<FlexLayout column gap-12>
+					<Header title='Thêm mới căn hộ' />
+					<Breadcrumb
+						listUrls={[
+							{
+								title: 'Danh sách căn hộ',
+								path: PATH.Home,
+							},
+							{
+								path: '',
+								title: 'Chi tiết căn hộ',
+							},
+						]}
+						actions={
+							<FlexLayout row gap-6>
+								<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
+									Hủy bỏ
+								</Button>
+								<ContextForm.Consumer>
+									{({isDone}) => (
+										<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
+											Lưu lại
+										</Button>
+									)}
+								</ContextForm.Consumer>
+							</FlexLayout>
+						}
+					/>
 
-				<FlexItem flex-1 overflow-x>
-					<FlexLayout column gap-12>
-						<WrapperForm title='Thông tin căn hộ'>
-							<div className={styles.form}>
-								<GridColumn col_3>
-									<Input
-										name='name'
-										type='text'
-										isBlur={true}
-										isRequired={true}
-										label={
-											<span>
-												Tên căn hộ <span style={{color: 'red'}}>* </span>
-											</span>
-										}
-										placeholder='Nhập tên căn hộ'
-									/>
-									<Select
-										placeholder='Lựa chọn'
-										label={
-											<span>
-												Loại hình căn hộ <span style={{color: 'red'}}>* </span>
-											</span>
-										}
-										value={form.apartmentTypeUuid}
-										options={apartmentTypes}
-										onSelect={(data) =>
-											setForm((prev) => ({
-												...prev,
-												apartmentTypeUuid: data.uuid,
-											}))
-										}
-										getOptionLabel={(opt) => opt.name}
-										getOptionValue={(opt) => opt.uuid}
-									/>
-
-									<div>
+					<FlexItem flex-1 overflow-x>
+						<FlexLayout column gap-12>
+							<WrapperForm title='Thông tin căn hộ'>
+								<div className={styles.form}>
+									<GridColumn col_3>
+										<Input
+											name='name'
+											type='text'
+											isRequired={true}
+											label={
+												<span>
+													Tên căn hộ <span style={{color: 'red'}}>* </span>
+												</span>
+											}
+											placeholder='Nhập tên căn hộ'
+										/>
 										<Select
 											placeholder='Lựa chọn'
 											label={
 												<span>
-													Chủ căn hộ <span style={{color: 'red'}}>* </span>
+													Loại hình căn hộ <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											value={form.ownerUuid}
-											options={users}
+											value={form.apartmentTypeUuid}
+											options={apartmentTypes}
 											onSelect={(data) =>
 												setForm((prev) => ({
 													...prev,
-													ownerUuid: data.uuid,
+													apartmentTypeUuid: data.uuid,
 												}))
 											}
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-									</div>
 
-									<Input
-										name='apartmentSize'
-										label={
-											<span>
-												Diện tích <span style={{color: 'red'}}>*</span>
-											</span>
-										}
-										placeholder='Nhập diện tích'
-										type='text'
-										isRequired
-										isBlur
-										isMoney
-										unit='M2'
-									/>
+										<div>
+											<Select
+												placeholder='Lựa chọn'
+												label={
+													<span>
+														Chủ căn hộ <span style={{color: 'red'}}>* </span>
+													</span>
+												}
+												value={form.ownerUuid}
+												options={users}
+												onSelect={(data) =>
+													setForm((prev) => ({
+														...prev,
+														ownerUuid: data.uuid,
+													}))
+												}
+												getOptionLabel={(opt) => opt.name}
+												getOptionValue={(opt) => opt.uuid}
+											/>
+										</div>
 
-									<Select
-										placeholder='Lựa chọn'
-										label={
-											<span>
-												Người quản lý <span style={{color: 'red'}}>* </span>
-											</span>
-										}
-										value={form.managerUuid}
-										options={users}
-										onSelect={(data) =>
-											setForm((prev) => ({
-												...prev,
-												managerUuid: data.uuid,
-											}))
-										}
-										getOptionLabel={(opt) => opt.name}
-										getOptionValue={(opt) => opt.uuid}
-									/>
-
-									<div>
 										<Select
 											placeholder='Lựa chọn'
 											label={
 												<span>
-													ID ổ khóa <span style={{color: 'red'}}>* </span>
+													Người quản lý <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											value={form.lockUuid}
-											options={locks}
+											value={form.managerUuid}
+											options={users}
 											onSelect={(data) =>
 												setForm((prev) => ({
 													...prev,
-													lockUuid: data.uuid,
+													managerUuid: data.uuid,
 												}))
 											}
-											getOptionLabel={(opt) => opt.code}
+											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-									</div>
 
-									<Select
-										placeholder='Lựa chọn'
-										label={
-											<span>
-												Tỉnh/TP <span style={{color: 'red'}}>* </span>
-											</span>
-										}
-										value={form.provinceId}
-										options={provinces}
-										onSelect={(data) =>
-											setForm((prev) => ({
-												...prev,
-												provinceId: data.code,
-												wardId: '',
-											}))
-										}
-										getOptionLabel={(opt) => opt.fullName}
-										getOptionValue={(opt) => opt.code}
-									/>
+										<div>
+											<Select
+												placeholder='Lựa chọn'
+												label={
+													<span>
+														ID ổ khóa <span style={{color: 'red'}}>* </span>
+													</span>
+												}
+												value={form.lockUuid}
+												options={locks}
+												onSelect={(data) =>
+													setForm((prev) => ({
+														...prev,
+														lockUuid: data.uuid,
+													}))
+												}
+												getOptionLabel={(opt) => opt.code}
+												getOptionValue={(opt) => opt.uuid}
+											/>
+										</div>
 
-									<div>
+										<Input
+											name='apartmentSize'
+											label={
+												<span>
+													Diện tích <span style={{color: 'red'}}>*</span>
+												</span>
+											}
+											placeholder='Nhập diện tích'
+											type='text'
+											isRequired
+											isMoney
+											unit='M2'
+										/>
+
 										<Select
 											placeholder='Lựa chọn'
 											label={
 												<span>
-													Xã/Phường <span style={{color: 'red'}}>* </span>
+													Tỉnh/TP <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											value={form.wardId}
-											options={wards}
+											value={form.provinceId}
+											options={provinces}
 											onSelect={(data) =>
 												setForm((prev) => ({
 													...prev,
-													wardId: data.code,
+													provinceId: data.code,
+													wardId: '',
 												}))
 											}
 											getOptionLabel={(opt) => opt.fullName}
 											getOptionValue={(opt) => opt.code}
 										/>
-									</div>
 
-									<Input
-										name='address'
-										type='text'
-										isBlur={true}
-										label={<span>Địa chỉ chi tiết</span>}
-										placeholder='Nhập địa chỉ chi tiết'
-									/>
-								</GridColumn>
+										<div>
+											<Select
+												placeholder='Lựa chọn'
+												label={
+													<span>
+														Xã/Phường <span style={{color: 'red'}}>* </span>
+													</span>
+												}
+												value={form.wardId}
+												options={wards}
+												onSelect={(data) =>
+													setForm((prev) => ({
+														...prev,
+														wardId: data.code,
+													}))
+												}
+												getOptionLabel={(opt) => opt.fullName}
+												getOptionValue={(opt) => opt.code}
+											/>
+										</div>
 
-								<div style={{marginTop: '16px'}}>
-									<TextArea name='description' placeholder='Nhập mô tả' label='Mô tả chi tiết' />
-								</div>
-
-								<div style={{marginTop: '16px'}}>
-									<UploadMultipleFile
-										label={
-											<span>
-												Hình ảnh đính kèm <span style={{color: 'red'}}>*</span>
-											</span>
-										}
-										images={images}
-										setImages={setImages}
-									/>
-								</div>
-							</div>
-						</WrapperForm>
-
-						{/* Danh sách phòng trong căn hộ */}
-						{/* <WrapperForm title='Danh sách phòng trong căn hộ'>
-							{form.rooms.map((room, index) => (
-								<GridColumn key={index} col_2 style={{marginBottom: '12px'}}>
-									<Input
-										value={room.name}
-										readOnly
-										label={<span>Loại phòng</span>}
-										name={`roomName-${index}`}
-										placeholder='Loại phòng'
-										type='text'
-									/>
-
-									<div>
 										<Input
-											value={room.quantity}
-											label={<span>Số lượng</span>}
-											name={`roomQuantity-${index}`}
-											placeholder='Số lượng'
+											name='address'
 											type='text'
+											isRequired
+											label={<span>Địa chỉ chi tiết</span>}
+											placeholder='Nhập địa chỉ chi tiết'
+										/>
+									</GridColumn>
+
+									<div style={{marginTop: '16px'}}>
+										<SelectMany
+											placeholder='Chọn phòng'
+											textShow={
+												form?.rooms?.filter((room) => price(room.count) > 0)?.length > 0
+													? form?.rooms
+															?.filter((room) => price(room.count) > 0)
+															?.flatMap((room, index, arr) => [
+																<span key={room.assetUuid}>
+																	{room.name} * <span style={{color: '#2970FF'}}>{room.count}</span>
+																</span>,
+																index < arr.length - 1 && <span key={`sep-${room.assetUuid}`}> - </span>,
+															])
+													: ''
+											}
+											label={
+												<span>
+													Phòng <span style={{color: 'red'}}>* </span>
+												</span>
+											}
+											onClick={() => setOpenChooseRoom(true)}
 										/>
 									</div>
-								</GridColumn>
-							))}
-						</WrapperForm> */}
 
-						{/* Danh sách nội thất */}
-						<WrapperForm title='Danh sách nội thất'>Main</WrapperForm>
+									<div style={{marginTop: '16px'}}>
+										<SelectMany
+											placeholder='Chọn nội thất'
+											textShow={
+												form?.furnitures?.filter((furniture) => price(furniture.count) > 0)?.length > 0
+													? form?.furnitures
+															?.filter((furniture) => price(furniture.count) > 0)
+															?.flatMap((furniture, index, arr) => [
+																<span key={furniture.assetUuid}>
+																	{furniture.name} *{' '}
+																	<span style={{color: '#2970FF'}}>{furniture.count}</span>
+																</span>,
+																index < arr.length - 1 && (
+																	<span key={`sep-${furniture.assetUuid}`}> - </span>
+																),
+															])
+													: ''
+											}
+											label={
+												<span>
+													Nội thất <span style={{color: 'red'}}>* </span>
+												</span>
+											}
+											onClick={() => setOpenChooseFurnitures(true)}
+										/>
+									</div>
 
-						{/* Danh sách thiết bị */}
-						<WrapperForm title='Danh sách thiết bị'>Main</WrapperForm>
-					</FlexLayout>
-				</FlexItem>
-			</FlexLayout>
-		</Form>
+									<div style={{marginTop: '16px'}}>
+										<TextArea name='description' placeholder='Nhập mô tả' label='Mô tả chi tiết' />
+									</div>
+
+									<div style={{marginTop: '16px'}}>
+										<UploadMultipleFile
+											label={
+												<span>
+													Hình ảnh đính kèm <span style={{color: 'red'}}>*</span>
+												</span>
+											}
+											images={images}
+											setImages={setImages}
+										/>
+									</div>
+								</div>
+							</WrapperForm>
+
+							{/* Danh sách thiết bị */}
+							<WrapperForm title='Danh sách thiết bị'>
+								<DataWrapper
+									data={form?.meters}
+									loading={loadingMeters}
+									title='Thiết bị trống!'
+									note='Danh sách thiết bị hiện đang trống!'
+								>
+									<FlexLayout column gap-8>
+										<div className={styles.grid}>
+											<label className={styles.label}>
+												<span>
+													Tên thiết bị <span style={{color: 'red'}}>* </span>
+												</span>
+											</label>
+											<label className={styles.label}>
+												<span>
+													Mã kết nối <span style={{color: 'red'}}>* </span>
+												</span>
+											</label>
+										</div>
+										{form?.meters?.map((meter) => (
+											<div key={meter?.meterUuid} className={styles.grid}>
+												<Input
+													name='name'
+													type='text'
+													placeholder='Nhập tên thiết bị'
+													value={meter?.name}
+													readOnly={true}
+													showError={false}
+												/>
+												<div>
+													<Input
+														name='serialNumber'
+														type='text'
+														placeholder='Nhập mã kết nối'
+														value={meter?.serialNumber}
+														isBlur={false}
+														showError={false}
+														onChangeValue={(val) => handleChangeSerialNumber(meter?.meterUuid, val)}
+													/>
+												</div>
+											</div>
+										))}
+									</FlexLayout>
+								</DataWrapper>
+							</WrapperForm>
+						</FlexLayout>
+					</FlexItem>
+				</FlexLayout>
+			</Form>
+
+			<PositionContainer open={openChooseRoom} onClose={() => setOpenChooseRoom(false)}>
+				<FormChooseRoom
+					loading={loadingRooms}
+					rooms={form.rooms}
+					setRooms={(rooms) =>
+						setForm((prev) => ({
+							...prev,
+							rooms: rooms,
+						}))
+					}
+					onClose={() => setOpenChooseRoom(false)}
+				/>
+			</PositionContainer>
+
+			<PositionContainer open={openChooseFurnitures} onClose={() => setOpenChooseFurnitures(false)}>
+				<FormChooseFurniture
+					loading={loadingFurnitures}
+					furnitures={form.furnitures}
+					setFurnitures={(furnitures) =>
+						setForm((prev) => ({
+							...prev,
+							furnitures: furnitures,
+						}))
+					}
+					onClose={() => setOpenChooseFurnitures(false)}
+				/>
+			</PositionContainer>
+		</Fragment>
 	);
 }
 

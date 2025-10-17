@@ -1,7 +1,7 @@
 import axiosClient from '.';
 
-const deviceServices = {
-	getListDevices: (
+const meterServices = {
+	listmeter: (
 		data: {
 			keyword: string;
 			isPaging: number;
@@ -9,13 +9,16 @@ const deviceServices = {
 			page: number;
 			typeFinding: number | null;
 			status: number | null;
+			installDateFrom: string | null;
+			installDateTo: string | null;
+			isUsed: number | null;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/Device/get-list-devices`, data, {
+		return axiosClient.post(`/Meter/list-meters`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
 };
 
-export default deviceServices;
+export default meterServices;

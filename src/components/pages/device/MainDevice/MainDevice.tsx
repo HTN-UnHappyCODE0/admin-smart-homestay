@@ -18,7 +18,7 @@ import moment from 'moment';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
-import deviceServices from '~/services/deviceServices';
+import deviceServices from '~/services/meterServices';
 import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateDevice from '../FormCreateDevice';

@@ -26,6 +26,40 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	createApartment: (
+		data: {
+			apartmentTypeUuid: string;
+			lockUuid: string;
+			ownerUuid: string;
+			managerUuid: string;
+			name: string;
+			provinceId: string;
+			wardId: string;
+			address: string;
+			apartmentSize: number;
+			rooms: {
+				assetUuid: string;
+				count: number;
+				description: string;
+			}[];
+			furnitures: {
+				assetUuid: string;
+				count: number;
+				description: string;
+			}[];
+			meters: {
+				meterUuid: string;
+				serialNumber: string;
+			}[];
+			attachments: string[];
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/create-apartment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default apartmentServices;
