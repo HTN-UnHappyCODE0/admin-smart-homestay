@@ -1,6 +1,6 @@
 import FlexLayout from '~/components/layouts/FlexLayout';
-import styles from './MainRequestViewApartment.module.scss';
-import {PropsMainRequestViewApartment} from './interfaces';
+import styles from './MainRequestRepairApartment.module.scss';
+import {PropsMainRequestRepairApartment} from './interfaces';
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import Breadcrumb from '~/components/common/Breadcrumb/Breadcrumb';
 import {PATH} from '~/constants/config';
@@ -24,9 +24,12 @@ import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
 import {useMutation} from '@tanstack/react-query';
 import PositionContainer from '~/components/common/PositionContainer';
-import DetailRequestViewApartment from './components/DetailRequestViewApartment';
+import DetailRequestRepairApartment from './components/DetailRequestRepairApartment';
+import Form, {TextArea} from '~/components/common/Form';
+import Popup from '~/components/common/Popup';
+import ConfirmRequest from '../MainRequestViewApartment/components/ConfirmRequest';
 
-function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
+function MainRequestRepairApartment({}: PropsMainRequestRepairApartment) {
 	const router = useRouter();
 	const {_uuid, _uuidDetail} = router.query;
 
@@ -38,8 +41,12 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 	const [status, setStatus] = useState<number | null>(null);
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
-	const [open, setOpen] = useState<string>('');
 	const [cancelApartment, setCancelApartment] = useState<string>('');
+	const [uuidConfirm, setUuidConfirm] = useState<string>('');
+
+	const [form, setForm] = useState<{note: string}>({
+		note: '',
+	});
 
 	const resetFilter = () => {
 		setKeyword('');
@@ -97,14 +104,13 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 				title='Chi tiết căn hộ'
 				tabs={tabsDetailApartments(_uuid as string)}
 			>
-				<WrapperForm title='Danh sách yêu cầu xem căn hộ'>
+				<WrapperForm title='Danh sách yêu cầu sửa chữa'>
 					<FlexLayout row gap-8 justify-space-between wrap fit-height>
 						<FlexItem>
 							<FlexLayout row gap-8 wrap>
 								<Search keyword={keyword} setKeyword={setKeyword} />
-								<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
 								<FilterCustom
-									name='Trạng thái'
+									name='Trạng thái sự cố'
 									value={status}
 									setValue={setStatus}
 									listOption={[
@@ -125,12 +131,12 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 					<div style={{marginTop: '12px'}}>
 						<FlexItem flex-1 overflow-x>
 							<DataWrapper data={[1]} loading={false} title='Dữ liệu trống!' note='Danh sách dữ liệu hiện đang trống!'>
-								<Table<{uuid: string; name: string; phone: string; date: string}>
+								<Table<{uuid: string; code: string; accountRepair: string; date: string}>
 									rowKey={(row) => row.uuid}
 									data={[
-										{uuid: '1', name: '1', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '2', name: '2', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '3', name: '3', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
+										{uuid: '1', code: '1', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
+										{uuid: '2', code: '2', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
+										{uuid: '3', code: '3', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
 									]}
 									fixedHeader={true}
 									column={[
@@ -140,19 +146,31 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 											render: (_, index) => <>{index + 1}</>,
 										},
 										{
-											title: 'Tên tài khoản',
-											render: (row, _) => <>{row.name}</>,
+											title: 'Mã yêu cầu',
+											render: (row, _) => <>{row.code}</>,
+										},
+										{
+											title: 'Tài khoản báo sửa',
+											render: (row, _) => <>{row.accountRepair}</>,
 										},
 										{
 											title: 'Số điện thoại',
-											render: (row, _) => <>{row.phone}</>,
-										},
-										{
-											title: 'Thời gian xem',
 											render: (row, _) => <>{row.date}</>,
 										},
 										{
-											title: 'Trạng thái',
+											title: 'Ghi chú',
+											render: (row, _) => <>{row.date}</>,
+										},
+										{
+											title: 'Thời gian yêu cầu',
+											render: (row, _) => <>{row.date}</>,
+										},
+										{
+											title: 'Thời gian xử lý',
+											render: (row, _) => <>{row.date}</>,
+										},
+										{
+											title: 'Trạng thái sự cố',
 											render: (row, _) => (
 												<StateActive
 													stateActive={1}
@@ -199,7 +217,7 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 													<IconActionTable
 														icon={<FaCircleCheck color='#00a441ff' size={24} />}
 														tooltip='Chấp nhận yêu cầu'
-														onClick={() => setCancelApartment(row?.uuid)}
+														onClick={() => setUuidConfirm(row?.uuid)}
 													/>
 												</FlexLayout>
 											),
@@ -226,11 +244,16 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 				type='error'
 				backgroundIconColor='#ffdce4'
 				borderIconColor='#fff0f3'
-				title='Từ chối xem căn hộ'
-				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xem căn hộ này không ?</span>}
+				title='Từ chối yêu cầu'
+				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xử lý sửa chữa YC2040 không?</span>}
 				icon={<Warning2 size='28' color='#EE0033' />}
 				onClose={() => setCancelApartment('')}
 				onSubmit={funcRequestView.mutate}
+				form={
+					<Form form={form} setForm={setForm}>
+						<TextArea name='note' placeholder='Từ chối yêu cầu' />
+					</Form>
+				}
 			/>
 
 			<PositionContainer
@@ -246,7 +269,7 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 					});
 				}}
 			>
-				<DetailRequestViewApartment
+				<DetailRequestRepairApartment
 					onClose={() => {
 						const {_uuidDetail, ...rest} = router.query;
 
@@ -259,8 +282,12 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 					}}
 				/>
 			</PositionContainer>
+
+			<Popup open={!!uuidConfirm} onClose={() => setUuidConfirm('')}>
+				<ConfirmRequest uuidConfirm={uuidConfirm} onClose={() => setUuidConfirm('')} />
+			</Popup>
 		</FlexLayout>
 	);
 }
 
-export default MainRequestViewApartment;
+export default MainRequestRepairApartment;
