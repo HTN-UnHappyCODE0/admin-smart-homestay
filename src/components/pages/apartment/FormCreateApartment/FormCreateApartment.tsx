@@ -16,15 +16,32 @@ import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/const
 import {useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
+import userServices from '~/services/userServices';
+import lockServices from '~/services/lockServices';
+import provinceServiecs from '~/services/provinceServices';
 
 export interface IFormCreateApartment {
 	name: string;
 	apartmentTypeUuid: string;
+	ownerUuid: string;
+	apartmentSize: string;
+	managerUuid: string;
+	lockUuid: string;
+	provinceId: string;
+	wardId: string;
+	address: string;
 }
 
 const initForm: IFormCreateApartment = {
 	name: '',
 	apartmentTypeUuid: '',
+	ownerUuid: '',
+	apartmentSize: '0',
+	managerUuid: '',
+	lockUuid: '',
+	provinceId: '',
+	wardId: '',
+	address: '',
 };
 
 function FormCreateApartment({}: PropsFormCreateApartment) {
@@ -32,13 +49,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
 	const [form, setForm] = useState<IFormCreateApartment>(initForm);
-
-	const resetForm = () => {
-		setForm({
-			name: '',
-			apartmentTypeUuid: '',
-		});
-	};
 
 	const {data: apartmentTypes = []} = useQuery<
 		{
@@ -61,6 +71,89 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 		select(data) {
 			return data;
 		},
+	});
+
+	const {data: users = []} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.dropdown_user], {
+		queryFn: () =>
+			httpRequest({
+				http: userServices.getUsers({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					hasRented: 0,
+					status: STATUS_CONFIG.ACTIVE,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
+
+	const {data: locks = []} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.dropdown_lock], {
+		queryFn: () =>
+			httpRequest({
+				http: lockServices.listActiveLock({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
+
+	const {data: provinces = []} = useQuery<
+		{
+			code: string;
+			fullName: string;
+			fullNameEn: string;
+		}[]
+	>([QUERY_KEY.dropdown_province], {
+		queryFn: () =>
+			httpRequest({
+				http: provinceServiecs.listProvince({
+					keyword: '',
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
+
+	const {data: wards = []} = useQuery<
+		{
+			code: string;
+			fullName: string;
+			fullNameEn: string;
+		}[]
+	>([QUERY_KEY.dropdown_ward, form.provinceId], {
+		queryFn: () =>
+			httpRequest({
+				http: provinceServiecs.listWard({
+					keyword: '',
+					provinceCode: form.provinceId,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		enabled: !!form.provinceId,
 	});
 
 	return (
@@ -111,7 +204,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 										}
 										placeholder='Nhập tên căn hộ'
 									/>
-
 									<Select
 										placeholder='Lựa chọn'
 										label={
@@ -120,16 +212,18 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 											</span>
 										}
 										value={form.apartmentTypeUuid}
-										options={[
-											{uuid: '1', name: 'Căn hộ chung cư'},
-											{uuid: '2', name: 'Biệt thự'},
-										]}
-										onSelect={(data) => setForm({...form, apartmentTypeUuid: data.uuid})}
+										options={apartmentTypes}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												apartmentTypeUuid: data.uuid,
+											}))
+										}
 										getOptionLabel={(opt) => opt.name}
 										getOptionValue={(opt) => opt.uuid}
 									/>
 
-									{/* <div>
+									<div>
 										<Select
 											placeholder='Lựa chọn'
 											label={
@@ -137,160 +231,123 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 													Chủ căn hộ <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											value={form.owner}
-											onClean={() =>
+											value={form.ownerUuid}
+											options={users}
+											onSelect={(data) =>
 												setForm((prev) => ({
 													...prev,
-													type: '',
+													ownerUuid: data.uuid,
 												}))
 											}
-											options={[
-												{uuid: '1', name: 'Chủ sở hữu 1'},
-												{uuid: '2', name: 'Chủ sở hữu 2'},
-											]}
-											onSelect={(data) => setForm({...form, owner: data.uuid})}
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-									</div> */}
+									</div>
+
+									<Input
+										name='apartmentSize'
+										label={
+											<span>
+												Diện tích <span style={{color: 'red'}}>*</span>
+											</span>
+										}
+										placeholder='Nhập diện tích'
+										type='text'
+										isRequired
+										isBlur
+										isMoney
+										unit='M2'
+									/>
+
+									<Select
+										placeholder='Lựa chọn'
+										label={
+											<span>
+												Người quản lý <span style={{color: 'red'}}>* </span>
+											</span>
+										}
+										value={form.managerUuid}
+										options={users}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												managerUuid: data.uuid,
+											}))
+										}
+										getOptionLabel={(opt) => opt.name}
+										getOptionValue={(opt) => opt.uuid}
+									/>
+
+									<div>
+										<Select
+											placeholder='Lựa chọn'
+											label={
+												<span>
+													ID ổ khóa <span style={{color: 'red'}}>* </span>
+												</span>
+											}
+											value={form.lockUuid}
+											options={locks}
+											onSelect={(data) =>
+												setForm((prev) => ({
+													...prev,
+													lockUuid: data.uuid,
+												}))
+											}
+											getOptionLabel={(opt) => opt.code}
+											getOptionValue={(opt) => opt.uuid}
+										/>
+									</div>
+
+									<Select
+										placeholder='Lựa chọn'
+										label={
+											<span>
+												Tỉnh/TP <span style={{color: 'red'}}>* </span>
+											</span>
+										}
+										value={form.provinceId}
+										options={provinces}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												provinceId: data.code,
+												wardId: '',
+											}))
+										}
+										getOptionLabel={(opt) => opt.fullName}
+										getOptionValue={(opt) => opt.code}
+									/>
+
+									<div>
+										<Select
+											placeholder='Lựa chọn'
+											label={
+												<span>
+													Xã/Phường <span style={{color: 'red'}}>* </span>
+												</span>
+											}
+											value={form.wardId}
+											options={wards}
+											onSelect={(data) =>
+												setForm((prev) => ({
+													...prev,
+													wardId: data.code,
+												}))
+											}
+											getOptionLabel={(opt) => opt.fullName}
+											getOptionValue={(opt) => opt.code}
+										/>
+									</div>
+
+									<Input
+										name='address'
+										type='text'
+										isBlur={true}
+										label={<span>Địa chỉ chi tiết</span>}
+										placeholder='Nhập địa chỉ chi tiết'
+									/>
 								</GridColumn>
-
-								<div style={{marginTop: '16px'}}>
-									{/* <GridColumn col_3>
-										<Input
-											name='apartmentSize'
-											value={form.apartmentSize}
-											label={
-												<span>
-													Diện tích <span style={{color: 'red'}}>*</span>
-												</span>
-											}
-											placeholder='Nhập diện tích'
-											type='text'
-											onClean
-											isRequired
-											isBlur
-											showDone
-											unit='M2'
-										/>
-
-										<Select
-											placeholder='Lựa chọn'
-											label={
-												<span>
-													Người quản lý <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											value={form.managerUu}
-											onClean={() =>
-												setForm((prev) => ({
-													...prev,
-													type: '',
-												}))
-											}
-											options={[
-												{uuid: '1', name: 'Người quản lý 1'},
-												{uuid: '2', name: 'Người quản lý 2'},
-											]}
-											onSelect={(data) => setForm({...form, managerUu: data.uuid})}
-											getOptionLabel={(opt) => opt.name}
-											getOptionValue={(opt) => opt.uuid}
-										/>
-
-										<div>
-											<Select
-												placeholder='Lựa chọn'
-												label={
-													<span>
-														ID ổ khóa <span style={{color: 'red'}}>* </span>
-													</span>
-												}
-												value={form.lock}
-												onClean={() =>
-													setForm((prev) => ({
-														...prev,
-														type: '',
-													}))
-												}
-												options={[
-													{uuid: '1', name: 'ID ổ khóa 1'},
-													{uuid: '2', name: 'ID ổ khóa 2'},
-												]}
-												onSelect={(data) => setForm({...form, lock: data.uuid})}
-												getOptionLabel={(opt) => opt.name}
-												getOptionValue={(opt) => opt.uuid}
-											/>
-										</div>
-									</GridColumn> */}
-								</div>
-
-								<div style={{marginTop: '16px'}}>
-									{/* <GridColumn col_3>
-										<Select
-											placeholder='Lựa chọn'
-											label={
-												<span>
-													Tỉnh/TP <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											value={form.provinceId}
-											onClean={() =>
-												setForm((prev) => ({
-													...prev,
-													provinceId: '',
-													type: '',
-												}))
-											}
-											options={[
-												{uuid: '1', matp: 'Tỉnh/TP 1'},
-												{uuid: '2', matp: 'Tỉnh/TP 2'},
-											]}
-											onSelect={(data) => setForm({...form, provinceId: data.uuid})}
-											getOptionLabel={(opt) => opt.matp}
-											getOptionValue={(opt) => opt.uuid}
-										/>
-
-										<div>
-											<Select
-												placeholder='Lựa chọn'
-												label={
-													<span>
-														Xã/Phường <span style={{color: 'red'}}>* </span>
-													</span>
-												}
-												value={form.wardId}
-												onClean={() =>
-													setForm((prev) => ({
-														...prev,
-														provinceId: '',
-														wardId: '',
-													}))
-												}
-												options={[
-													{uuid: '1', xaid: 'Xã/Phường 1'},
-													{uuid: '2', xaid: 'Xã/Phường 2'},
-												]}
-												onSelect={(data) => setForm({...form, wardId: data.uuid})}
-												getOptionLabel={(opt) => opt.xaid}
-												getOptionValue={(opt) => opt.uuid}
-											/>
-										</div>
-
-										<Input
-											name='address'
-											value={form.address}
-											type='text'
-											isBlur={true}
-											isRequired={true}
-											label={
-												<span>
-													Địa chỉ chi tiết <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											placeholder='Nhập địa chỉ chi tiết'
-										/>
-									</GridColumn> */}
-								</div>
 
 								<div style={{marginTop: '16px'}}>
 									<TextArea name='description' placeholder='Nhập mô tả' label='Mô tả chi tiết' />

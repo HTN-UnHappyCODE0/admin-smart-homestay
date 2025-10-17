@@ -4,6 +4,7 @@ const lockServices = {
 	listLock: (
 		data: {
 			isPaging: number;
+			typeFinding: number;
 			keyword: string;
 			page: number;
 			pageSize: number;
@@ -74,6 +75,19 @@ const lockServices = {
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/Lock/get-lock-history`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	listActiveLock: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			page: number;
+			pageSize: number;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/get-list-active-lock`, data, {
 			cancelToken: tokenAxios,
 		});
 	},

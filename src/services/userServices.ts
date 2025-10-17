@@ -6,6 +6,22 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getUsers: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			page: number;
+			pageSize: number;
+			status: number | null;
+			typeFinding: number;
+			hasRented: number | null;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/User/get-users`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default userServices;

@@ -33,7 +33,7 @@ function FormUpdateFurniture({onClose}: PropsFormUpdateFurniture) {
 			if (data) {
 				setForm({
 					name: data.name,
-					description: data.description,
+					description: data.description || '',
 					lastAdded: data.lastAdded ? moment(data?.lastAdded).format('YYYY-MM-DD') : '',
 				});
 			}
