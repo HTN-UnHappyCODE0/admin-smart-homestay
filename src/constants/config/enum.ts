@@ -17,6 +17,10 @@ export enum QUERY_KEY {
 	detail_furniture,
 
 	dropdown_apartment_type,
+	dropdown_user,
+	dropdown_lock,
+	dropdown_province,
+	dropdown_ward,
 }
 
 export enum TYPE_DATE {
