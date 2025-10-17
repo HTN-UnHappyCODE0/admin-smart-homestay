@@ -1,6 +1,6 @@
-import {Fragment, useState} from 'react';
+import {useState} from 'react';
 import styles from './FormCreateApartment.module.scss';
-import {IDataUploadFile, IFormCreateApartment, PropsFormCreateApartment} from './interfaces';
+import {IDataUploadFile, PropsFormCreateApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Breadcrumb from '~/components/common/Breadcrumb';
@@ -12,49 +12,56 @@ import GridColumn from '~/components/layouts/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import {useRouter} from 'next/router';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {useQuery} from '@tanstack/react-query';
+import {httpRequest} from '~/services';
+import apartmentTypeServices from '~/services/apartmentTypeServices';
+
+export interface IFormCreateApartment {
+	name: string;
+	apartmentTypeUuid: string;
+}
+
+const initForm: IFormCreateApartment = {
+	name: '',
+	apartmentTypeUuid: '',
+};
 
 function FormCreateApartment({}: PropsFormCreateApartment) {
 	const router = useRouter();
 
-	const [form, setForm] = useState<IFormCreateApartment>({
-		name: '',
-		apartmentTypeUu: '',
-		owner: '',
-		apartmentSize: 0,
-		managerUu: '',
-		lock: '',
-		provinceId: '',
-		wardId: '',
-		address: '',
-		description: '',
-
-		rooms: [
-			{name: 'Phòng ngủ', quantity: ''},
-			{name: 'Phòng khách', quantity: ''},
-			{name: 'Phòng bếp', quantity: ''},
-		],
-	});
-
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
+	const [form, setForm] = useState<IFormCreateApartment>(initForm);
 
 	const resetForm = () => {
 		setForm({
 			name: '',
-			apartmentTypeUu: '',
-			owner: '',
-			apartmentSize: 0,
-			managerUu: '',
-			lock: '',
-			provinceId: '',
-			wardId: '',
-			address: '',
-			description: '',
-			rooms: [
-				{name: 'Phòng ngủ', quantity: ''},
-				{name: 'Phòng khách', quantity: ''},
-			],
+			apartmentTypeUuid: '',
 		});
 	};
+
+	const {data: apartmentTypes = []} = useQuery<
+		{
+			uuid: string;
+			code: string;
+			name: string;
+		}[]
+	>([QUERY_KEY.dropdown_apartment_type], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentTypeServices.listApartmentType({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: STATUS_CONFIG.ACTIVE,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
 
 	return (
 		<Form heightFull={true} form={form} setForm={setForm} onSubmit={() => {}}>
@@ -93,7 +100,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 							<div className={styles.form}>
 								<GridColumn col_3>
 									<Input
-										value={form.name}
 										name='name'
 										type='text'
 										isBlur={true}
@@ -113,17 +119,17 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 												Loại hình căn hộ <span style={{color: 'red'}}>* </span>
 											</span>
 										}
-										value={form.apartmentTypeUu}
+										value={form.apartmentTypeUuid}
 										options={[
 											{uuid: '1', name: 'Căn hộ chung cư'},
 											{uuid: '2', name: 'Biệt thự'},
 										]}
-										onSelect={(data) => setForm({...form, apartmentTypeUu: data.uuid})}
+										onSelect={(data) => setForm({...form, apartmentTypeUuid: data.uuid})}
 										getOptionLabel={(opt) => opt.name}
 										getOptionValue={(opt) => opt.uuid}
 									/>
 
-									<div>
+									{/* <div>
 										<Select
 											placeholder='Lựa chọn'
 											label={
@@ -146,11 +152,11 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-									</div>
+									</div> */}
 								</GridColumn>
 
 								<div style={{marginTop: '16px'}}>
-									<GridColumn col_3>
+									{/* <GridColumn col_3>
 										<Input
 											name='apartmentSize'
 											value={form.apartmentSize}
@@ -215,11 +221,11 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 												getOptionValue={(opt) => opt.uuid}
 											/>
 										</div>
-									</GridColumn>
+									</GridColumn> */}
 								</div>
 
 								<div style={{marginTop: '16px'}}>
-									<GridColumn col_3>
+									{/* <GridColumn col_3>
 										<Select
 											placeholder='Lựa chọn'
 											label={
@@ -283,7 +289,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 											}
 											placeholder='Nhập địa chỉ chi tiết'
 										/>
-									</GridColumn>
+									</GridColumn> */}
 								</div>
 
 								<div style={{marginTop: '16px'}}>
@@ -305,7 +311,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 						</WrapperForm>
 
 						{/* Danh sách phòng trong căn hộ */}
-						<WrapperForm title='Danh sách phòng trong căn hộ'>
+						{/* <WrapperForm title='Danh sách phòng trong căn hộ'>
 							{form.rooms.map((room, index) => (
 								<GridColumn key={index} col_2 style={{marginBottom: '12px'}}>
 									<Input
@@ -328,7 +334,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 									</div>
 								</GridColumn>
 							))}
-						</WrapperForm>
+						</WrapperForm> */}
 
 						{/* Danh sách nội thất */}
 						<WrapperForm title='Danh sách nội thất'>Main</WrapperForm>

@@ -15,6 +15,8 @@ export enum QUERY_KEY {
 	detail_cost_type,
 	detail_lock,
 	detail_furniture,
+
+	dropdown_apartment_type,
 }
 
 export enum TYPE_DATE {
