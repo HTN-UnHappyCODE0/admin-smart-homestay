@@ -7,7 +7,7 @@ import Breadcrumb from '~/components/common/Breadcrumb';
 import {PATH} from '~/constants/config';
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import {useRouter} from 'next/router';
-import {tabsDetailApartments} from '~/constants/config/data';
+import {statusConfigs, tabsDetailApartments} from '~/constants/config/data';
 import WrapperForm from '~/components/utils/WrapperForm';
 import StateActive from '~/components/utils/StateActive';
 import GridColumn from '~/components/layouts/GridColumn';
@@ -21,21 +21,23 @@ import {getDetailAddress} from '~/common/funcs/optionConvert';
 import Dialog from '~/components/common/Dialog';
 import {Warning2} from 'iconsax-react';
 import Loading from '~/components/common/Loading';
-import Image from 'next/image';
+import {convertCoin} from '~/common/funcs/convertCoin';
 
 function MainInfoApartment({}: PropsMainInfoApartment) {
 	const router = useRouter();
 	const {_uuid} = router.query;
 	const queryClient = useQueryClient();
 
-	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{apartmentMeterUuid: string; state: number; type: 1 | 2} | null>(
-		null
-	);
+	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{
+		apartmentMeterUuid: string;
+		state: number;
+		name: string;
+	} | null>(null);
 
 	const {data: apartmentInfo} = useQuery<IDetailInfoApartment>([QUERY_KEY.detail_info_apartment, _uuid], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getApartmentDetail({uuid: _uuid as string}),
+				http: apartmentServices.getApartmentDetailForUpdate({uuid: _uuid as string}),
 			}),
 
 		select(data) {
@@ -49,7 +51,10 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 			httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
-				msgSuccess: dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt aptomat thành công!' : 'Bật aptomat thành công!',
+				msgSuccess:
+					dataChangeStateSwitch?.state == STATE_SWITCH.ON
+						? `Tắt ${dataChangeStateSwitch?.name} thành công!`
+						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
 				http: apartmentServices.changeStatusMeter({
 					apartmentMeterUuid: dataChangeStateSwitch?.apartmentMeterUuid!,
 					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
@@ -111,24 +116,7 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 									>
 										Trạng thái:
 									</p>
-									<StateActive
-										isSmall={true}
-										stateActive={1}
-										listState={[
-											{
-												backgroundColor: '#06AED4',
-												state: 1,
-												text: 'Hoạt động',
-												textColor: '#fff',
-											},
-											{
-												backgroundColor: '#EE0033',
-												state: 2,
-												text: 'Bị khóa',
-												textColor: '#fff',
-											},
-										]}
-									/>
+									<StateActive isSmall={true} stateActive={1} listState={statusConfigs} />
 								</FlexLayout>
 							}
 						>
@@ -144,8 +132,8 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 											<>
 												{apartmentInfo?.apartmentRooms.flatMap((room, index, array) => (
 													<span key={index}>
-														{room.item} * <span style={{color: '#2970FF'}}>{room.count}</span>
-														{index < array.length - 1 && <span key={`sep-${room.uuid}`}> , </span>}
+														{room?.item?.name} * <span style={{color: '#2970FF'}}>{room?.count}</span>
+														{index < array.length - 1 && <span key={`sep-${room?.uuid}`}>, </span>}
 													</span>
 												))}
 											</>
@@ -153,10 +141,18 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 									/>
 									<InfoDetail
 										name='Nội thất'
-										value={apartmentInfo?.apartmentFurnitures.map((item, index) => (
-											<div key={index}>{item.count}</div>
-										))}
+										value={
+											<>
+												{apartmentInfo?.apartmentFurnitures.flatMap((furniture, index, array) => (
+													<span key={index}>
+														{furniture?.item?.name} * <span style={{color: '#2970FF'}}>{furniture?.count}</span>
+														{index < array.length - 1 && <span key={`sep-${furniture?.uuid}`}>, </span>}
+													</span>
+												))}
+											</>
+										}
 									/>
+
 									<InfoDetail name='Giá cho thuê' value={apartmentInfo?.rentPrice} />
 									<InfoDetail name='Giá quảng cáo' value={apartmentInfo?.adPrice} />
 								</GridColumn>
@@ -194,96 +190,50 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 							</WrapperForm>
 						</FlexLayout>
 					</div>
-					<WrapperForm title='Quản lý điện nước'>
-						<GridColumn col_4>
-							<InfoDetail name='Số điện đầu tháng' value={apartmentInfo?.waterMeter?.initialValue || 0} />
-							<InfoDetail name='Số điện hiện tại' value={apartmentInfo?.waterMeter?.currentValue || 0} />
-							<InfoDetail
-								name='Số điện đã tiêu thụ'
-								value={
-									apartmentInfo?.waterMeter
-										? apartmentInfo.waterMeter.currentValue - apartmentInfo.waterMeter.initialValue
-										: 0
-								}
-							/>
 
-							<InfoDetail
-								name='Aptomat'
-								value=''
-								actions={
-									<SwitchButton
-										checkOn={apartmentInfo?.electricMeter?.onState === STATE_SWITCH.ON}
-										onClick={() =>
-											setDataChangeStateSwitch({
-												apartmentMeterUuid: apartmentInfo?.electricMeter?.uuid!,
-												state: apartmentInfo?.electricMeter?.onState!,
-												type: 1,
-											})
+					{apartmentInfo?.meters
+						?.filter((meter) => meter?.meterTypeUu?.type === 0)
+						?.map((meter, index) => (
+							<WrapperForm key={index} title={`Quản lý ${meter?.meterTypeUu?.name}`}>
+								<GridColumn col_4>
+									<InfoDetail name='Số đầu tháng' value={convertCoin(meter?.initialValue || 0)} />
+									<InfoDetail name='Số hiện tại' value={convertCoin(meter?.currentValue || 0)} />
+									<InfoDetail name='Số đã tiêu thụ' value={convertCoin(meter?.currentValue - meter?.initialValue)} />
+
+									<InfoDetail
+										name={`${meter?.meterTypeUu?.name}`}
+										value=''
+										actions={
+											<SwitchButton
+												checkOn={meter?.onState === STATE_SWITCH.ON}
+												onClick={() =>
+													setDataChangeStateSwitch({
+														apartmentMeterUuid: meter?.uuid!,
+														state: meter?.onState!,
+														name: meter?.meterTypeUu?.name,
+													})
+												}
+											/>
 										}
 									/>
-								}
-							/>
-							<InfoDetail name='Số nước đầu tháng' value={apartmentInfo?.waterMeter?.initialValue || 0} />
-							<InfoDetail name='Số nước hiện tại' value={apartmentInfo?.waterMeter?.currentValue || 0} />
-							<InfoDetail
-								name='Số nước đã tiêu thụ'
-								value={
-									apartmentInfo?.waterMeter
-										? apartmentInfo.waterMeter.currentValue - apartmentInfo.waterMeter.initialValue
-										: 0
-								}
-							/>
-							<InfoDetail
-								name='Đồng hồ nước'
-								value=''
-								actions={
-									<SwitchButton
-										checkOn={apartmentInfo?.waterMeter?.onState === STATE_SWITCH.ON}
-										onClick={() =>
-											setDataChangeStateSwitch({
-												apartmentMeterUuid: apartmentInfo?.waterMeter?.uuid!,
-												state: apartmentInfo?.waterMeter?.onState!,
-												type: 2,
-											})
-										}
-									/>
-								}
-							/>
-						</GridColumn>
-					</WrapperForm>
+								</GridColumn>
+							</WrapperForm>
+						))}
 
 					<Dialog
-						open={!!dataChangeStateSwitch && dataChangeStateSwitch.type === 1}
+						open={!!dataChangeStateSwitch}
 						type={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'error' : 'primary'}
 						backgroundIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#ffdce4' : '#b5f4d4ff'}
 						borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
-						title={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt Aptomat' : 'Bật Aptomat'}
+						title={
+							dataChangeStateSwitch?.state == STATE_SWITCH.ON
+								? `Tắt ${dataChangeStateSwitch?.name}`
+								: `Bật ${dataChangeStateSwitch?.name}`
+						}
 						note={
 							dataChangeStateSwitch?.state == STATE_SWITCH.ON
-								? 'Bạn có chắc chắn muốn tắt aptopmat không?'
-								: 'Bạn có chắc chắn muốn bật aptomat không?'
-						}
-						icon={
-							dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (
-								<Warning2 size='28' color='#EE0033' />
-							) : (
-								<Warning2 size='28' color='#25C173' />
-							)
-						}
-						onClose={() => setDataChangeStateSwitch(null)}
-						onSubmit={funcChangeSwitch.mutate}
-					/>
-
-					<Dialog
-						open={!!dataChangeStateSwitch && dataChangeStateSwitch.type === 2}
-						type={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'error' : 'primary'}
-						backgroundIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#ffdce4' : '#b5f4d4ff'}
-						borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
-						title={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'Tắt đồng hồ nước' : 'Bật đồng hồ nước'}
-						note={
-							dataChangeStateSwitch?.state == STATE_SWITCH.ON
-								? 'Bạn có chắc chắn muốn tắt đồng hồ nước không?'
-								: 'Bạn có chắc chắn muốn bật đồng hồ nước không?'
+								? `Bạn có chắc chắn muốn tắt ${dataChangeStateSwitch?.name} không?`
+								: `Bạn có chắc chắn muốn bật ${dataChangeStateSwitch?.name} không?`
 						}
 						icon={
 							dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (

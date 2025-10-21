@@ -1,6 +1,6 @@
 import FlexLayout from '~/components/layouts/FlexLayout';
 import styles from './MainRequestRepairApartment.module.scss';
-import {PropsMainRequestRepairApartment} from './interfaces';
+import {IIncidentApartment, PropsMainRequestRepairApartment} from './interfaces';
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import Breadcrumb from '~/components/common/Breadcrumb/Breadcrumb';
 import {PATH} from '~/constants/config';
@@ -9,25 +9,26 @@ import {tabsDetailApartments} from '~/constants/config/data';
 import {useRouter} from 'next/router';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Search from '~/components/common/Search';
-import FilterDateRange from '~/components/common/FilterDateRange';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
 import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {CloseCircle, Eye, Warning2} from 'iconsax-react';
 import {useState} from 'react';
-import {TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
 import WrapperForm from '~/components/utils/WrapperForm';
 import {FaCircleCheck} from 'react-icons/fa6';
 import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import PositionContainer from '~/components/common/PositionContainer';
 import DetailRequestRepairApartment from './components/DetailRequestRepairApartment';
 import Form, {TextArea} from '~/components/common/Form';
 import Popup from '~/components/common/Popup';
 import ConfirmRequest from '../MainRequestViewApartment/components/ConfirmRequest';
+import {httpRequest} from '~/services';
+import incidentServices from '~/services/incidentServices';
 
 function MainRequestRepairApartment({}: PropsMainRequestRepairApartment) {
 	const router = useRouter();
@@ -53,6 +54,40 @@ function MainRequestRepairApartment({}: PropsMainRequestRepairApartment) {
 		setTypeDate(TYPE_DATE.ALL);
 		setDate(null);
 	};
+
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IIncidentApartment[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_apartment_incident, page, pageSize, keyword, status, _uuid], {
+		queryFn: () =>
+			httpRequest({
+				http: incidentServices.getIncidentReports({
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					page: page,
+					pageSize: pageSize,
+					keyword: keyword,
+					status: status,
+					apartmentUuid: _uuid as string,
+					userUuid: '',
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
 
 	const funcRequestView = useMutation({
 		// mutationFn: () =>

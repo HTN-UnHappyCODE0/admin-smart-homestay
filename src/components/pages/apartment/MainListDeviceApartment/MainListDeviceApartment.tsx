@@ -150,7 +150,7 @@ function MainListDeviceApartment({}: PropsMainListDeviceApartment) {
 										{
 											title: 'Mã kết nối',
 											render: (row, _) => (
-												<Link className={styles.link} href={PATH.Device}>
+												<Link className={styles.link} href={PATH.Any}>
 													{row.code}
 												</Link>
 											),

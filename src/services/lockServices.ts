@@ -84,6 +84,9 @@ const lockServices = {
 			isPaging: number;
 			page: number;
 			pageSize: number;
+			state: number | null;
+			status: number | null;
+			isUsed: boolean | null;
 		},
 		tokenAxios?: any
 	) => {

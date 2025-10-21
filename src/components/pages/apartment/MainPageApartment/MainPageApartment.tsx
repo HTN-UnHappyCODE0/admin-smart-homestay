@@ -23,13 +23,9 @@ import Dialog from '~/components/common/Dialog';
 import {convertCoin} from '~/common/funcs/convertCoin';
 import {stateApartments, statusConfigs} from '~/constants/config/data';
 import {PATH} from '~/constants/config';
-import Form, {TextArea} from '~/components/common/Form';
 
 function MainPageApartment({}: PropsMainPageApartment) {
 	const queryClient = useQueryClient();
-	const [form, setForm] = useState<{note: string}>({
-		note: '',
-	});
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -118,7 +114,6 @@ function MainPageApartment({}: PropsMainPageApartment) {
 						</FlexLayout>
 					}
 				/>
-
 				<SearchBlock
 					keyword={keyword}
 					setKeyword={setKeyword}
@@ -155,7 +150,6 @@ function MainPageApartment({}: PropsMainPageApartment) {
 						</FlexLayout>
 					}
 				/>
-
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
 						<DataWrapper
@@ -260,7 +254,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 														})
 													}
 												/>
-												<IconActionTable icon={<Edit color='#065dbbff' size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable
+													icon={<Edit color='#065dbbff' size={24} />}
+													tooltip='Chỉnh sửa'
+													href={`${PATH.UpdateApartment}?_uuid=${row?.uuid}`}
+												/>
 											</FlexLayout>
 										),
 									},

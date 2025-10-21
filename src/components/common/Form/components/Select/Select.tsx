@@ -111,9 +111,10 @@ function Select<OptionType>({
 										const key = removeVietnameseTones(keyword || '');
 										return label.includes(key);
 									})
-									?.map((opt) => (
+									?.map((opt, index) => (
 										<div
-											key={getOptionValue(opt)}
+											// key={getOptionValue(opt)}
+											key={index}
 											className={clsx(styles.option, {
 												[styles.active]: getOptionValue(opt) === value,
 											})}

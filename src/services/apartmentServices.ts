@@ -47,16 +47,45 @@ const apartmentServices = {
 				count: number;
 				description: string;
 			}[];
-			meters: {
-				meterUuid: string;
-				serialNumber: string;
-			}[];
+			meters: string[];
 			attachments: string[];
 			description: string;
 		},
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/Apartment/create-apartment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateApartment: (
+		data: {
+			uuid: string;
+			apartmentTypeUuid: string;
+			lockUuid: string;
+			ownerUuid: string;
+			managerUuid: string;
+			name: string;
+			provinceId: string;
+			wardId: string;
+			address: string;
+			apartmentSize: number;
+			rooms: {
+				assetUuid: string;
+				count: number;
+				description: string;
+			}[];
+			furnitures: {
+				assetUuid: string;
+				count: number;
+				description: string;
+			}[];
+			meters: string[];
+			attachments: string[];
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/update-apartment`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
@@ -67,6 +96,16 @@ const apartmentServices = {
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/Apartment/get-apartment-detailed`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	apartmentDetailForUpdate: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/get-apartment-detailed-for-update`, data, {
 			cancelToken: tokenAxios,
 		});
 	},

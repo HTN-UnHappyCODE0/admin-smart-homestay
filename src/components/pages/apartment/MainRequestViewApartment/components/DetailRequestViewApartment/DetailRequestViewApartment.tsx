@@ -1,6 +1,6 @@
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import styles from './DetailRequestViewApartment.module.scss';
-import {PropsDetailRequestViewApartment} from './interfaces';
+import {IDetailRequestView, PropsDetailRequestViewApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import StateActive from '~/components/utils/StateActive';
@@ -9,17 +9,65 @@ import WrapperForm from '~/components/utils/WrapperForm';
 import InfoDetail from '~/components/utils/InfoDetail';
 import Image from 'next/image';
 import GridColumn from '~/components/layouts/GridColumn';
+import {useRouter} from 'next/router';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {QUERY_KEY, STATE_APARTMENT_VISIT} from '~/constants/config/enum';
+import {httpRequest} from '~/services';
+import apartmentVisitServices from '~/services/apartmentVisitServices';
+import {statusApartmentVisit} from '~/constants/config/data';
+import {useState} from 'react';
+import Dialog from '~/components/common/Dialog';
+import {Warning2} from 'iconsax-react';
 
 function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) {
+	const router = useRouter();
+	const {_uuidDetail} = router.query;
+	const queryClient = useQueryClient();
+	const [rejectApartment, setRejectApartment] = useState<string>('');
+
+	const {data: detailRequestView} = useQuery<IDetailRequestView>([QUERY_KEY.detail_request_view, _uuidDetail], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentVisitServices.getDetailLApartmentVisit({uuid: _uuidDetail as string}),
+			}),
+
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidDetail,
+	});
+
+	const funcRejectView = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: 'Từ chối xem căn hộ thành công',
+				http: apartmentVisitServices.rejectVisitRequest({
+					uuid: rejectApartment,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setRejectApartment('');
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.detail_request_view],
+				});
+			}
+		},
+	});
+
 	return (
 		<WrapperFormPostion
 			width={1200}
 			title='Chi tiết yêu cầu xem căn hộ'
 			actions={
 				<FlexLayout row gap-8>
-					<Button p_8_24 rounded_8 red bold onClick={onClose}>
-						Từ chối xem
-					</Button>
+					{detailRequestView?.status === STATE_APARTMENT_VISIT.PENDING && (
+						<Button p_8_24 rounded_8 red bold onClick={() => setRejectApartment(_uuidDetail as string)}>
+							Từ chối xem
+						</Button>
+					)}
 					<Button p_8_24 rounded_8 white bold onClick={onClose}>
 						Đóng
 					</Button>
@@ -28,29 +76,14 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 			nodes={
 				<FlexLayout row gap-8 items-center>
 					<p className={styles.text}>Trạng thái yêu cầu:</p>
-					<StateActive
-						isSmall={true}
-						stateActive={1}
-						listState={[
-							{
-								backgroundColor: '#06AED4',
-								state: 1,
-								text: 'Hoạt động',
-								textColor: '#fff',
-							},
-							{
-								backgroundColor: '#EE0033',
-								state: 2,
-								text: 'Bị khóa',
-								textColor: '#fff',
-							},
-						]}
-					/>
+					<StateActive isSmall={true} stateActive={detailRequestView?.status!} listState={statusApartmentVisit} />
 
 					<div style={{height: '16px', width: '1px', background: '#CDD5DF'}}></div>
 					<p className={styles.text}>Thời gian xem:</p>
 					<p className={styles.time}>
-						<Moment format='HH:mm, DD/MM/YYYY' />
+						<Moment date={detailRequestView?.from} format='HH:mm, DD/MM/YYYY' />
+						-
+						<Moment date={detailRequestView?.to} format='HH:mm, DD/MM/YYYY' />
 					</p>
 				</FlexLayout>
 			}
@@ -58,7 +91,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 			<WrapperForm title='Thông tin người xem'>
 				<FlexLayout column gap-16>
 					<Image
-						src='https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png'
+						src={`${process.env.NEXT_PUBLIC_IMAGE}/${detailRequestView?.identification?.selfieImage}`}
 						alt='Ảnh đại diện'
 						width={120}
 						height={120}
@@ -66,23 +99,23 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 					/>
 
 					<GridColumn col_3>
-						<InfoDetail name='Tên tài khoản' value={'Vũ Đức Minh'} textColor='#1F5FFF' />
-						<InfoDetail name='Số điện thoại' value={'0362238888'} />
+						<InfoDetail name='Tên tài khoản' value={detailRequestView?.identification?.userUu?.bankName} textColor='#1F5FFF' />
+						<InfoDetail name='Số điện thoại' value={detailRequestView?.identification?.userUu?.phoneNumber} />
 					</GridColumn>
 				</FlexLayout>
 			</WrapperForm>
 
 			<WrapperForm title='Thông tin CMND/CCCD'>
 				<GridColumn col_3>
-					<InfoDetail name='Số CMND/CCCD' value={'142882868'} textColor='#1F5FFF' />
-					<InfoDetail name='Nơi cấp' value={'Vĩnh Phúc'} />
-					<InfoDetail name='Ngày cấp' value={'10/10/2016'} />
+					<InfoDetail name='Số CMND/CCCD' value={detailRequestView?.identification?.identityNumber} textColor='#1F5FFF' />
+					<InfoDetail name='Nơi cấp' value={detailRequestView?.identification?.issuedPlace} />
+					<InfoDetail name='Ngày cấp' value={detailRequestView?.identification?.issuedDate} />
 					<InfoDetail
 						name='Ảnh mặt trước'
 						value=''
 						actions={
 							<Image
-								src='https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png'
+								src={`${process.env.NEXT_PUBLIC_IMAGE}/${detailRequestView?.identification?.idFrontImage}`}
 								alt='Ảnh mặt trước'
 								width={368}
 								height={216}
@@ -96,7 +129,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 						value=''
 						actions={
 							<Image
-								src='https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png'
+								src={`${process.env.NEXT_PUBLIC_IMAGE}/${detailRequestView?.identification?.idBackImage}`}
 								alt='Ảnh mặt sau'
 								width={368}
 								height={216}
@@ -106,6 +139,18 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 					/>
 				</GridColumn>
 			</WrapperForm>
+
+			<Dialog
+				open={!!rejectApartment}
+				type='error'
+				backgroundIconColor='#ffdce4'
+				borderIconColor='#fff0f3'
+				title='Từ chối yêu cầu xem căn hộ'
+				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xem căn hộ này không?</span>}
+				icon={<Warning2 size='28' color='#EE0033' />}
+				onClose={() => setRejectApartment('')}
+				onSubmit={() => funcRejectView.mutate()}
+			/>
 		</WrapperFormPostion>
 	);
 }

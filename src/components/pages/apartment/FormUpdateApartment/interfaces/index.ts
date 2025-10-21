@@ -1,6 +1,27 @@
-export interface PropsMainInfoApartment {}
+export interface PropsFormUpdateApartment {}
 
-export interface IDetailInfoApartment {
+export interface IMeterApartment {
+	meterUu: {
+		uuid: string;
+		serialNumber: string;
+		code: string;
+		name: string;
+	};
+	meterTypeUu: {
+		uuid: string;
+		code: string;
+		name: string;
+	};
+	currentValue: number;
+	initialValue: number;
+	onState: number;
+	description: string;
+	id: number;
+	uuid: string;
+	status: number;
+}
+
+export interface IDetailApartmentForUpdate {
 	lock: {
 		uuid: string;
 		code: string;
@@ -11,15 +32,15 @@ export interface IDetailInfoApartment {
 		bankName: string;
 		phoneNumber: string;
 		uuid: string;
-		code: number;
+		code: string;
 		name: string;
 	};
 	ownerUu: {
 		bankNumber: string;
 		bankName: string;
-		phoneNumber: number;
+		phoneNumber: string;
 		uuid: string;
-		code: number;
+		code: string;
 		name: string;
 	};
 	numVisitRequest: number;
@@ -27,27 +48,7 @@ export interface IDetailInfoApartment {
 	maxPeople: number;
 	rentPrice: number;
 	adPrice: number;
-	meters: {
-		meterUu: {
-			serialNumber: string;
-			uuid: string;
-			code: string;
-			name: string;
-		};
-		meterTypeUu: {
-			type: number;
-			uuid: string;
-			code: string;
-			name: string;
-		};
-		currentValue: number;
-		initialValue: number;
-		onState: number;
-		description: number;
-		id: number;
-		uuid: string;
-		status: number;
-	}[];
+	meters: IMeterApartment[];
 	apartmentRooms: {
 		item: {
 			uuid: string;
@@ -56,7 +57,7 @@ export interface IDetailInfoApartment {
 		};
 		count: number;
 		description: string;
-		serialNumber: number;
+		serialNumber: string;
 		id: number;
 		uuid: string;
 		status: number;
@@ -69,7 +70,7 @@ export interface IDetailInfoApartment {
 		};
 		count: number;
 		description: string;
-		serialNumber: number;
+		serialNumber: string;
 		id: number;
 		uuid: string;
 		status: number;
