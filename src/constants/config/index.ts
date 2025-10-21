@@ -23,7 +23,7 @@ export enum PATH {
 	CatalogCostType = '/catalog/cost-type',
 
 	Locks = '/locks',
-	Device = '/device',
+	Meter = '/meter',
 
 	UnlockHistory = '/unlock-history',
 
@@ -123,10 +123,16 @@ export const Menus: {
 				pathActive: PATH.Furniture,
 			},
 			{
+				title: 'Loại thiết bị',
+				icon: Cpu,
+				path: PATH.Any,
+				pathActive: PATH.Any,
+			},
+			{
 				title: 'Danh sách thiết bị',
 				icon: Cpu,
-				path: PATH.Device,
-				pathActive: PATH.Device,
+				path: PATH.Any,
+				pathActive: PATH.Any,
 			},
 		],
 	},

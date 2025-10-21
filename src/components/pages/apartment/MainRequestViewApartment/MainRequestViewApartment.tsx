@@ -1,11 +1,11 @@
 import FlexLayout from '~/components/layouts/FlexLayout';
 import styles from './MainRequestViewApartment.module.scss';
-import {PropsMainRequestViewApartment} from './interfaces';
+import {IApartmentVisit, PropsMainRequestViewApartment} from './interfaces';
 import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import Breadcrumb from '~/components/common/Breadcrumb/Breadcrumb';
 import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button/Button';
-import {tabsDetailApartments} from '~/constants/config/data';
+import {statusApartmentVisit, tabsDetailApartments} from '~/constants/config/data';
 import {useRouter} from 'next/router';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Search from '~/components/common/Search';
@@ -16,55 +16,96 @@ import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {CloseCircle, Eye, Warning2} from 'iconsax-react';
 import {useState} from 'react';
-import {TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
 import WrapperForm from '~/components/utils/WrapperForm';
-import {FaCircleCheck} from 'react-icons/fa6';
 import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import PositionContainer from '~/components/common/PositionContainer';
 import DetailRequestViewApartment from './components/DetailRequestViewApartment';
+import {httpRequest} from '~/services';
+import apartmentVisitServices from '~/services/apartmentVisitServices';
+import Moment from 'react-moment';
+import moment from 'moment';
 
 function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const {_uuid, _uuidDetail} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
-	const [type, setType] = useState<number | null>(null);
-
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
-	const [open, setOpen] = useState<string>('');
-	const [cancelApartment, setCancelApartment] = useState<string>('');
+	const [approveApartment, setApproveApartment] = useState<string>('');
+	const [rejectApartment, setRejectApartment] = useState<string>('');
 
 	const resetFilter = () => {
 		setKeyword('');
 		setTypeDate(TYPE_DATE.ALL);
 		setDate(null);
+		setStatus(null);
+		setApproveApartment('');
+		setRejectApartment('');
 	};
 
-	const funcRequestView = useMutation({
-		// mutationFn: () =>
-		// 	httpRequest({
-		// 		showMessageSuccess: true,
-		// 		showMessageFailed: true,
-		// 		msgSuccess: 'Reset mật khẩu thành công!',
-		// 		http: lockServices.resetUserPassword({
-		// 			uuid: cancelApartment,
-		// 		}),
-		// 	}),
-		// onSuccess(data) {
-		// 	if (data) {
-		// 		setCancelApartment('');
-		// 		queryClient.invalidateQueries({
-		// 			queryKey: [QUERY_KEY.table_lock],
-		// 		});
-		// 	}
-		// },
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IApartmentVisit[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_apartment_visit, page, pageSize, keyword, status, _uuid, date?.to, date?.from], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentVisitServices.getApartmentVisit({
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					page: page,
+					pageSize: pageSize,
+					keyword: keyword,
+					status: status,
+					apartmentUuid: _uuid as string,
+					from: date?.from ? moment(date.from).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+					to: date?.to ? moment(date.to).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+					userUuid: '',
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
+
+	const funcRejectView = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: 'Từ chối xem căn hộ thành công',
+				http: apartmentVisitServices.rejectVisitRequest({
+					uuid: rejectApartment,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setRejectApartment('');
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_visit],
+				});
+			}
+		},
 	});
 
 	return (
@@ -107,31 +148,31 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 									name='Trạng thái'
 									value={status}
 									setValue={setStatus}
-									listOption={[
-										{
-											uuid: 1,
-											name: 'Hoạt động',
-										},
-										{
-											uuid: 2,
-											name: 'Đang khóa',
-										},
-									]}
+									listOption={statusApartmentVisit.map((item) => ({
+										uuid: item.state,
+										name: item.text,
+									}))}
 								/>
+								<FlexLayout row gap-8>
+									<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
+										Đặt lại
+									</Button>
+								</FlexLayout>
 							</FlexLayout>
 						</FlexItem>
 					</FlexLayout>
 
 					<div style={{marginTop: '12px'}}>
 						<FlexItem flex-1 overflow-x>
-							<DataWrapper data={[1]} loading={false} title='Dữ liệu trống!' note='Danh sách dữ liệu hiện đang trống!'>
-								<Table<{uuid: string; name: string; phone: string; date: string}>
-									rowKey={(row) => row.uuid}
-									data={[
-										{uuid: '1', name: '1', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '2', name: '2', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '3', name: '3', phone: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-									]}
+							<DataWrapper
+								data={data?.items || []}
+								loading={isLoading}
+								title='Dữ liệu trống!'
+								note='Danh sách dữ liệu hiện đang trống!'
+							>
+								<Table<IApartmentVisit>
+									rowKey={(row) => row?.userUu?.uuid}
+									data={data?.items || []}
 									fixedHeader={true}
 									column={[
 										{
@@ -141,37 +182,24 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 										},
 										{
 											title: 'Tên tài khoản',
-											render: (row, _) => <>{row.name}</>,
+											render: (row, _) => <>{row?.userUu?.name}</>,
 										},
 										{
 											title: 'Số điện thoại',
-											render: (row, _) => <>{row.phone}</>,
+											render: (row, _) => <>{row?.userUu?.phoneNumber || '---'}</>,
 										},
 										{
 											title: 'Thời gian xem',
-											render: (row, _) => <>{row.date}</>,
+											render: (row, _) => (
+												<>
+													<Moment from={row?.from} format='HH:mm, DD/MM/YYYY' /> -
+													<Moment from={row?.to} format='HH:mm, DD/MM/YYYY' />
+												</>
+											),
 										},
 										{
 											title: 'Trạng thái',
-											render: (row, _) => (
-												<StateActive
-													stateActive={1}
-													listState={[
-														{
-															backgroundColor: '#06AED4',
-															state: 1,
-															text: 'Hoạt động',
-															textColor: '#fff',
-														},
-														{
-															backgroundColor: '#EE0033',
-															state: 2,
-															text: 'Bị khóa',
-															textColor: '#fff',
-														},
-													]}
-												/>
-											),
+											render: (row, _) => <StateActive stateActive={row?.status} listState={statusApartmentVisit} />,
 										},
 										{
 											title: 'Tác vụ',
@@ -191,16 +219,13 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 															})
 														}
 													/>
-													<IconActionTable
-														icon={<CloseCircle color='#EE0033' size={24} />}
-														tooltip='Từ chối yêu cầu'
-														onClick={() => setCancelApartment(row?.uuid)}
-													/>
-													<IconActionTable
-														icon={<FaCircleCheck color='#00a441ff' size={24} />}
-														tooltip='Chấp nhận yêu cầu'
-														onClick={() => setCancelApartment(row?.uuid)}
-													/>
+													{row?.status === STATE_APARTMENT_VISIT.PENDING && (
+														<IconActionTable
+															icon={<CloseCircle color='#EE0033' size={24} />}
+															tooltip='Từ chối yêu cầu'
+															onClick={() => setRejectApartment(row?.uuid)}
+														/>
+													)}
 												</FlexLayout>
 											),
 										},
@@ -213,8 +238,8 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 								onSetPage={setPage}
 								pageSize={pageSize}
 								onSetPageSize={setPageSize}
-								total={1}
-								dependencies={[pageSize, date?.from, date?.to, type]}
+								total={data?.pagination?.totalCount || 0}
+								dependencies={[pageSize, keyword, status, _uuid, date?.to, date?.from]}
 							/>
 						</FlexItem>
 					</div>
@@ -222,15 +247,15 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 			</LayoutMainPage>
 
 			<Dialog
-				open={!!cancelApartment}
+				open={!!rejectApartment}
 				type='error'
 				backgroundIconColor='#ffdce4'
 				borderIconColor='#fff0f3'
-				title='Từ chối xem căn hộ'
-				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xem căn hộ này không ?</span>}
+				title='Từ chối yêu cầu xem căn hộ'
+				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xem căn hộ này không?</span>}
 				icon={<Warning2 size='28' color='#EE0033' />}
-				onClose={() => setCancelApartment('')}
-				onSubmit={funcRequestView.mutate}
+				onClose={() => setRejectApartment('')}
+				onSubmit={() => funcRejectView.mutate()}
 			/>
 
 			<PositionContainer

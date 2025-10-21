@@ -99,7 +99,7 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-	apartmentDetailForUpdate: (
+	getApartmentDetailForUpdate: (
 		data: {
 			uuid: string;
 		},
