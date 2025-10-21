@@ -1,4 +1,4 @@
-﻿stages:
+stages:
   - prepare
   - pull
   - build
@@ -46,5 +46,5 @@ run:
     - minhkakart-runner
   script:
     - docker container rm $APP_NAME -f || echo "No existing container to remove" # Remove existing container if it exists
-    - docker run -dp 4510:4510 --network bridge --name $APP_NAME $APP_NAME # - docker run -dp 4510:4510 --volume $VOLUME_PATH:/app/Resources/data --network bridge --name $APP_NAME $APP_NAME # Run the Docker container with volume mapping
+    - docker run -dp 4510:4510 --network bridge --name $APP_NAME $APP_NAME
     - docker ps | grep $APP_NAME || echo "Container may not be running" # Verify the container is running
