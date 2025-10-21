@@ -30,7 +30,7 @@ pull:
     - git clone $REPOSITORY "$DEPLOY_DIR" # Clone the repository
     - cd "$DEPLOY_DIR" # Navigate to the deployment directory
     - git checkout dev # Checkout the desired branch
-    - cp -f $APP_SETTINGS . # Copy the appsettings.json file
+    #- cp -f $APP_SETTINGS . # Copy the appsettings.json file
 
 build:
   stage: build
