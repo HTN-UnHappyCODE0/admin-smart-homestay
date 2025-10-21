@@ -70,6 +70,16 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getApartmentDetailForUpdate: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/get-apartment-detailed-for-update`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 	changeStatusMeter: (
 		data: {
 			apartmentMeterUuid: string;

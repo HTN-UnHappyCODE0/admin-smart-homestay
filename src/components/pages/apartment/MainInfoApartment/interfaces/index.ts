@@ -1,64 +1,6 @@
 export interface PropsMainInfoApartment {}
 
 export interface IDetailInfoApartment {
-	contract: {
-		code: number;
-		userSignUu: {
-			uuid: string;
-			code: number;
-			name: string;
-		};
-		numPerson: number;
-		userContracts: {
-			userUu: {
-				uuid: string;
-				code: string;
-				name: string;
-			};
-			deviceId: string;
-			description: string;
-			type: number;
-			hasResidenceRegistered: number;
-		}[];
-		contractServicePrices: {
-			serviceUu: {
-				uuid: string;
-				code: string;
-				name: string;
-			};
-			apartmentMeterUu: number;
-			price: number;
-			paymentCycle: number;
-			type: number;
-		}[];
-		deposit: number;
-		price: number;
-		from: string;
-		to: string;
-		id: number;
-		uuid: string;
-		status: number;
-	};
-	apartmentRooms: {
-		item: string;
-		count: number;
-		description: string;
-		serialNumber: number;
-		id: number;
-		uuid: string;
-		status: number;
-	}[];
-	apartmentFurnitures: [
-		{
-			item: string;
-			count: number;
-			description: string;
-			serialNumber: number;
-			id: number;
-			uuid: string;
-			status: number;
-		}
-	];
 	lock: {
 		uuid: string;
 		code: string;
@@ -85,9 +27,19 @@ export interface IDetailInfoApartment {
 	maxPeople: number;
 	rentPrice: number;
 	adPrice: number;
-	waterMeter: {
-		serialNumber: number;
-		type: number;
+	meters: {
+		meterUu: {
+			serialNumber: string;
+			uuid: string;
+			code: string;
+			name: string;
+		};
+		meterTypeUu: {
+			type: number;
+			uuid: string;
+			code: string;
+			name: string;
+		};
 		currentValue: number;
 		initialValue: number;
 		onState: number;
@@ -95,18 +47,33 @@ export interface IDetailInfoApartment {
 		id: number;
 		uuid: string;
 		status: number;
-	};
-	electricMeter: {
+	}[];
+	apartmentRooms: {
+		item: {
+			uuid: string;
+			code: string;
+			name: string;
+		};
+		count: number;
+		description: string;
 		serialNumber: number;
-		type: number;
-		currentValue: number;
-		initialValue: number;
-		onState: number;
-		description: number;
 		id: number;
 		uuid: string;
 		status: number;
-	};
+	}[];
+	apartmentFurnitures: {
+		item: {
+			uuid: string;
+			code: string;
+			name: string;
+		};
+		count: number;
+		description: string;
+		serialNumber: number;
+		id: number;
+		uuid: string;
+		status: number;
+	}[];
 	description: string;
 	attachments: string[];
 	state: number;

@@ -1,5 +1,14 @@
 import {PATH} from '.';
-import {STATE_APARTMENT, STATE_LOCK, STATUS_CONFIG, TYPE_LOCK, STATUS_FURNITURE, STATUS_TEMPORARILY_ABSENT, STATUS_CONTRACT} from './enum';
+import {
+	STATE_APARTMENT,
+	STATE_LOCK,
+	STATUS_CONFIG,
+	TYPE_LOCK,
+	STATUS_FURNITURE,
+	STATUS_TEMPORARILY_ABSENT,
+	STATUS_CONTRACT,
+	STATE_APARTMENT_VISIT,
+} from './enum';
 
 export function tabsDetailApartments(uuid: string): {
 	title: string;
@@ -182,6 +191,38 @@ export const statusContract: {
 	{
 		state: STATUS_CONTRACT.OWNER,
 		text: 'Chủ hợp đồng',
+	},
+];
+
+export const statusApartmentVisit: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATE_APARTMENT_VISIT.CANCELED,
+		text: 'Đã hủy',
+		backgroundColor: '#06AED4',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_VISIT.PENDING,
+		text: 'Chờ duyệt',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_VISIT.APPROVED,
+		text: 'Đã duyệt',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_VISIT.OVERDUE,
+		text: 'Quá hạn',
+		backgroundColor: '#E03',
+		textColor: '#FFF',
 	},
 ];
 

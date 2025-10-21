@@ -1,6 +1,8 @@
 export enum QUERY_KEY {
 	table_apartment_type,
 	table_apartment,
+	table_apartment_visit,
+	table_apartment_incident,
 	table_rental_contract,
 	table_room_type,
 	table_cost_type,
@@ -13,6 +15,7 @@ export enum QUERY_KEY {
 
 	detail_info_apartment,
 	detail_apartment_type,
+	detail_request_view,
 	detail_user_contract,
 	detail_room_type,
 	detail_cost_type,
@@ -91,6 +94,13 @@ export enum STATE_APARTMENT {
 	VACANT, // trống
 	DEPOSITED, // đã đặt cọc
 	RENTED, // đang cho thuê
+}
+
+export enum STATE_APARTMENT_VISIT {
+	CANCELED, // đã hủy
+	PENDING, // chờ duyệt
+	APPROVED, // đã duyệt
+	OVERDUE, // quá hạn
 }
 
 export enum STATE_LOCK {
