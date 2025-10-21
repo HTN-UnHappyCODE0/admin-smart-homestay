@@ -182,7 +182,7 @@ function MainRequestViewApartment({}: PropsMainRequestViewApartment) {
 										},
 										{
 											title: 'Tên tài khoản',
-											render: (row, _) => <>{row?.userUu?.name}</>,
+											render: (row, _) => <>{row?.userUu?.name || '---'}</>,
 										},
 										{
 											title: 'Số điện thoại',
