@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import {Fragment, ReactElement} from 'react';
 import BaseLayout from '~/components/layouts/BaseLayout';
-import RentalContractApartment from '~/components/pages/apartment/RentalContractApartment';
+import RentalContractApartment from '~/components/pages/apartment/MainDetailApartment/components/RentalContractApartment';
 
 export default function Page() {
 	return (

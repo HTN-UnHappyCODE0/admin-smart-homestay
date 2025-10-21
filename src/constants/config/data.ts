@@ -38,8 +38,8 @@ export function tabsDetailApartments(uuid: string): {
 		},
 		{
 			title: 'Danh sách thiết bị',
-			path: `${PATH.ListDeviceApartment}?_uuid=${uuid}`,
-			pathActive: PATH.ListDeviceApartment,
+			path: `${PATH.ListMeterApartment}?_uuid=${uuid}`,
+			pathActive: PATH.ListMeterApartment,
 		},
 		{
 			title: 'Danh sách quảng cáo',

@@ -1,18 +1,18 @@
 import Head from 'next/head';
 import {Fragment, ReactElement} from 'react';
 import BaseLayout from '~/components/layouts/BaseLayout';
-import RequestRepairApartment from '~/components/pages/apartment/MainDetailApartment/components/RequestRepairApartment';
+import MainMeterType from '~/components/pages/meter-type/MainMeterType';
 
 export default function Page() {
 	return (
 		<Fragment>
 			<Head>
-				<title>Yêu cầu sửa chữa</title>
-				<meta name='description' content='Yêu cầu sửa chữa' />
+				<title>Danh sách loại thiết bị</title>
+				<meta name='description' content='Danh sách loại thiết bị' />
 				<meta name='viewport' content='width=device-width, initial-scale=1' />
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
-			<RequestRepairApartment />
+			<MainMeterType />
 		</Fragment>
 	);
 }

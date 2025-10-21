@@ -1,4 +1,17 @@
-import {Alarm, ArchiveBook, Cpu, Element3, FavoriteChart, FingerScan, Flash, House2, Lamp, Lock, NotificationFavorite} from 'iconsax-react';
+import {
+	Alarm,
+	ArchiveBook,
+	Cpu,
+	CpuSetting,
+	Element3,
+	FavoriteChart,
+	FingerScan,
+	Flash,
+	House2,
+	Lamp,
+	Lock,
+	NotificationFavorite,
+} from 'iconsax-react';
 import {TYPE_DATE} from './enum';
 
 export enum PATH {
@@ -16,7 +29,7 @@ export enum PATH {
 	RentalContractApartment = '/apartment/detail/rental-contract',
 	RequestViewApartment = '/apartment/detail/request-view',
 	RequestRepairApartment = '/apartment/detail/request-repair',
-	ListDeviceApartment = '/apartment/detail/list-device',
+	ListMeterApartment = '/apartment/detail/list-meter',
 
 	Catalog = '/catalog',
 	CatalogRoomType = '/catalog/room-type',
@@ -24,6 +37,7 @@ export enum PATH {
 
 	Locks = '/locks',
 	Meter = '/meter',
+	MeterType = '/meter-type',
 
 	UnlockHistory = '/unlock-history',
 
@@ -125,14 +139,14 @@ export const Menus: {
 			{
 				title: 'Loại thiết bị',
 				icon: Cpu,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.MeterType,
+				pathActive: PATH.MeterType,
 			},
 			{
 				title: 'Danh sách thiết bị',
-				icon: Cpu,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				icon: CpuSetting,
+				path: PATH.Meter,
+				pathActive: PATH.Meter,
 			},
 		],
 	},
