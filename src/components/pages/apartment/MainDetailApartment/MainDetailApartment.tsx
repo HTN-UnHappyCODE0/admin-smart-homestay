@@ -33,7 +33,7 @@ function MainDetailApartment({children}: PropsMainDetailApartment) {
 								<Button p_8_16 rounded_8 red bold>
 									Khóa căn hộ
 								</Button>
-								<Button p_8_16 rounded_8 bright-cyan bold>
+								<Button p_8_16 rounded_8 bright-cyan bold href={`${PATH.UpdateApartment}?_uuid=${_uuid}`}>
 									Chỉnh sửa
 								</Button>
 							</FlexLayout>
