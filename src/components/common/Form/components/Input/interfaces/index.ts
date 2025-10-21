@@ -29,6 +29,7 @@ export interface PropsInput {
 	isEmail?: boolean;
 	isMoney?: boolean;
 	isUppercase?: boolean;
+	isShowValue?: boolean;
 
 	onBlur?: () => void;
 	onChangeValue?: (val: string | number) => void;

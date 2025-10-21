@@ -1,0 +1,50 @@
+stages:
+  - prepare
+  - pull
+  - build
+  - run
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+
+variables:
+  APP_NAME: admin-smart-homestay # Name of the application and Docker image
+  REPOSITORY: https://git21.mobiplus.vn/smart-homestay/admin-smart-homestay.git # Replace with your repository URL
+  DEPLOY_DIR: /tmp/admin-smart-homestay # Temporary directory for deployment
+  APP_SETTINGS: /home/minhkakart/projects/admin-smart-homestay/.env # Replace with actual path
+  VOLUME_PATH: /home/minhkakart/projects/admin-smart-homestay/data # Path for persistent data
+
+prepare:
+  stage: prepare
+  script:
+    - echo "Starting CI/CD"
+    - rm -rf "$DEPLOY_DIR" # Clean up previous deployment directory
+
+pull:
+  stage: pull
+  tags:
+    - minhkakart-runner
+  script:
+    - git clone $REPOSITORY "$DEPLOY_DIR" # Clone the repository
+    - cd "$DEPLOY_DIR" # Navigate to the deployment directory
+    - git checkout dev # Checkout the desired branch
+    - cp -f $APP_SETTINGS . # Copy the appsettings.json file
+
+build:
+  stage: build
+  tags:
+    - minhkakart-runner
+  script:
+    - cd "$DEPLOY_DIR" # Navigate to the deployment directory
+    - docker build -t $APP_NAME . # Build the Docker image
+
+run:
+  stage: run
+  tags:
+    - minhkakart-runner
+  script:
+    - docker container rm $APP_NAME -f || echo "No existing container to remove" # Remove existing container if it exists
+    - docker run -dp 4510:4510 --network bridge --name $APP_NAME $APP_NAME
+    - docker ps | grep $APP_NAME || echo "Container may not be running" # Verify the container is running
