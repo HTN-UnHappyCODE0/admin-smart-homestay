@@ -37,7 +37,7 @@ function MainInfoApartment({}: PropsMainInfoApartment) {
 	const {data: apartmentInfo} = useQuery<IDetailInfoApartment>([QUERY_KEY.detail_info_apartment, _uuid], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getApartmentDetailForUpdate({uuid: _uuid as string}),
+				http: apartmentServices.apartmentDetailForUpdate({uuid: _uuid as string}),
 			}),
 
 		select(data) {
