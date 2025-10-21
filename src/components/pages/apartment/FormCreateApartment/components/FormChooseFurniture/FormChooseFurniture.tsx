@@ -76,6 +76,7 @@ function FormChooseFurniture({furnitures, setFurnitures, loading, onClose}: Prop
 									value={furniture?.name}
 									readOnly={true}
 									showError={false}
+									isShowValue={true}
 								/>
 								<div>
 									<Input
@@ -85,6 +86,7 @@ function FormChooseFurniture({furnitures, setFurnitures, loading, onClose}: Prop
 										value={furniture?.count}
 										isBlur={false}
 										showError={false}
+										isShowValue={true}
 										onChangeValue={(val) => handleChangeCount(furniture?.assetUuid, val)}
 									/>
 								</div>

@@ -76,6 +76,7 @@ function FormChooseRoom({rooms, setRooms, loading, onClose}: PropsFormChooseRoom
 									value={room?.name}
 									readOnly={true}
 									showError={false}
+									isShowValue={true}
 								/>
 								<div>
 									<Input
@@ -85,6 +86,7 @@ function FormChooseRoom({rooms, setRooms, loading, onClose}: PropsFormChooseRoom
 										value={room?.count}
 										isBlur={false}
 										showError={false}
+										isShowValue={true}
 										onChangeValue={(val) => handleChangeCount(room?.assetUuid, val)}
 									/>
 								</div>

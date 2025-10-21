@@ -1,7 +1,7 @@
 import axiosClient from '.';
 
-const meterServices = {
-	listmeter: (
+const meterTypeServices = {
+	listMeterType: (
 		data: {
 			keyword: string;
 			isPaging: number;
@@ -9,17 +9,13 @@ const meterServices = {
 			page: number;
 			typeFinding: number | null;
 			status: number | null;
-			installDateFrom: string | null;
-			installDateTo: string | null;
-			isUsed: number | null;
-			meterTypeUuid: string;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/Meter/list-meters`, data, {
+		return axiosClient.post(`/MeterType/list-meter-types`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
 };
 
-export default meterServices;
+export default meterTypeServices;

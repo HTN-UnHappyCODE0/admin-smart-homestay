@@ -34,6 +34,7 @@ function Input({
 	isPhone,
 	isEmail,
 	isMoney,
+	isShowValue = false,
 	onBlur,
 	onChangeValue,
 }: PropsInput) {
@@ -104,7 +105,7 @@ function Input({
 				const numeric = Number(price(value));
 				setForm((prev: any) => ({
 					...prev,
-					[name]: numeric ? convertCoin(numeric) : 0,
+					[name]: numeric ? convertCoin(numeric) : '0',
 				}));
 				return;
 			}
@@ -237,7 +238,8 @@ function Input({
 					id={`input_${name}`}
 					className={styles.input}
 					name={name}
-					value={value != undefined || value !== null ? value : `${form[name]}`}
+					// value={value != undefined || value !== null ? value : `${form[name]}`}
+					value={isShowValue ? value : `${form[name]}`}
 					type={showPass ? 'text' : type}
 					placeholder={placeholder}
 					autoComplete='off'

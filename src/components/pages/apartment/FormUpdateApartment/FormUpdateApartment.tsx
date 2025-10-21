@@ -1,6 +1,6 @@
 import {Fragment, useState} from 'react';
-import styles from './FormCreateApartment.module.scss';
-import {PropsFormCreateApartment} from './interfaces';
+import styles from './FormUpdateApartment.module.scss';
+import {IDetailApartmentForUpdate, PropsFormUpdateApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Breadcrumb from '~/components/common/Breadcrumb';
@@ -20,18 +20,18 @@ import userServices from '~/services/userServices';
 import lockServices from '~/services/lockServices';
 import provinceServiecs from '~/services/provinceServices';
 import PositionContainer from '~/components/common/PositionContainer';
-import FormChooseRoom from './components/FormChooseRoom';
 import roomServices from '~/services/roomServices';
-import {price} from '~/common/funcs/convertCoin';
+import {convertCoin, price} from '~/common/funcs/convertCoin';
 import furnitureServices from '~/services/furnitureServices';
-import FormChooseFurniture from './components/FormChooseFurniture';
 import apartmentServices from '~/services/apartmentServices';
 import Loading from '~/components/common/Loading';
 import {toastWarn} from '~/common/funcs/toast';
 import fileServices from '~/services/fileServices';
+import FormChooseRoom from '../FormCreateApartment/components/FormChooseRoom';
+import FormChooseFurniture from '../FormCreateApartment/components/FormChooseFurniture';
 import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
+import FormChooseMeter from '../FormCreateApartment/components/FormChooseMeter';
 import meterTypeServices from '~/services/meterTypeServices';
-import FormChooseMeter from './components/FormChooseMeter';
 
 export interface IRoom {
 	assetUuid: string;
@@ -56,7 +56,7 @@ export interface IMeter {
 	meterCode: string;
 }
 
-export interface IFormCreateApartment {
+export interface IFormUpdateApartment {
 	name: string;
 	apartmentTypeUuid: string;
 	ownerUuid: string;
@@ -72,7 +72,7 @@ export interface IFormCreateApartment {
 	description: string;
 }
 
-const initForm: IFormCreateApartment = {
+const initForm: IFormUpdateApartment = {
 	name: '',
 	apartmentTypeUuid: '',
 	ownerUuid: '',
@@ -88,16 +88,72 @@ const initForm: IFormCreateApartment = {
 	description: '',
 };
 
-function FormCreateApartment({}: PropsFormCreateApartment) {
+function FormUpdateApartment({}: PropsFormUpdateApartment) {
 	const router = useRouter();
 
+	const {_uuid} = router.query;
+
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
-	const [form, setForm] = useState<IFormCreateApartment>(initForm);
+	const [form, setForm] = useState<IFormUpdateApartment>(initForm);
 
 	const [openChooseRoom, setOpenChooseRoom] = useState<boolean>(false);
 	const [openChooseFurnitures, setOpenChooseFurnitures] = useState<boolean>(false);
 
 	const [loading, setLoading] = useState<boolean>(false);
+
+	const {data: apartment} = useQuery<IDetailApartmentForUpdate>([QUERY_KEY.detail_apartment_for_update, _uuid], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.apartmentDetailForUpdate({
+					uuid: _uuid as string,
+				}),
+			}),
+		onSuccess(data) {
+			setForm({
+				name: data?.name,
+				apartmentTypeUuid: data?.apartmentTypeUu?.uuid,
+				ownerUuid: data?.ownerUu?.uuid,
+				managerUuid: data?.managerUu?.uuid,
+				lockUuid: data?.lock?.uuid,
+				apartmentSize: convertCoin(data?.apartmentSize),
+				provinceId: data?.province?.code,
+				wardId: data?.ward?.code,
+				address: data?.address || '',
+				rooms: data?.apartmentRooms?.map((v) => ({
+					assetUuid: v?.item?.uuid,
+					name: v?.item?.name,
+					count: convertCoin(v?.count),
+					description: v?.description || '',
+				})),
+				furnitures: data?.apartmentFurnitures?.map((v) => ({
+					assetUuid: v?.item?.uuid,
+					name: v?.item?.name,
+					count: convertCoin(v?.count),
+					description: v?.description || '',
+				})),
+				meters: data?.meters?.map((meter) => ({
+					meterTypeName: meter?.meterTypeUu?.name,
+					meterTypeUuid: meter?.meterTypeUu?.uuid,
+					meterUuid: meter?.meterUu?.uuid,
+					meterCode: meter?.meterUu?.code,
+					meterName: meter?.meterUu?.name,
+					meterSerialNumber: meter?.meterUu?.serialNumber,
+				})),
+				description: data?.description || '',
+			});
+			setImages(
+				data?.attachments?.map((v) => ({
+					file: null,
+					url: '',
+					path: v,
+				}))
+			);
+		},
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuid,
+	});
 
 	const {data: apartmentTypes = []} = useQuery<
 		{
@@ -229,19 +285,30 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 				}),
 			}),
 		onSuccess(data) {
-			setForm((prev) => ({
-				...prev,
-				furnitures: data?.map((v) => ({
-					assetUuid: v?.uuid,
-					name: v?.name,
-					description: '',
-					count: '0',
-				})),
-			}));
+			const updatedFurnitures = data?.map((furniture) => {
+				const existed = apartment?.apartmentFurnitures?.find(
+					(apartmentFurniture) => apartmentFurniture.item?.uuid === furniture.uuid
+				);
+
+				return {
+					assetUuid: furniture.uuid,
+					name: furniture.name,
+					description: existed?.description || '',
+					count: existed ? convertCoin(existed.count) : '0',
+				};
+			});
+
+			setForm((prev) => {
+				return {
+					...prev,
+					furnitures: updatedFurnitures,
+				};
+			});
 		},
 		select(data) {
 			return data;
 		},
+		enabled: !!apartment,
 	});
 
 	const {isLoading: loadingRooms} = useQuery<
@@ -263,19 +330,28 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 				}),
 			}),
 		onSuccess(data) {
-			setForm((prev) => ({
-				...prev,
-				rooms: data?.map((v) => ({
-					assetUuid: v?.uuid,
-					name: v?.name,
-					description: '',
-					count: '0',
-				})),
-			}));
+			const updatedRooms = data?.map((room) => {
+				const existed = apartment?.apartmentRooms?.find((apartmentRoom) => apartmentRoom.item?.uuid === room.uuid);
+
+				return {
+					assetUuid: room.uuid,
+					name: room.name,
+					description: existed?.description || '',
+					count: existed ? convertCoin(existed.count) : '0',
+				};
+			});
+
+			setForm((prev) => {
+				return {
+					...prev,
+					rooms: updatedRooms,
+				};
+			});
 		},
 		select(data) {
 			return data;
 		},
+		enabled: !!apartment,
 	});
 
 	const {isLoading: loadingMeterType} = useQuery<
@@ -297,30 +373,40 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 				}),
 			}),
 		onSuccess(data) {
-			setForm((prev) => ({
-				...prev,
-				meters: data?.map((v) => ({
-					meterTypeUuid: v?.uuid,
-					meterTypeName: v?.name,
-					meterUuid: '',
-					meterSerialNumber: '',
-					meterName: '',
-					meterCode: '',
-				})),
-			}));
+			const updatedMeterTypes = data?.map((meterType) => {
+				const existed = apartment?.meters?.find((meter) => meter?.meterTypeUu?.uuid === meterType.uuid);
+
+				return {
+					meterTypeName: meterType?.name,
+					meterTypeUuid: meterType?.uuid,
+					meterUuid: existed ? existed?.meterUu?.uuid : '',
+					meterName: existed ? existed?.meterUu?.name : '',
+					meterCode: existed ? existed?.meterUu?.code : '',
+					meterSerialNumber: existed ? existed?.meterUu?.serialNumber : '',
+				};
+			});
+
+			setForm((prev) => {
+				return {
+					...prev,
+					meters: updatedMeterTypes,
+				};
+			});
 		},
 		select(data) {
 			return data;
 		},
+		enabled: !!apartment,
 	});
 
-	const funcCreateApartment = useMutation({
+	const funcUpdateApartment = useMutation({
 		mutationFn: (body: {paths: string[]}) =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Thêm căn hộ thành công!',
-				http: apartmentServices.createApartment({
+				msgSuccess: 'Chỉnh sửa hộ thành công!',
+				http: apartmentServices.updateApartment({
+					uuid: _uuid as string,
 					name: form?.name,
 					apartmentTypeUuid: form?.apartmentTypeUuid,
 					apartmentSize: price(form?.apartmentSize),
@@ -357,7 +443,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 		},
 	});
 
-	const handleCreateApartment = async () => {
+	const handleUpdateApartment = async () => {
 		if (!form.apartmentTypeUuid) {
 			return toastWarn({msg: 'Chọn loại hình căn hộ!'});
 		}
@@ -384,18 +470,25 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 		}
 
 		if (images.length > 0) {
-			const files = images?.map((v) => v?.file);
+			const files = images?.filter((v) => !!v.file)?.map((v) => v?.file);
+			const paths = images?.filter((v) => !v?.file && !!v.path)?.map((v) => v?.path);
+
+			if (files.length == 0) {
+				return funcUpdateApartment.mutate({
+					paths: paths,
+				});
+			}
 
 			const dataImage = await httpRequest({
 				setLoading,
 				http: fileServices.uploadMutilFile(files, 'false'),
 			});
 
-			return funcCreateApartment.mutate({
-				paths: dataImage,
+			return funcUpdateApartment.mutate({
+				paths: [...paths, ...dataImage],
 			});
 		} else {
-			return funcCreateApartment.mutate({
+			return funcUpdateApartment.mutate({
 				paths: [],
 			});
 		}
@@ -403,10 +496,10 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 
 	return (
 		<Fragment>
-			<Loading loading={loading || funcCreateApartment.isLoading} />
-			<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleCreateApartment}>
+			<Loading loading={loading || funcUpdateApartment.isLoading} />
+			<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleUpdateApartment}>
 				<FlexLayout column gap-12>
-					<Header title='Thêm mới căn hộ' />
+					<Header title='Chỉnh sửa căn hộ' />
 					<Breadcrumb
 						listUrls={[
 							{
@@ -426,14 +519,13 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 								<ContextForm.Consumer>
 									{({isDone}) => (
 										<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
-											Lưu lại
+											Cập nhật
 										</Button>
 									)}
 								</ContextForm.Consumer>
 							</FlexLayout>
 						}
 					/>
-
 					<FlexItem flex-1 overflow-x>
 						<FlexLayout column gap-12>
 							<WrapperForm title='Thông tin căn hộ'>
@@ -468,7 +560,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-
 										<div>
 											<Select
 												placeholder='Lựa chọn'
@@ -489,7 +580,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 												getOptionValue={(opt) => opt.uuid}
 											/>
 										</div>
-
 										<Select
 											placeholder='Lựa chọn'
 											label={
@@ -508,7 +598,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt.uuid}
 										/>
-
 										<div>
 											<Select
 												placeholder='Lựa chọn'
@@ -518,7 +607,14 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 													</span>
 												}
 												value={form.lockUuid}
-												options={locks}
+												options={[
+													{
+														uuid: apartment?.lock?.uuid!,
+														code: apartment?.lock?.code!,
+														name: apartment?.lock?.name!,
+													},
+													...locks,
+												]}
 												onSelect={(data) =>
 													setForm((prev) => ({
 														...prev,
@@ -529,7 +625,6 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 												getOptionValue={(opt) => opt.uuid}
 											/>
 										</div>
-
 										<Input
 											label={
 												<span>
@@ -665,14 +760,15 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 							{/* Danh sách thiết bị */}
 							<WrapperForm title='Danh sách thiết bị'>
 								<FormChooseMeter
+									loading={loadingMeterType}
 									meters={form?.meters}
+									meterApartment={apartment?.meters || []}
 									setMeters={(meters) =>
 										setForm((prev) => ({
 											...prev,
 											meters: meters,
 										}))
 									}
-									loading={loadingMeterType}
 								/>
 							</WrapperForm>
 						</FlexLayout>
@@ -711,4 +807,4 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 	);
 }
 
-export default FormCreateApartment;
+export default FormUpdateApartment;

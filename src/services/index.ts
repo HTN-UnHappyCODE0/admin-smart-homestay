@@ -54,6 +54,15 @@ axiosClient.interceptors.response.use(
 				// Gọi api refresh token
 				const res = await authServices.refreshToken({});
 
+				if (res.status == 401) {
+					deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
+					deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
+
+					store.dispatch(logout());
+					store.dispatch(setInfoUser(null));
+					return;
+				}
+
 				const newAccessToken = res?.data?.data?.accessToken;
 				const newRefreshToken = res?.data?.data?.refreshToken;
 
