@@ -70,7 +70,7 @@ function FormUpdateCostType({onClose}: PropsFormUpdateCostType) {
 		<Form form={form} setForm={setForm} onSubmit={funcUpdateCost.mutate}>
 			<Loading loading={funcUpdateCost.isLoading} />
 			<WrapperFormPostion
-				width={540}
+				width={600}
 				title='Chỉnh sửa loại chi phí'
 				actions={
 					<FlexLayout row gap-8>

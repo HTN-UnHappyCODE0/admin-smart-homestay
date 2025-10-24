@@ -48,9 +48,20 @@ const meterServices = {
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/Meter/update-meters-in-apartment`, data, {
+	createMeter: (
+		data: {
+			meterType: string;
+			serialNumber: string;
+			apartmentUuid: string;
+			userInstallUuid: string;
+			installedDate: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Meter/create-meter`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
-};
+});
 
 export default meterServices;

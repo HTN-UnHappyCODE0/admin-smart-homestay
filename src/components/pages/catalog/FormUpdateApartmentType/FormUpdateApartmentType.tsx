@@ -72,7 +72,7 @@ function FormUpdateApartmentType({onClose}: PropsFormUpdateApartmentType) {
 		<Form form={form} setForm={setForm} onSubmit={funcUpdateApartmentType.mutate}>
 			<Loading loading={funcUpdateApartmentType.isLoading} />
 			<WrapperFormPostion
-				width={540}
+				width={600}
 				title='Chỉnh sửa loại hình căn hộ'
 				actions={
 					<FlexLayout row gap-8>
