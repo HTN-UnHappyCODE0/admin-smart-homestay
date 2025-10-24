@@ -15,7 +15,7 @@ const fileServices = {
 			},
 		});
 	},
-	uploadMutilFile: (files: any[], encrypt: 'true' | 'false') => {
+	uploadMultilFile: (files: any[], encrypt: 'true' | 'false') => {
 		const dataFile = new FormData();
 
 		files.forEach((file) => {

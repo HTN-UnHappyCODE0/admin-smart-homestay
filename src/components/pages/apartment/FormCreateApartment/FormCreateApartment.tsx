@@ -388,7 +388,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 
 			const dataImage = await httpRequest({
 				setLoading,
-				http: fileServices.uploadMutilFile(files, 'false'),
+				http: fileServices.uploadMultilFile(files, 'false'),
 			});
 
 			return funcCreateApartment.mutate({

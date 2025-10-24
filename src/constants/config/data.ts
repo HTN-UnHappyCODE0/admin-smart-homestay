@@ -8,6 +8,9 @@ import {
 	STATUS_TEMPORARILY_ABSENT,
 	STATUS_CONTRACT,
 	STATE_APARTMENT_VISIT,
+	STATE_APARTMENT_INCIDENT_REPORTS,
+	STATE_APARTMENT_ADVERTISEMENT,
+	STATE_APARTMENT_PAYMENT_TYPE,
 } from './enum';
 
 export function tabsDetailApartments(uuid: string): {
@@ -43,8 +46,8 @@ export function tabsDetailApartments(uuid: string): {
 		},
 		{
 			title: 'Danh sách quảng cáo',
-			path: PATH.Any,
-			pathActive: PATH.Any,
+			path: PATH.ListAdvertisementApartment,
+			pathActive: PATH.ListAdvertisementApartment,
 		},
 		{
 			title: 'Danh sách nội thất',
@@ -194,6 +197,7 @@ export const statusContract: {
 	},
 ];
 
+// Yêu cầu xem căn hộ
 export const statusApartmentVisit: {
 	state: number;
 	text: string;
@@ -223,6 +227,103 @@ export const statusApartmentVisit: {
 		text: 'Quá hạn',
 		backgroundColor: '#E03',
 		textColor: '#FFF',
+	},
+];
+
+// Yêu cầu sửa chữa căn hộ
+export const statusApartmentIncidentReport: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATE_APARTMENT_INCIDENT_REPORTS.CANCELED,
+		text: 'Đã hủy',
+		backgroundColor: '#E03',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_INCIDENT_REPORTS.PENDING,
+		text: 'Chờ xử lý',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_INCIDENT_REPORTS.IN_PROGRESS,
+		text: 'Đã tiếp nhận/Đang xử lý',
+		backgroundColor: '#06AED4',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_INCIDENT_REPORTS.RESOLVED,
+		text: 'Đã xử lý',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+];
+
+// Quảng cáo căn hộ
+export const statusApartmentAdvertisement: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATE_APARTMENT_ADVERTISEMENT.DELETED,
+		text: 'Đã xóa',
+		backgroundColor: '#E03',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_ADVERTISEMENT.PENDING,
+		text: 'Chờ duyệt',
+		backgroundColor: '#17B26A',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_ADVERTISEMENT.POSTED,
+		text: 'Đã đăng',
+		backgroundColor: '#06AED4',
+		textColor: '#FFF',
+	},
+	{
+		state: STATE_APARTMENT_ADVERTISEMENT.EXPIRED,
+		text: 'Hết hạn',
+		backgroundColor: '#F79009',
+		textColor: '#FFF',
+	},
+];
+
+// Chu kì thanh toán
+export const paymentTypeApartmentAdvertisement: {
+	state: number;
+	text: string;
+}[] = [
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.SELF,
+		text: 'Tự thanh toán',
+	},
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.DEPOSIT,
+		text: 'Cọc',
+	},
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+		text: 'Phát sinh theo tháng',
+	},
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.APARTMENT,
+		text: 'Phát sinh theo căn hộ',
+	},
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.USAGE_BASED,
+		text: 'Phát sinh theo lượng sử dụng',
+	},
+	{
+		state: STATE_APARTMENT_PAYMENT_TYPE.PERSON,
+		text: 'Phát sinh theo người',
 	},
 ];
 

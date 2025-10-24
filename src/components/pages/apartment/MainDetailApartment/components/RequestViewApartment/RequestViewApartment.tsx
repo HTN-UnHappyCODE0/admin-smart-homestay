@@ -31,7 +31,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidDetail} = router.query;
+	const {_uuid, _uuidRequestView} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -183,7 +183,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 															pathname: router.pathname,
 															query: {
 																...router.query,
-																_uuidDetail: row?.uuid,
+																_uuidRequestView: row?.uuid,
 															},
 														})
 													}
@@ -226,9 +226,9 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 			/>
 
 			<PositionContainer
-				open={!!_uuidDetail}
+				open={!!_uuidRequestView}
 				onClose={() => {
-					const {_uuidDetail, ...rest} = router.query;
+					const {_uuidRequestView, ...rest} = router.query;
 
 					router.replace({
 						pathname: router.pathname,
@@ -240,7 +240,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 			>
 				<DetailRequestViewApartment
 					onClose={() => {
-						const {_uuidDetail, ...rest} = router.query;
+						const {_uuidRequestView, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,
