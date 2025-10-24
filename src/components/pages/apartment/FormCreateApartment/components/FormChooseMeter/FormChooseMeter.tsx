@@ -12,8 +12,6 @@ import {IMeterApartment} from '../../../FormUpdateApartment/interfaces';
 import {useMemo} from 'react';
 
 function FormChooseMeter({meterApartment = [], meters, setMeters, loading}: PropsFormChooseMeter) {
-	console.log('Meters render:', meters);
-
 	return (
 		<DataWrapper data={meters} loading={loading} title='Thiết bị trống!' note='Danh sách thiết bị hiện đang trống!'>
 			<FlexLayout column gap-8>

@@ -5,16 +5,14 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import WrapperForm from '~/components/utils/WrapperForm';
 import FormChooseMeter from '~/components/pages/apartment/FormCreateApartment/components/FormChooseMeter';
 import FlexLayout from '~/components/layouts/FlexLayout';
-import {useEffect, useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, IS_USED, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {useState} from 'react';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import meterTypeServices from '~/services/meterTypeServices';
 import Button from '~/components/common/Button';
 import Form, {ContextForm} from '~/components/common/Form';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import apartmentServices from '~/services/apartmentServices';
-import {convertCoin, price} from '~/common/funcs/convertCoin';
-import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
 import {IDetailApartmentForUpdate} from '~/components/pages/apartment/FormUpdateApartment/interfaces';
 import Loading from '~/components/common/Loading';
 import meterServices from '~/services/meterServices';
@@ -54,7 +52,7 @@ function FormUpdateListMeter({onClose}: PropsFormUpdateListMeter) {
 		enabled: !!_uuid,
 	});
 
-	const {data: listMeterType = [], isLoading: loadingMeterType} = useQuery<
+	const {isLoading: loadingMeterType} = useQuery<
 		{
 			uuid: string;
 			code: string;
@@ -135,7 +133,7 @@ function FormUpdateListMeter({onClose}: PropsFormUpdateListMeter) {
 				}),
 		};
 
-		funcUpdateMeterApartment.mutate(payload);
+		return funcUpdateMeterApartment.mutate(payload);
 	};
 
 	return (

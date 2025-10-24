@@ -43,7 +43,6 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 	const queryClient = useQueryClient();
 
 	const [form, setForm] = useState<IFormCreateMeter>(initForm);
-	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const {data: apartments = []} = useQuery<
 		{
@@ -145,7 +144,7 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 					serialNumber: form?.serialNumber,
 					apartmentUuid: form?.apartmentUuid,
 					userInstallUuid: form?.userInstallUuid,
-					installedDate: form?.installedDate,
+					installedDate: moment(form?.installedDate).format('YYYY-MM-DD'),
 				}),
 			}),
 		onSuccess(data) {
@@ -162,7 +161,8 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 	const handleCreateMeter = () => {
 		if (!!form?.apartmentUuid && !form?.installedDate) {
 			return toastWarn({msg: 'Vui lòng nhập ngày lắp đặt!'});
-		} else if (!!form?.apartmentUuid && !!form?.installedDate && !form?.userInstallUuid) {
+		}
+		if (!!form?.apartmentUuid && !!form?.installedDate && !form?.userInstallUuid) {
 			return toastWarn({msg: 'Vui lòng nhập người lắp đặt / người thanh toán!'});
 		}
 

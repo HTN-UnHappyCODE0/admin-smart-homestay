@@ -5,7 +5,7 @@ import Loading from '~/components/common/Loading';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
-import {AddCircle, DocumentText, Edit, Key, Lock, Unlock, Warning2} from 'iconsax-react';
+import {AddCircle, Edit, Lock, Unlock, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -41,6 +41,7 @@ function MainMeterType({}: PropsMainMeterType) {
 
 	const resetFilter = () => {
 		setKeyword('');
+		setPageSize(20);
 		setStatus(null);
 	};
 
@@ -130,7 +131,6 @@ function MainMeterType({}: PropsMainMeterType) {
 						</FlexLayout>
 					}
 				/>
-
 				<SearchBlock
 					keyword={keyword}
 					setKeyword={setKeyword}
@@ -158,7 +158,6 @@ function MainMeterType({}: PropsMainMeterType) {
 						</FlexLayout>
 					}
 				/>
-
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
 						<DataWrapper
@@ -189,7 +188,6 @@ function MainMeterType({}: PropsMainMeterType) {
 										title: 'Trạng thái',
 										render: (row, _) => <StateActive stateActive={row?.status} listState={statusConfigs} />,
 									},
-
 									{
 										title: 'Hành động',
 										fixedRight: true,

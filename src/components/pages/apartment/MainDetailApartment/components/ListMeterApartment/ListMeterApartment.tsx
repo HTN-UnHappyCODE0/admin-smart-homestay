@@ -7,7 +7,7 @@ import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Search from '~/components/common/Search';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
-import {Edit, Eye, Warning2} from 'iconsax-react';
+import {Edit, Warning2} from 'iconsax-react';
 import {useState} from 'react';
 import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_SWITCH} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -34,21 +34,14 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
-	const [type, setType] = useState<number | null>(null);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
-	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{
 		apartmentMeterUuid: string;
 		state: number;
 		name: string;
 	} | null>(null);
-
-	const resetFilter = () => {
-		setKeyword('');
-		setDate(null);
-	};
 
 	const {
 		data = {
@@ -214,8 +207,8 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 							onSetPage={setPage}
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
-							total={1}
-							dependencies={[pageSize, date?.from, date?.to, type]}
+							total={data?.pagination?.totalCount || 0}
+							dependencies={[pageSize, status]}
 						/>
 					</FlexItem>
 				</div>

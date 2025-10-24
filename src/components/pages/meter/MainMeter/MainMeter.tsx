@@ -1,22 +1,18 @@
 import {Fragment, useState} from 'react';
 import styles from './MainMeter.module.scss';
 import {IMeter, PropsMainMeter} from './interfaces';
-import Loading from '~/components/common/Loading';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
 import {AddCircle, Edit} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
-import FilterCustom from '~/components/common/FilterCustom';
-import {statusConfigs} from '~/constants/config/data';
 import {useRouter} from 'next/router';
 import FilterDateRange from '~/components/common/FilterDateRange';
 import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
-import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
 import {useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
@@ -25,21 +21,23 @@ import moment from 'moment';
 import Moment from 'react-moment';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateMeter from '../FormCreateMeter';
+import {getDetailAddress} from '~/common/funcs/optionConvert';
 
 function MainMeter({}: PropsMainMeter) {
 	const router = useRouter();
 
-	const {_open, _uuidUpdate} = router.query;
+	const {_open} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [status, setStatus] = useState<number | null>(null);
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 
 	const resetFilter = () => {
 		setKeyword('');
+		setPageSize(20);
+		setTypeDate(TYPE_DATE.ALL);
 	};
 
 	const {
@@ -57,7 +55,7 @@ function MainMeter({}: PropsMainMeter) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_meter, page, pageSize, keyword, status, date?.from, date?.to], {
+	}>([QUERY_KEY.table_meter, page, pageSize, keyword, date?.from, date?.to], {
 		queryFn: () =>
 			httpRequest({
 				http: meterServices.listmeter({
@@ -66,7 +64,7 @@ function MainMeter({}: PropsMainMeter) {
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					status: status,
+					status: null,
 					installDateFrom: date?.from ? moment(date.from).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
 					installDateTo: date?.to ? moment(date.to).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
 					isUsed: null,
@@ -154,7 +152,7 @@ function MainMeter({}: PropsMainMeter) {
 									},
 									{
 										title: 'Loại thiết bị',
-										render: (row, _) => <>{row?.meterTypeUu?.name}</>,
+										render: (row, _) => <>{row?.meterTypeUu?.name || '---'}</>,
 									},
 									{
 										title: 'Mã kết nối',
@@ -168,36 +166,26 @@ function MainMeter({}: PropsMainMeter) {
 										title: 'Địa chỉ',
 										render: (row, _) => (
 											<>
-												{row?.apartment?.address} - {row?.apartment?.ward?.fullName} -{' '}
-												{row?.apartment?.province?.fullName}
+												{getDetailAddress({
+													provinceName: row?.apartment?.province?.fullName!,
+													districtName: '',
+													wardName: row?.apartment?.ward?.fullName!,
+													address: row?.apartment?.address!,
+												})}
 											</>
 										),
 									},
 									{
 										title: 'Thời gian lắp đặt',
-										render: (row, _) => <Moment date={row?.installedDate} format=' DD/MM/YYYY' />,
+										render: (row, _) => (
+											<>{row?.installedDate ? <Moment date={row?.installedDate} format=' DD/MM/YYYY' /> : '---'}</>
+										),
 									},
 
 									{
 										title: 'Hành động',
 										fixedRight: true,
-										render: (row, _) => (
-											<FlexLayout row>
-												<IconActionTable
-													icon={<Edit color='#292D32' size={24} />}
-													tooltip='Chỉnh sửa thiết bị'
-													onClick={() =>
-														router.replace({
-															pathname: router.pathname,
-															query: {
-																...router.query,
-																_uuidUpdate: row?.uuid,
-															},
-														})
-													}
-												/>
-											</FlexLayout>
-										),
+										render: (row, _) => <FlexLayout row>---</FlexLayout>,
 									},
 								]}
 							/>
@@ -209,11 +197,12 @@ function MainMeter({}: PropsMainMeter) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination.totalCount || 0}
-							dependencies={[pageSize, keyword, status, date?.from, date?.to]}
+							dependencies={[pageSize, keyword, date?.from, date?.to]}
 						/>
 					</MainTable>
 				</FlexItem>
 			</FlexLayout>
+
 			<PositionContainer
 				open={_open == 'create'}
 				onClose={() => {

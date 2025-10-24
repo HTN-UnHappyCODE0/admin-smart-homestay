@@ -17,7 +17,7 @@ function FormCreateMeterType({onClose}: PropsFormCreateMeterType) {
 
 	const [form, setForm] = useState<{name: string; description: string}>({name: '', description: ''});
 
-	const funcCreateRoom = useMutation({
+	const funcCreateMeterType = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
@@ -40,8 +40,8 @@ function FormCreateMeterType({onClose}: PropsFormCreateMeterType) {
 	});
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={funcCreateRoom.mutate}>
-			<Loading loading={funcCreateRoom.isLoading} />
+		<Form form={form} setForm={setForm} onSubmit={funcCreateMeterType.mutate}>
+			<Loading loading={funcCreateMeterType.isLoading} />
 			<WrapperFormPostion
 				width={540}
 				title='Thêm loại thiết bị'
@@ -70,7 +70,6 @@ function FormCreateMeterType({onClose}: PropsFormCreateMeterType) {
 						placeholder='Nhập tên loại thiết bị'
 						type='text'
 						name='name'
-						onClean
 						isRequired
 						isBlur
 					/>

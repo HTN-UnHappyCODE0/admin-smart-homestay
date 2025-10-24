@@ -23,6 +23,7 @@ export enum QUERY_KEY {
 	detail_request_repair,
 	detail_user_contract,
 	detail_room_type,
+	detail_meter_type,
 	detail_cost_type,
 	detail_lock,
 	detail_furniture,
