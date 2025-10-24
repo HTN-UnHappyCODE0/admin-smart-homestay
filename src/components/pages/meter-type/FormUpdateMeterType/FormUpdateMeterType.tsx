@@ -21,7 +21,7 @@ function FormUpdateMeterType({onClose}: PropsFormUpdateMeterType) {
 
 	const [form, setForm] = useState<{name: string; description: string}>({name: '', description: ''});
 
-	useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_room_type, _uuidUpdate], {
+	useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_meter_type, _uuidUpdate], {
 		queryFn: () =>
 			httpRequest({
 				http: meterTypeServices.detailMeterType({
@@ -42,7 +42,7 @@ function FormUpdateMeterType({onClose}: PropsFormUpdateMeterType) {
 		enabled: !!_uuidUpdate,
 	});
 
-	const funcUpdateRoom = useMutation({
+	const funcUpdateMeterType = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
@@ -66,8 +66,8 @@ function FormUpdateMeterType({onClose}: PropsFormUpdateMeterType) {
 	});
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={funcUpdateRoom.mutate}>
-			<Loading loading={funcUpdateRoom.isLoading} />
+		<Form form={form} setForm={setForm} onSubmit={funcUpdateMeterType.mutate}>
+			<Loading loading={funcUpdateMeterType.isLoading} />
 			<WrapperFormPostion
 				width={540}
 				title='Chỉnh sửa loại thiết bị'
@@ -96,7 +96,6 @@ function FormUpdateMeterType({onClose}: PropsFormUpdateMeterType) {
 						placeholder='Nhập tên loại thiết bị'
 						type='text'
 						name='name'
-						onClean
 						isRequired
 						isBlur
 					/>
