@@ -53,7 +53,7 @@ function InfoApartment({}: PropsInfoApartment) {
 					dataChangeStateSwitch?.state == STATE_SWITCH.ON
 						? `Tắt ${dataChangeStateSwitch?.name} thành công!`
 						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
-				http: apartmentServices.changeStatusMeter({
+				http: apartmentServices.changeStateMeter({
 					apartmentMeterUuid: dataChangeStateSwitch?.apartmentMeterUuid!,
 					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
 				}),

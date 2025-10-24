@@ -481,7 +481,7 @@ function FormUpdateApartment({}: PropsFormUpdateApartment) {
 
 			const dataImage = await httpRequest({
 				setLoading,
-				http: fileServices.uploadMutilFile(files, 'false'),
+				http: fileServices.uploadMultilFile(files, 'false'),
 			});
 
 			return funcUpdateApartment.mutate({

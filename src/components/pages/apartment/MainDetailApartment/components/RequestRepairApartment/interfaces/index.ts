@@ -1,6 +1,7 @@
 export interface PropsRequestRepairApartment {}
 
 export interface IIncidentApartment {
+	code: string;
 	userReportUu: {
 		uuid: string;
 		code: number;

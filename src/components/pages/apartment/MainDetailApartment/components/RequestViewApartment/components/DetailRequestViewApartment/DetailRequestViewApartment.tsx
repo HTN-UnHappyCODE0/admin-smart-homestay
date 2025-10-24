@@ -21,20 +21,22 @@ import {Warning2} from 'iconsax-react';
 
 function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) {
 	const router = useRouter();
-	const {_uuidDetail} = router.query;
 	const queryClient = useQueryClient();
+
+	const {_uuidRequestView} = router.query;
+
 	const [rejectApartment, setRejectApartment] = useState<string>('');
 
-	const {data: detailRequestView} = useQuery<IDetailRequestView>([QUERY_KEY.detail_request_view, _uuidDetail], {
+	const {data: detailRequestView} = useQuery<IDetailRequestView>([QUERY_KEY.detail_request_view, _uuidRequestView], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentVisitServices.getDetailLApartmentVisit({uuid: _uuidDetail as string}),
+				http: apartmentVisitServices.getDetailLApartmentVisit({uuid: _uuidRequestView as string}),
 			}),
 
 		select(data) {
 			return data;
 		},
-		enabled: !!_uuidDetail,
+		enabled: !!_uuidRequestView,
 	});
 
 	const funcRejectView = useMutation({
@@ -64,7 +66,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 			actions={
 				<FlexLayout row gap-8>
 					{detailRequestView?.status === STATE_APARTMENT_VISIT.PENDING && (
-						<Button p_8_24 rounded_8 red bold onClick={() => setRejectApartment(_uuidDetail as string)}>
+						<Button p_8_24 rounded_8 red bold onClick={() => setRejectApartment(_uuidRequestView as string)}>
 							Từ chối xem
 						</Button>
 					)}

@@ -5,7 +5,7 @@ import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import Breadcrumb from '~/components/common/Breadcrumb/Breadcrumb';
 import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button/Button';
-import {tabsDetailApartments} from '~/constants/config/data';
+import {statusApartmentIncidentReport, tabsDetailApartments} from '~/constants/config/data';
 import {useRouter} from 'next/router';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Search from '~/components/common/Search';
@@ -15,13 +15,13 @@ import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {CloseCircle, Eye, Warning2} from 'iconsax-react';
 import {useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
 import WrapperForm from '~/components/utils/WrapperForm';
 import {FaCircleCheck} from 'react-icons/fa6';
 import Pagination from '~/components/common/Pagination';
 import Dialog from '~/components/common/Dialog';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import PositionContainer from '~/components/common/PositionContainer';
 import DetailRequestRepairApartment from './components/DetailRequestRepairApartment';
 import Form, {TextArea} from '~/components/common/Form';
@@ -29,18 +29,20 @@ import Popup from '~/components/common/Popup';
 import ConfirmRequest from '../RequestViewApartment/components/ConfirmRequest';
 import {httpRequest} from '~/services';
 import incidentServices from '~/services/incidentServices';
+import Moment from 'react-moment';
+import Loading from '~/components/common/Loading';
 
 function RequestRepairApartment({}: PropsRequestRepairApartment) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidDetail} = router.query;
+	const {_uuid, _uuidRequestRepair} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
-
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
-	const [cancelApartment, setCancelApartment] = useState<string>('');
+	const [rejectRepairApartment, setRejectRepairApartment] = useState<string>('');
 	const [uuidConfirm, setUuidConfirm] = useState<string>('');
 
 	const [form, setForm] = useState<{note: string}>({
@@ -81,28 +83,31 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 		},
 	});
 
-	const funcRequestView = useMutation({
-		// mutationFn: () =>
-		// 	httpRequest({
-		// 		showMessageSuccess: true,
-		// 		showMessageFailed: true,
-		// 		msgSuccess: 'Reset mật khẩu thành công!',
-		// 		http: lockServices.resetUserPassword({
-		// 			uuid: cancelApartment,
-		// 		}),
-		// 	}),
-		// onSuccess(data) {
-		// 	if (data) {
-		// 		setCancelApartment('');
-		// 		queryClient.invalidateQueries({
-		// 			queryKey: [QUERY_KEY.table_lock],
-		// 		});
-		// 	}
-		// },
+	const funcRequestRepairApartment = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess: 'Từ chối yêu cầu thành công',
+				http: incidentServices.acceptOrRejectIncident({
+					uuid: rejectRepairApartment,
+					description: '',
+					status: STATE_APARTMENT_INCIDENT_REPORTS.CANCELED,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setRejectRepairApartment('');
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_incident],
+				});
+			}
+		},
 	});
 
 	return (
 		<FlexLayout column gap-12>
+			<Loading loading={funcRequestRepairApartment.isLoading} />
 			<LayoutMainPage
 				breadcrumb={
 					<Breadcrumb
@@ -140,16 +145,10 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 									name='Trạng thái sự cố'
 									value={status}
 									setValue={setStatus}
-									listOption={[
-										{
-											uuid: 1,
-											name: 'Hoạt động',
-										},
-										{
-											uuid: 2,
-											name: 'Đang khóa',
-										},
-									]}
+									listOption={statusApartmentIncidentReport.map((item) => ({
+										uuid: item.state,
+										name: item.text,
+									}))}
 								/>
 							</FlexLayout>
 						</FlexItem>
@@ -157,14 +156,15 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 
 					<div style={{marginTop: '12px'}}>
 						<FlexItem flex-1 overflow-x>
-							<DataWrapper data={[1]} loading={false} title='Dữ liệu trống!' note='Danh sách dữ liệu hiện đang trống!'>
-								<Table<{uuid: string; code: string; accountRepair: string; date: string}>
+							<DataWrapper
+								data={data?.items || []}
+								loading={isLoading}
+								title='Dữ liệu trống!'
+								note='Danh sách dữ liệu hiện đang trống!'
+							>
+								<Table<IIncidentApartment>
 									rowKey={(row) => row.uuid}
-									data={[
-										{uuid: '1', code: '1', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '2', code: '2', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-										{uuid: '3', code: '3', accountRepair: '0398162589', date: '24/08/2025 08:00 - 09:00'},
-									]}
+									data={data?.items || []}
 									fixedHeader={true}
 									column={[
 										{
@@ -174,48 +174,32 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 										},
 										{
 											title: 'Mã yêu cầu',
-											render: (row, _) => <>{row.code}</>,
+											render: (row, _) => <>{row?.code || '---'}</>,
 										},
 										{
 											title: 'Tài khoản báo sửa',
-											render: (row, _) => <>{row.accountRepair}</>,
+											render: (row, _) => <>{row?.userReportUu?.name || '---'}</>,
 										},
 										{
 											title: 'Số điện thoại',
-											render: (row, _) => <>{row.date}</>,
+											render: (row, _) => <>{row?.userReportUu?.code || '---'}</>,
 										},
 										{
 											title: 'Ghi chú',
-											render: (row, _) => <>{row.date}</>,
+											render: (row, _) => <>{row?.description || '---'}</>,
 										},
 										{
 											title: 'Thời gian yêu cầu',
-											render: (row, _) => <>{row.date}</>,
+											render: (row, _) => <>{<Moment date={row?.reportDate} format='DD/MM/YYYY' />}</>,
 										},
 										{
 											title: 'Thời gian xử lý',
-											render: (row, _) => <>{row.date}</>,
+											render: (row, _) => <>{<Moment date={row?.resolveDate} format='DD/MM/YYYY' />}</>,
 										},
 										{
 											title: 'Trạng thái sự cố',
 											render: (row, _) => (
-												<StateActive
-													stateActive={1}
-													listState={[
-														{
-															backgroundColor: '#06AED4',
-															state: 1,
-															text: 'Hoạt động',
-															textColor: '#fff',
-														},
-														{
-															backgroundColor: '#EE0033',
-															state: 2,
-															text: 'Bị khóa',
-															textColor: '#fff',
-														},
-													]}
-												/>
+												<StateActive stateActive={row?.status} listState={statusApartmentIncidentReport} />
 											),
 										},
 										{
@@ -231,21 +215,26 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 																pathname: router.pathname,
 																query: {
 																	...router.query,
-																	_uuidDetail: row?.uuid,
+																	_uuidRequestRepair: row?.uuid,
 																},
 															})
 														}
 													/>
-													<IconActionTable
-														icon={<CloseCircle color='#EE0033' size={24} />}
-														tooltip='Từ chối yêu cầu'
-														onClick={() => setCancelApartment(row?.uuid)}
-													/>
-													<IconActionTable
-														icon={<FaCircleCheck color='#00a441ff' size={24} />}
-														tooltip='Chấp nhận yêu cầu'
-														onClick={() => setUuidConfirm(row?.uuid)}
-													/>
+													{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
+														<IconActionTable
+															icon={<CloseCircle color='#EE0033' size={24} />}
+															tooltip='Từ chối yêu cầu'
+															onClick={() => setRejectRepairApartment(row?.uuid)}
+														/>
+													)}
+
+													{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
+														<IconActionTable
+															icon={<FaCircleCheck color='#00a441ff' size={24} />}
+															tooltip='Xác nhận đã xử lý'
+															onClick={() => setUuidConfirm(row?.uuid)}
+														/>
+													)}
 												</FlexLayout>
 											),
 										},
@@ -258,8 +247,8 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 								onSetPage={setPage}
 								pageSize={pageSize}
 								onSetPageSize={setPageSize}
-								total={1}
-								dependencies={[pageSize]}
+								total={data?.pagination?.totalCount || 0}
+								dependencies={[pageSize, keyword, status, _uuid]}
 							/>
 						</FlexItem>
 					</div>
@@ -267,15 +256,16 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			</LayoutMainPage>
 
 			<Dialog
-				open={!!cancelApartment}
+				open={!!rejectRepairApartment}
 				type='error'
 				backgroundIconColor='#ffdce4'
 				borderIconColor='#fff0f3'
 				title='Từ chối yêu cầu'
-				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xử lý sửa chữa YC2040 không?</span>}
+				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xử lý sửa chữa không?</span>}
 				icon={<Warning2 size='28' color='#EE0033' />}
-				onClose={() => setCancelApartment('')}
-				onSubmit={funcRequestView.mutate}
+				onClose={() => setRejectRepairApartment('')}
+				onSubmit={funcRequestRepairApartment.mutate}
+				isDisabledBtnSubmit={!form?.note}
 				form={
 					<Form form={form} setForm={setForm}>
 						<TextArea name='note' placeholder='Từ chối yêu cầu' />
@@ -284,9 +274,9 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			/>
 
 			<PositionContainer
-				open={!!_uuidDetail}
+				open={!!_uuidRequestRepair}
 				onClose={() => {
-					const {_uuidDetail, ...rest} = router.query;
+					const {_uuidRequestRepair, ...rest} = router.query;
 
 					router.replace({
 						pathname: router.pathname,
@@ -298,7 +288,7 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			>
 				<DetailRequestRepairApartment
 					onClose={() => {
-						const {_uuidDetail, ...rest} = router.query;
+						const {_uuidRequestRepair, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,
