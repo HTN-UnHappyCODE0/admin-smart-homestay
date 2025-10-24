@@ -109,7 +109,7 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-	changeStatusMeter: (
+	changeStateMeter: (
 		data: {
 			apartmentMeterUuid: string;
 			state: number;

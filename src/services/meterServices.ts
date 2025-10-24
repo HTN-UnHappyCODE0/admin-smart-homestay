@@ -20,6 +20,37 @@ const meterServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	listMeterInApartment: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			pageSize: number;
+			page: number;
+			typeFinding: number | null;
+			meterTypeUuid: string;
+			apartmentUuid: string;
+			status: number | null;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Meter/list-meter-in-apartment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateMeterInApartment: (
+		data: {
+			apartmentUuid: string;
+			listMeter: {
+				apartmentMeterUuid: string;
+				meterUuid: string;
+			}[];
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Meter/update-meters-in-apartment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default meterServices;

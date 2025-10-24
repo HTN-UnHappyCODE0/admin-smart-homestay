@@ -3,6 +3,8 @@ export enum QUERY_KEY {
 	table_apartment,
 	table_apartment_visit,
 	table_apartment_incident,
+	table_apartment_list_meter,
+	table_apartment_advertisement,
 	table_rental_contract,
 	table_room_type,
 	table_cost_type,
@@ -16,12 +18,14 @@ export enum QUERY_KEY {
 	detail_info_apartment,
 	detail_apartment_type,
 	detail_request_view,
+	detail_request_repair,
 	detail_user_contract,
 	detail_room_type,
 	detail_cost_type,
 	detail_lock,
 	detail_furniture,
 	detail_apartment_for_update,
+	detail_meter_apartment_update,
 
 	dropdown_apartment_type,
 	dropdown_user,
@@ -103,6 +107,29 @@ export enum STATE_APARTMENT_VISIT {
 	PENDING, // chờ duyệt
 	APPROVED, // đã duyệt
 	OVERDUE, // quá hạn
+}
+
+export enum STATE_APARTMENT_INCIDENT_REPORTS {
+	CANCELED, // đã hủy
+	PENDING, // chờ xử lý
+	IN_PROGRESS, // đã tiếp nhận/đang xử lý
+	RESOLVED, // đã xử lý
+}
+
+export enum STATE_APARTMENT_ADVERTISEMENT {
+	DELETED, // đã xóa
+	PENDING, // chờ duyệt
+	POSTED, // đã đăng
+	EXPIRED, // hết hạn
+}
+
+export enum STATE_APARTMENT_PAYMENT_TYPE {
+	SELF, // TỰ THANH TOÁN
+	DEPOSIT, // CỌC
+	MONTHLY, // PHÁT SINH THEO THÁNG
+	APARTMENT, // PHÁT SINH THEO CĂN HỘ
+	USAGE_BASED, // PHÁT SINH THEO LƯỢNG SỬ DỤNG
+	PERSON, // PHÁT SINH THEO NGƯỜI
 }
 
 export enum STATE_LOCK {

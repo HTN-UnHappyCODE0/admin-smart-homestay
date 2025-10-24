@@ -10,7 +10,7 @@ import {useRouter} from 'next/router';
 import clsx from 'clsx';
 import Tippy from '@tippyjs/react';
 import useWindowWidth from '~/common/hooks/useWindowWidth';
-import {Danger, Notification, UserEdit, Warning2} from 'iconsax-react';
+import {Notification, UserEdit, Warning2} from 'iconsax-react';
 import {IoLogOutOutline} from 'react-icons/io5';
 import Dialog from '~/components/common/Dialog';
 import {useSelector} from 'react-redux';
