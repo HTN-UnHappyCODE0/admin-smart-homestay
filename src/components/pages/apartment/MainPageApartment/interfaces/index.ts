@@ -16,7 +16,21 @@ export interface IApartment {
 	numIncidentRequest: number;
 	maxPeople: number;
 	rentPrice: number;
-	adPrice: number;
+	adPrices: number;
+	// adPrices: {
+	// 	serviceUu: {
+	// 		name: string;
+	// 		description: string;
+	// 		state: number;
+	// 		type: number;
+	// 		id: number;
+	// 		uuid: string;
+	// 		status: number;
+	// 	};
+	// 	price: number;
+	// 	paymentCycle: number;
+	// 	type: number;
+	// }[];
 	apartmentMeters: {
 		serialNumber: string;
 		type: number;

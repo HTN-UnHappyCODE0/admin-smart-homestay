@@ -181,7 +181,7 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 									},
 									{
 										title: 'Người lắp đặt',
-										render: (row, _) => <>{row?.meterUu?.userInstallUu || '---'}</>,
+										render: (row) => <>{row?.meterUu?.userInstallUu?.name || '---'}</>,
 									},
 									{
 										title: 'Trạng thái',

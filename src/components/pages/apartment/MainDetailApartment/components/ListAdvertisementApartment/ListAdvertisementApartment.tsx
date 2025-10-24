@@ -7,12 +7,12 @@ import Search from '~/components/common/Search';
 import FilterCustom from '~/components/common/FilterCustom';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Button from '~/components/common/Button';
-import {DocumentSketch, Edit, Eye, RepeatCircle} from 'iconsax-react';
+import {DocumentSketch, Edit, Eye, RepeatCircle, Warning2} from 'iconsax-react';
 import {useRouter} from 'next/router';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import FilterDateRange from '~/components/common/FilterDateRange';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_PAYMENT_TYPE, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_PAYMENT_TYPE, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -25,22 +25,31 @@ import Pagination from '~/components/common/Pagination';
 import SwitchButton from '~/components/common/SwitchButton';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
-import {statusApartmentAdvertisement} from '~/constants/config/data';
+import {stateApartmentAdvertisement, statusApartmentAdvertisement} from '~/constants/config/data';
+import {getUnitByAdPrice} from '~/common/funcs/getUnitByAdPrice';
+import Dialog from '~/components/common/Dialog';
+import PositionContainer from '~/components/common/PositionContainer';
+import FormCreateAdvertisement from './components/FormCreateAdvertisement';
 
 function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidListAdvertisement} = router.query;
+	const {_uuid, _uuidAdvertisement, _open} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
-	const [type, setType] = useState<number | null>(null);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
-	const [stateApartment, setStateApartment] = useState<number | null>(null);
+	const [stateAdvertisement, setStateAdvertisement] = useState<number | null>(null);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
+
+	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{
+		advertisementUuid: string;
+		state: number;
+		name: string;
+	} | null>(null);
 
 	const {
 		data = {
@@ -57,7 +66,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment_advertisement, page, pageSize, keyword, status], {
+	}>([QUERY_KEY.table_apartment_advertisement, page, pageSize, keyword, status, stateAdvertisement], {
 		queryFn: () =>
 			httpRequest({
 				http: advertisementServices.getListAdvertisement({
@@ -66,7 +75,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					state: stateApartment,
+					state: stateAdvertisement,
 					status: status,
 					provinceId: '',
 					wardId: '',
@@ -80,14 +89,30 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 		},
 	});
 
-	const getUnitByAdPrice = (serviceType: number, type: number) => {
-		if (serviceType === 0) return 'KW';
-		if (serviceType === 1) {
-			if (type === STATE_APARTMENT_PAYMENT_TYPE.USAGE_BASED) return 'khối';
-			if (type === STATE_APARTMENT_PAYMENT_TYPE.PERSON) return 'người';
-		}
-		return '';
-	};
+	const funcChangeSwitch = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageSuccess: true,
+				showMessageFailed: true,
+				msgSuccess:
+					dataChangeStateSwitch?.state == STATE_SWITCH.ON
+						? `Tắt ${dataChangeStateSwitch?.name} thành công!`
+						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
+				http: advertisementServices.changeStateAdvertisement({
+					uuid: dataChangeStateSwitch?.advertisementUuid!,
+					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
+					description: '',
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setDataChangeStateSwitch(null);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_advertisement],
+				});
+			}
+		},
+	});
 
 	return (
 		<MainDetailApartment>
@@ -107,18 +132,12 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 						<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
 						<FilterCustom
 							name='Hiển thị'
-							value={status}
-							setValue={setStatus}
-							listOption={[
-								{
-									uuid: 1,
-									name: 'Hoạt động',
-								},
-								{
-									uuid: 2,
-									name: 'Đang khóa',
-								},
-							]}
+							value={stateAdvertisement}
+							setValue={setStateAdvertisement}
+							listOption={stateApartmentAdvertisement.map((item) => ({
+								uuid: item.state,
+								name: item.text,
+							}))}
 						/>
 					</FlexLayout>
 					<FlexItem>
@@ -133,7 +152,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 									pathname: router.pathname,
 									query: {
 										...router.query,
-										_uuidListAdvertisement: 'open',
+										_open: 'create',
 									},
 								})
 							}
@@ -183,32 +202,20 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 									},
 									{
 										title: 'Giá điện/kiểu tính',
-										render: (row) => {
-											const electric = row?.adPrices?.find((item) => item.serviceUu?.type === 0);
-											if (!electric) return <>—</>;
-
-											const unit = getUnitByAdPrice(electric.serviceUu.type, electric.type);
-
-											return (
-												<>
-													{electric.price.toLocaleString('vi-VN')}/ {unit}
-												</>
-											);
+										render: (row: IAdvertisement) => {
+											const electric = row.adPrices?.find((item) => item.serviceUu?.type === 0);
+											const unit = getUnitByAdPrice(electric?.serviceUu?.type ?? 0, electric?.type ?? 0);
+											const priceText = electric ? `${electric.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											return <>{priceText}</>;
 										},
 									},
 									{
 										title: 'Giá nước/kiểu tính',
-										render: (row) => {
-											const water = row?.adPrices?.find((item) => item.serviceUu?.type === 1);
-											if (!water) return <>—</>;
-
-											const unit = getUnitByAdPrice(water.serviceUu.type, water.type);
-
-											return (
-												<>
-													{water.price.toLocaleString('vi-VN')}/ {unit}
-												</>
-											);
+										render: (row: IAdvertisement) => {
+											const water = row.adPrices?.find((item) => item.serviceUu?.type === 1);
+											const unit = getUnitByAdPrice(water?.serviceUu?.type ?? 0, water?.type ?? 0);
+											const priceText = water ? `${water.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											return <>{priceText}</>;
 										},
 									},
 
@@ -228,7 +235,18 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 									},
 									{
 										title: 'Hiển thị',
-										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
+										render: (row) => (
+											<SwitchButton
+												checkOn={row?.state === 1}
+												onClick={() =>
+													setDataChangeStateSwitch({
+														advertisementUuid: row?.uuid!,
+														state: row?.state!,
+														name: row?.title,
+													})
+												}
+											/>
+										),
 									},
 									{
 										title: 'Tác vụ',
@@ -243,11 +261,12 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 												<IconActionTable
 													icon={<DocumentSketch color='#292D32' size={24} />}
-													tooltip='Copy và đăng lại'
+													tooltip='Copy và đăng mới'
 												/>
+												{/*  */}
 												<IconActionTable
 													icon={<RepeatCircle color='#292D32' size={24} />}
-													tooltip='Xác nhận đăng lại'
+													tooltip='Đăng lại ngay'
 												/>
 											</FlexLayout>
 										),
@@ -261,12 +280,64 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 							onSetPage={setPage}
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
-							total={10}
-							// total={data?.pagination.totalCount || 0}
-							dependencies={[pageSize, keyword, status]}
+							total={data?.pagination.totalCount || 0}
+							dependencies={[pageSize, keyword, status, stateAdvertisement]}
 						/>
 					</MainTable>
 				</FlexItem>
+
+				<Dialog
+					open={!!dataChangeStateSwitch}
+					type={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? 'error' : 'primary'}
+					backgroundIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#ffdce4' : '#b5f4d4ff'}
+					borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
+					title={
+						dataChangeStateSwitch?.state == STATE_SWITCH.ON
+							? `Tắt ${dataChangeStateSwitch?.name}`
+							: `Bật ${dataChangeStateSwitch?.name}`
+					}
+					note={
+						dataChangeStateSwitch?.state == STATE_SWITCH.ON
+							? `Bạn có chắc chắn muốn tắt ${dataChangeStateSwitch?.name} không?`
+							: `Bạn có chắc chắn muốn bật ${dataChangeStateSwitch?.name} không?`
+					}
+					icon={
+						dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (
+							<Warning2 size='28' color='#EE0033' />
+						) : (
+							<Warning2 size='28' color='#25C173' />
+						)
+					}
+					onClose={() => setDataChangeStateSwitch(null)}
+					onSubmit={funcChangeSwitch.mutate}
+				/>
+
+				<PositionContainer
+					open={_open == 'create'}
+					onClose={() => {
+						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				>
+					<FormCreateAdvertisement
+						onClose={() => {
+							const {_open, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
+				</PositionContainer>
 			</WrapperForm>
 		</MainDetailApartment>
 	);

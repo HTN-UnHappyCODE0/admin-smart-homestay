@@ -206,7 +206,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Giá quảng cáo(VND)',
-										render: (row, _) => <>{convertCoin(row?.adPrice)}</>,
+										render: (row, _) => <>{convertCoin(row?.adPrices)}</>,
 									},
 									{
 										title: 'Aptomat',

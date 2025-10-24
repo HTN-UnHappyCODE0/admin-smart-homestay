@@ -22,6 +22,41 @@ const advertisementServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	createAdvertisement: (
+		data: {
+			apartmentUuid: string;
+			title: string;
+			deposit: number;
+			price: number;
+			images: string[];
+			adPrices: {
+				serviceUuid: string;
+				price: number;
+				paymentCycle: number;
+				type: number;
+			}[];
+			startDate: string;
+			expireDate: string;
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Advertisement/create-advertisement`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	changeStateAdvertisement: (
+		data: {
+			uuid: string;
+			state: number;
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Advertisement/change-state-advertisement`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default advertisementServices;

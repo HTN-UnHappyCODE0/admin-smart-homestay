@@ -11,6 +11,7 @@ import {
 	STATE_APARTMENT_INCIDENT_REPORTS,
 	STATE_APARTMENT_ADVERTISEMENT,
 	STATE_APARTMENT_PAYMENT_TYPE,
+	STATE_SWITCH,
 } from './enum';
 
 export function tabsDetailApartments(uuid: string): {
@@ -46,7 +47,7 @@ export function tabsDetailApartments(uuid: string): {
 		},
 		{
 			title: 'Danh sách quảng cáo',
-			path: PATH.ListAdvertisementApartment,
+			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
 			pathActive: PATH.ListAdvertisementApartment,
 		},
 		{
@@ -324,6 +325,21 @@ export const paymentTypeApartmentAdvertisement: {
 	{
 		state: STATE_APARTMENT_PAYMENT_TYPE.PERSON,
 		text: 'Phát sinh theo người',
+	},
+];
+
+// State quảng cáo căn hộ
+export const stateApartmentAdvertisement: {
+	state: number;
+	text: string;
+}[] = [
+	{
+		state: STATE_SWITCH.ON,
+		text: 'Hiển thị',
+	},
+	{
+		state: STATE_SWITCH.OFF,
+		text: 'Không hiển thị',
 	},
 ];
 

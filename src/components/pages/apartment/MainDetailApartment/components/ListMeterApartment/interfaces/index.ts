@@ -2,7 +2,13 @@ export interface PropsListMeterApartment {}
 
 export interface IListMeterApartment {
 	meterUu: {
-		userInstallUu: string;
+		userInstallUu: {
+			name: string;
+			code: null;
+			id: number;
+			uuid: string;
+			status: number;
+		};
 		serialNumber: string;
 		installedDate: string;
 		code: string;
