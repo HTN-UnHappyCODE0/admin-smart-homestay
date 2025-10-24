@@ -1,20 +1,19 @@
-import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
-import styles from './PropsFormUpdateRoomType.module.scss';
-import {PropsFormUpdateRoomType} from './interfaces/index';
-import FlexLayout from '~/components/layouts/FlexLayout';
-import Button from '~/components/common/Button';
 import Form, {ContextForm, Input, TextArea} from '~/components/common/Form';
-import WrapperForm from '~/components/utils/WrapperForm';
-import {useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import apartmentTypeServices from '~/services/apartmentTypeServices';
-import {QUERY_KEY} from '~/constants/config/enum';
-import {httpRequest} from '~/services';
+import styles from './FormUpdateMeterType.module.scss';
+import {PropsFormUpdateMeterType} from './interfaces';
 import Loading from '~/components/common/Loading';
+import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
+import Button from '~/components/common/Button';
+import FlexLayout from '~/components/layouts/FlexLayout';
+import WrapperForm from '~/components/utils/WrapperForm';
 import {useRouter} from 'next/router';
-import roomServices from '~/services/roomServices';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useState} from 'react';
+import {httpRequest} from '~/services';
+import meterTypeServices from '~/services/meterTypeServices';
+import {QUERY_KEY} from '~/constants/config/enum';
 
-function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
+function FormUpdateMeterType({onClose}: PropsFormUpdateMeterType) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
@@ -22,34 +21,34 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 
 	const [form, setForm] = useState<{name: string; description: string}>({name: '', description: ''});
 
-	// useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_room_type, _uuidUpdate], {
-	// 	queryFn: () =>
-	// 		httpRequest({
-	// 			http: roomServices.detailRoom({
-	// 				uuid: _uuidUpdate as string,
-	// 			}),
-	// 		}),
-	// 	onSuccess(data) {
-	// 		if (data) {
-	// 			setForm({
-	// 				name: data.name,
-	// 				description: data.description || '',
-	// 			});
-	// 		}
-	// 	},
-	// 	select(data) {
-	// 		return data;
-	// 	},
-	// 	enabled: !!_uuidUpdate,
-	// });
+	useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_room_type, _uuidUpdate], {
+		queryFn: () =>
+			httpRequest({
+				http: meterTypeServices.detailMeterType({
+					uuid: _uuidUpdate as string,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setForm({
+					name: data.name,
+					description: data.description || '',
+				});
+			}
+		},
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidUpdate,
+	});
 
 	const funcUpdateRoom = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Chỉnh sửa loại hình căn hộ thành công!',
-				http: roomServices.updateRoom({
+				msgSuccess: 'Chỉnh sửa loại thiết bị thành công!',
+				http: meterTypeServices.updateMeterType({
 					uuid: _uuidUpdate as string,
 					name: form.name,
 					description: form.description,
@@ -60,7 +59,7 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 				setForm({name: '', description: ''});
 				onClose();
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_room_type],
+					queryKey: [QUERY_KEY.table_meter_type],
 				});
 			}
 		},
@@ -70,8 +69,8 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 		<Form form={form} setForm={setForm} onSubmit={funcUpdateRoom.mutate}>
 			<Loading loading={funcUpdateRoom.isLoading} />
 			<WrapperFormPostion
-				width={600}
-				title='Chỉnh sửa loại hình căn hộ'
+				width={540}
+				title='Chỉnh sửa loại thiết bị'
 				actions={
 					<FlexLayout row gap-8>
 						<Button p_8_24 rounded_8 white bold onClick={onClose}>
@@ -87,14 +86,14 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 					</FlexLayout>
 				}
 			>
-				<WrapperForm title='Thông tin căn hộ'>
+				<WrapperForm title='Thông tin loại thiết bị'>
 					<Input
 						label={
 							<span>
 								Tên loại phòng <span style={{color: 'red'}}>*</span>
 							</span>
 						}
-						placeholder='Nhập tên loại phòng'
+						placeholder='Nhập tên loại thiết bị'
 						type='text'
 						name='name'
 						onClean
@@ -110,4 +109,4 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 	);
 }
 
-export default FormUpdateRoomType;
+export default FormUpdateMeterType;
