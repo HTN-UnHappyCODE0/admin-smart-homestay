@@ -58,6 +58,7 @@ export interface IAdvertisement {
 	expireDate: string;
 	description: string;
 	id: number;
+	state: number;
 	uuid: string;
 	status: number;
 }

@@ -17,9 +17,11 @@ function SelectMany({label, placeholder, textShow, readOnly, onClick}: PropsSele
 			<div className={styles.main_select} onClick={onClick}>
 				<p className={clsx(styles.value, {[styles.placeholder]: !textShow})}>{textShow || placeholder}</p>
 
-				<div className={styles.icon}>
-					<AddCircle variant='Bold' size={18} />
-				</div>
+				{!readOnly && (
+					<div className={styles.icon}>
+						<AddCircle variant='Bold' size={18} />
+					</div>
+				)}
 			</div>
 		</div>
 	);

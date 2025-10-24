@@ -250,7 +250,6 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 								placeholder='Nhập địa chỉ '
 								type='text'
 								name='address'
-								value={form?.address}
 								readOnly={true}
 							/>
 
