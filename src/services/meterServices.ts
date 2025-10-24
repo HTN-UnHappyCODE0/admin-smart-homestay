@@ -20,6 +20,18 @@ const meterServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	createMeter: (
+		data: {
+			meterType: string;
+			serialNumber: string;
+			apartmentUuid: string;
+			userInstallUuid: string;
+			installedDate: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Meter/create-meter`, data, {});
+	},
 	listMeterInApartment: (
 		data: {
 			keyword: string;
