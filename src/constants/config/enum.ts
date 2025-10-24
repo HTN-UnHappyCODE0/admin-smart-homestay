@@ -12,6 +12,8 @@ export enum QUERY_KEY {
 	table_detail_lock_history,
 	table_furniture,
 	table_using_department,
+	table_meter,
+	table_meter_type,
 
 	detail_info_apartment,
 	detail_apartment_type,
@@ -25,9 +27,11 @@ export enum QUERY_KEY {
 
 	dropdown_apartment_type,
 	dropdown_user,
+	dropdown_apartment,
 	dropdown_lock,
 	dropdown_province,
 	dropdown_ward,
+	dropdown_meter_type,
 
 	list_room,
 	list_furniture,
@@ -61,6 +65,7 @@ export enum CONFIG_PAGING {
 export enum CONFIG_TYPE_FIND {
 	DROPDOWN,
 	TABLE,
+	CUSTOM = 4,
 }
 
 export enum CONFIG_TYPE_FINDING {
