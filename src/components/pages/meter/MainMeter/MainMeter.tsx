@@ -22,6 +22,7 @@ import Moment from 'react-moment';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateMeter from '../FormCreateMeter';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
+import IconActionTable from '~/components/utils/IconActionTable';
 
 function MainMeter({}: PropsMainMeter) {
 	const router = useRouter();
@@ -185,7 +186,11 @@ function MainMeter({}: PropsMainMeter) {
 									{
 										title: 'Hành động',
 										fixedRight: true,
-										render: (row, _) => <FlexLayout row>---</FlexLayout>,
+										render: (row, _) => (
+											<FlexLayout row>
+												<IconActionTable icon={<Edit size={24} />} tooltip='Chỉnh sửa' />
+											</FlexLayout>
+										),
 									},
 								]}
 							/>

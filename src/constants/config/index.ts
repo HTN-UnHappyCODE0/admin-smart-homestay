@@ -43,6 +43,8 @@ export enum PATH {
 	UnlockHistory = '/unlock-history',
 
 	Furniture = '/furniture',
+
+	ApartmentOwner = 'apartment-owner',
 }
 
 export const Menus: {
@@ -148,6 +150,17 @@ export const Menus: {
 				icon: CpuSetting,
 				path: PATH.Meter,
 				pathActive: PATH.Meter,
+			},
+		],
+	},
+	{
+		title: 'CHỦ CĂN HỘ',
+		group: [
+			{
+				title: 'Chủ căn hộ',
+				icon: Lamp,
+				path: PATH.ApartmentOwner,
+				pathActive: PATH.ApartmentOwner,
 			},
 		],
 	},
