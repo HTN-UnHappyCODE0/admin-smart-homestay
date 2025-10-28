@@ -103,6 +103,8 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 					pageSize: 100,
 					status: STATUS_CONFIG.ACTIVE,
 					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					type: null,
+					userUuid: '',
 				}),
 			}),
 		select(data) {

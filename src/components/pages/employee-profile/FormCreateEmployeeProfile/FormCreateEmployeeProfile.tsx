@@ -63,7 +63,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 					bankName: '',
 					bankNumber: '',
 					bankAccount: '',
-					type: [25, 50, 100],
+					type: 1,
 				}),
 			}),
 		onSuccess(data) {

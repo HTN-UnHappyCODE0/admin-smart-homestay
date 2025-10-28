@@ -58,23 +58,23 @@ const userServices = {
 	createUser: (
 		data: {
 			managerUuid: string;
-			name: string | null;
-			email: string | null;
-			username: string | null;
-			password: string | null;
-			phoneNumber: string | null;
-			profileImage: string | null;
+			name: string;
+			email: string;
+			username: string;
+			password: string;
+			phoneNumber: string;
+			profileImage: string;
 			birthDate: string | null;
-			gender: number | null;
-			identityNumber: string | null;
-			provinceId: string | null;
-			wardId: string | null;
-			address: string | null;
+			gender: number;
+			identityNumber: string;
+			provinceId: string;
+			wardId: string;
+			address: string;
 			description: string;
-			bankName: string | null;
-			bankNumber: string | null;
-			bankAccount: string | null;
-			type: number[] | null;
+			bankName: string;
+			bankNumber: string;
+			bankAccount: string;
+			type: number;
 		},
 		tokenAxios?: any
 	) => {

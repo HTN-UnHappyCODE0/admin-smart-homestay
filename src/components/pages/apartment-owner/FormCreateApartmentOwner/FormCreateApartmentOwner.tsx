@@ -54,8 +54,8 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 					password: '',
 					phoneNumber: form?.phoneNumber,
 					profileImage: '',
-					birthDate: null,
-					gender: null,
+					birthDate: '',
+					gender: 1,
 					identityNumber: '',
 					provinceId: '',
 					wardId: '',
@@ -65,6 +65,7 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 					bankNumber: form?.bankNumber,
 					bankAccount: form?.bankAccount,
 					type: 10,
+					managerUuid: '',
 				}),
 			}),
 		onSuccess(data) {
