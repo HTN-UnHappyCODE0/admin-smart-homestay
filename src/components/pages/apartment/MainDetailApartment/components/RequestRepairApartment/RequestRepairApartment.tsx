@@ -26,11 +26,11 @@ import PositionContainer from '~/components/common/PositionContainer';
 import DetailRequestRepairApartment from './components/DetailRequestRepairApartment';
 import Form, {TextArea} from '~/components/common/Form';
 import Popup from '~/components/common/Popup';
-import ConfirmRequest from '../RequestViewApartment/components/ConfirmRequest';
 import {httpRequest} from '~/services';
 import incidentServices from '~/services/incidentServices';
 import Moment from 'react-moment';
 import Loading from '~/components/common/Loading';
+import ConfirmRequest from './components/ConfirmRequest';
 
 function RequestRepairApartment({}: PropsRequestRepairApartment) {
 	const router = useRouter();
@@ -64,7 +64,7 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment_incident, page, pageSize, keyword, status, _uuid], {
+	}>([QUERY_KEY.table_apartment_incident_detail, page, pageSize, keyword, status, _uuid], {
 		queryFn: () =>
 			httpRequest({
 				http: incidentServices.getIncidentReports({
@@ -99,7 +99,7 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			if (data) {
 				setRejectRepairApartment('');
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_incident],
+					queryKey: [QUERY_KEY.table_apartment_incident_detail],
 				});
 			}
 		},

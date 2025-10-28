@@ -1,7 +1,7 @@
-export interface PropsListAdvertisementApartment {}
+export interface PropsMainAdvertisement {}
 
 export interface IAdvertisement {
-	code: string;
+	code: null;
 	apartmentUu: {
 		name: string;
 		apartmentTypeUu: {
@@ -11,6 +11,7 @@ export interface IAdvertisement {
 			uuid: string;
 			status: number;
 		};
+		numFloor: number;
 		province: {
 			code: string;
 			fullName: string;
@@ -29,7 +30,7 @@ export interface IAdvertisement {
 		status: number;
 	};
 	userPostUu: {
-		code: number;
+		code: string;
 		name: string;
 		id: number;
 		uuid: string;

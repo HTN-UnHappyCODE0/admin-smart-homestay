@@ -1,20 +1,20 @@
+import {useRouter} from 'next/router';
+import styles from './DetailApartmentIncidentReport.module.scss';
+import {IDetailIncidentReport, PropsDetailApartmentIncidentReport} from './interfaces';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useState} from 'react';
+import {QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
+import {httpRequest} from '~/services';
+import incidentServices from '~/services/incidentServices';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
-import styles from './DetailRequestRepairApartment.module.scss';
-import {IDetailRequestRepair, PropsDetailRequestRepairApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import StateActive from '~/components/utils/StateActive';
+import {statusApartmentIncidentReport} from '~/constants/config/data';
 import Moment from 'react-moment';
 import WrapperForm from '~/components/utils/WrapperForm';
-import InfoDetail from '~/components/utils/InfoDetail';
 import GridColumn from '~/components/layouts/GridColumn';
-import {useRouter} from 'next/router';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {httpRequest} from '~/services';
-import incidentServices from '~/services/incidentServices';
-import {useState} from 'react';
-import {QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
-import {statusApartmentIncidentReport} from '~/constants/config/data';
+import InfoDetail from '~/components/utils/InfoDetail';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import Dialog from '~/components/common/Dialog';
 import {Warning2} from 'iconsax-react';
@@ -22,11 +22,11 @@ import Form, {TextArea} from '~/components/common/Form';
 import Popup from '~/components/common/Popup';
 import ConfirmRequest from '../ConfirmRequest';
 
-function DetailRequestRepairApartment({onClose}: PropsDetailRequestRepairApartment) {
+function DetailApartmentIncidentReport({onClose}: PropsDetailApartmentIncidentReport) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuidRequestRepair} = router.query;
+	const {_uuidDetailIncidentReport} = router.query;
 	const [uuidConfirm, setUuidConfirm] = useState<string>('');
 
 	const [form, setForm] = useState<{note: string}>({
@@ -34,17 +34,19 @@ function DetailRequestRepairApartment({onClose}: PropsDetailRequestRepairApartme
 	});
 	const [rejectRepairApartment, setRejectRepairApartment] = useState<string>('');
 
-	const {data: detailRequestRepair} = useQuery<IDetailRequestRepair>([QUERY_KEY.detail_request_repair_detail, _uuidRequestRepair], {
-		queryFn: () =>
-			httpRequest({
-				http: incidentServices.detailIncidentReport({uuid: _uuidRequestRepair as string}),
-			}),
-
-		select(data) {
-			return data;
-		},
-		enabled: !!_uuidRequestRepair,
-	});
+	const {data: detailRequestRepair} = useQuery<IDetailIncidentReport>(
+		[QUERY_KEY.detail_apartment_incident_report_module, _uuidDetailIncidentReport],
+		{
+			queryFn: () =>
+				httpRequest({
+					http: incidentServices.detailIncidentReport({uuid: _uuidDetailIncidentReport as string}),
+				}),
+			select(data) {
+				return data;
+			},
+			enabled: !!_uuidDetailIncidentReport,
+		}
+	);
 
 	const funcRequestRepairApartment = useMutation({
 		mutationFn: () =>
@@ -62,10 +64,10 @@ function DetailRequestRepairApartment({onClose}: PropsDetailRequestRepairApartme
 			if (data) {
 				setRejectRepairApartment('');
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.detail_request_repair_detail],
+					queryKey: [QUERY_KEY.detail_apartment_incident_report_module],
 				});
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_incident_detail],
+					queryKey: [QUERY_KEY.table_apartment_incident_module],
 				});
 			}
 		},
@@ -78,12 +80,12 @@ function DetailRequestRepairApartment({onClose}: PropsDetailRequestRepairApartme
 			actions={
 				<FlexLayout row gap-8>
 					{detailRequestRepair?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
-						<Button p_8_24 rounded_8 green bold onClick={() => setUuidConfirm(_uuidRequestRepair as string)}>
+						<Button p_8_24 rounded_8 green bold onClick={() => setUuidConfirm(_uuidDetailIncidentReport as string)}>
 							Xác nhận đã xử lý
 						</Button>
 					)}
 					{detailRequestRepair?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
-						<Button p_8_24 rounded_8 red bold onClick={() => setRejectRepairApartment(_uuidRequestRepair as string)}>
+						<Button p_8_24 rounded_8 red bold onClick={() => setRejectRepairApartment(_uuidDetailIncidentReport as string)}>
 							Từ chối xem
 						</Button>
 					)}
@@ -174,4 +176,4 @@ function DetailRequestRepairApartment({onClose}: PropsDetailRequestRepairApartme
 	);
 }
 
-export default DetailRequestRepairApartment;
+export default DetailApartmentIncidentReport;
