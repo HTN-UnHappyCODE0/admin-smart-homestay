@@ -17,7 +17,7 @@ const userServices = {
 			hasRented: number | null;
 			status: number | null;
 			userUuid: string;
-			type: number;
+			type: number[] | null;
 		},
 		tokenAxios?: any
 	) => {
@@ -57,6 +57,7 @@ const userServices = {
 
 	createUser: (
 		data: {
+			managerUuid: string;
 			name: string | null;
 			email: string | null;
 			username: string | null;
@@ -73,7 +74,7 @@ const userServices = {
 			bankName: string | null;
 			bankNumber: string | null;
 			bankAccount: string | null;
-			type: number;
+			type: number[] | null;
 		},
 		tokenAxios?: any
 	) => {
@@ -81,7 +82,15 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-	changeStatus: (data: {uuid: string; status: number; description: string}, tokenAxios?: any) => {
+
+	changeStatus: (
+		data: {
+			uuid: string;
+			status: number;
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
 		return axiosClient.post(`/User/change-status`, data, {
 			cancelToken: tokenAxios,
 		});

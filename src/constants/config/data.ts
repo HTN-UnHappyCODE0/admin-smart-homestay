@@ -12,6 +12,7 @@ import {
 	STATE_APARTMENT_ADVERTISEMENT,
 	STATE_APARTMENT_PAYMENT_TYPE,
 	STATE_SWITCH,
+	STATE_ACCOUNT,
 } from './enum';
 
 export function tabsDetailApartments(uuid: string): {
@@ -108,6 +109,65 @@ export const statusConfigs: {
 		text: 'Đang hoạt động',
 		backgroundColor: '#17B26A',
 		textColor: '#FFF',
+	},
+];
+
+export const stateAccounts: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: STATE_ACCOUNT.ISSUED,
+		text: 'Đã cấp',
+		backgroundColor: '#ABEFC6',
+		textColor: '#333',
+	},
+	{
+		state: STATE_ACCOUNT.NOT_ISSUE,
+		text: 'Chưa cấp',
+		backgroundColor: '#FEDF89',
+		textColor: '#333',
+	},
+];
+
+export const roleAccounts: {
+	state: number;
+	text: string;
+	backgroundColor?: string;
+	textColor?: string;
+}[] = [
+	{
+		state: 1,
+		text: 'Người dùng',
+		backgroundColor: '#ABEFC6',
+		textColor: '#333',
+	},
+	{
+		state: 10,
+		text: 'Chủ căn hộ',
+		backgroundColor: '#FEDF89',
+		textColor: '#333',
+	},
+
+	{
+		state: 25,
+		text: 'Nhân viên',
+		backgroundColor: '#FEDF89',
+		textColor: '#333',
+	},
+	{
+		state: 50,
+		text: 'Quản lý',
+		backgroundColor: '#FEDF89',
+		textColor: '#333',
+	},
+	{
+		state: 100,
+		text: 'Quản trị viên',
+		backgroundColor: '#FEDF89',
+		textColor: '#333',
 	},
 ];
 

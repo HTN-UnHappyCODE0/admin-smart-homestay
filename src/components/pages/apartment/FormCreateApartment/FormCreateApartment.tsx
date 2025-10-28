@@ -139,7 +139,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 					keyword: '',
 					hasRented: 0,
 					status: STATUS_CONFIG.ACTIVE,
-					type: 0,
+					type: [1, 10, 25, 50, 100],
 					userUuid: '',
 				}),
 			}),

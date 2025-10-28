@@ -1,6 +1,6 @@
 export interface PropsStateActive {
 	isBox?: boolean;
-	stateActive: number;
+	stateActive: number | null;
 	isSmall?: boolean;
 	listState: {
 		state: number;

@@ -48,6 +48,8 @@ export enum PATH {
 	GuestTenant = '/guest-tenant',
 
 	ApartmentOwner = 'apartment-owner',
+
+	EmployeeProfile = 'employee-profile',
 }
 
 export const Menus: {
@@ -170,6 +172,17 @@ export const Menus: {
 				icon: People,
 				path: PATH.GuestTenant,
 				pathActive: PATH.GuestTenant,
+			},
+		],
+	},
+	{
+		title: 'QUẢN LÝ TÀI KHOẢN',
+		group: [
+			{
+				title: 'Hồ sơ nhân viên',
+				icon: Lamp,
+				path: PATH.EmployeeProfile,
+				pathActive: PATH.EmployeeProfile,
 			},
 		],
 	},
