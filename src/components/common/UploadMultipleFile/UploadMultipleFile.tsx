@@ -6,7 +6,7 @@ import {IoClose} from 'react-icons/io5';
 import clsx from 'clsx';
 import icons from '~/constants/images/icons';
 
-function UploadMultipleFile({label, images = [], setImages, isDisableDelete = false}: PropsUploadMultipleFile) {
+function UploadMultipleFile({label, images = [], setImages, isDisableDelete = false, size = 'small'}: PropsUploadMultipleFile) {
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
 		if (!files) return;
@@ -39,7 +39,7 @@ function UploadMultipleFile({label, images = [], setImages, isDisableDelete = fa
 			)}
 			<div className={styles.main_upload}>
 				<div className={styles.upload}>
-					<label className={styles.input_upload}>
+					<label className={clsx(styles.input_upload, styles[size])}>
 						<Image alt='Icon upload file' src={icons.iconUploadFile} />
 						<input
 							id='input-upload-file'
@@ -58,7 +58,7 @@ function UploadMultipleFile({label, images = [], setImages, isDisableDelete = fa
 				{images.length > 0 && (
 					<div className={styles.list_image}>
 						{images.map((image, index) => (
-							<div className={styles.box_image} key={index}>
+							<div className={clsx(styles.box_image, styles[size])} key={index}>
 								<Image
 									className={styles.image}
 									src={image.url || `${process.env.NEXT_PUBLIC_IMAGE}/${image.path}`}
