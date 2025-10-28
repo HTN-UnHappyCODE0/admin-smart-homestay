@@ -9,4 +9,5 @@ export interface PropsUploadMultipleFile {
 	images: IDataUploadFile[];
 	setImages: React.Dispatch<React.SetStateAction<IDataUploadFile[]>>;
 	isDisableDelete?: boolean;
+	size?: 'small' | 'medium' | 'large';
 }

@@ -10,6 +10,7 @@ const contractServices = {
 			typeFinding: number | null;
 			status: number | null;
 			apartmentUuid: string;
+			renterUuid: string;
 		},
 		tokenAxios?: any
 	) => {
