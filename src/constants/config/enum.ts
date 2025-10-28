@@ -18,6 +18,7 @@ export enum QUERY_KEY {
 	table_meter_type,
 	table_apartment_owner,
 	table_employee_profile,
+	table_guest_tenant,
 
 	detail_info_apartment,
 	detail_apartment_type,
@@ -32,6 +33,7 @@ export enum QUERY_KEY {
 	detail_apartment_for_update,
 	detail_meter_apartment_update,
 	detail_apartment_owner,
+	detail_guest_tenant,
 
 	dropdown_apartment_type,
 	dropdown_user,

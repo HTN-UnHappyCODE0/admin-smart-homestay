@@ -195,6 +195,8 @@ function FormUpdateApartment({}: PropsFormUpdateApartment) {
 					keyword: '',
 					hasRented: 0,
 					status: STATUS_CONFIG.ACTIVE,
+					type: [1, 10, 25, 50, 100],
+					userUuid: '',
 				}),
 			}),
 		select(data) {
@@ -695,7 +697,7 @@ function FormUpdateApartment({}: PropsFormUpdateApartment) {
 												form?.rooms?.filter((room) => price(room.count) > 0)?.length > 0
 													? form?.rooms
 															?.filter((room) => price(room.count) > 0)
-															?.flatMap((room, index, arr) => [
+															?.flatMap?.((room, index, arr) => [
 																<span key={room.assetUuid}>
 																	{room.name} * <span style={{color: '#2970FF'}}>{room.count}</span>
 																</span>,
@@ -719,7 +721,7 @@ function FormUpdateApartment({}: PropsFormUpdateApartment) {
 												form?.furnitures?.filter((furniture) => price(furniture.count) > 0)?.length > 0
 													? form?.furnitures
 															?.filter((furniture) => price(furniture.count) > 0)
-															?.flatMap((furniture, index, arr) => [
+															?.flatMap?.((furniture, index, arr) => [
 																<span key={furniture.assetUuid}>
 																	{furniture.name} *{' '}
 																	<span style={{color: '#2970FF'}}>{furniture.count}</span>

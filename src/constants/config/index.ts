@@ -11,6 +11,7 @@ import {
 	Lamp,
 	Lock,
 	NotificationFavorite,
+	People,
 } from 'iconsax-react';
 import {TYPE_DATE} from './enum';
 
@@ -43,6 +44,8 @@ export enum PATH {
 	UnlockHistory = '/unlock-history',
 
 	Furniture = '/furniture',
+
+	GuestTenant = '/guest-tenant',
 
 	ApartmentOwner = 'apartment-owner',
 
@@ -163,6 +166,12 @@ export const Menus: {
 				icon: Lamp,
 				path: PATH.ApartmentOwner,
 				pathActive: PATH.ApartmentOwner,
+			},
+			{
+				title: 'Tài khoản khách thuê',
+				icon: People,
+				path: PATH.GuestTenant,
+				pathActive: PATH.GuestTenant,
 			},
 		],
 	},

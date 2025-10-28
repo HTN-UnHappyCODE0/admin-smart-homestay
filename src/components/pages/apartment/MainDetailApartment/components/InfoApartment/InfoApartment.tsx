@@ -100,7 +100,7 @@ function InfoApartment({}: PropsInfoApartment) {
 									name='Phòng'
 									value={
 										<>
-											{apartmentInfo?.apartmentRooms.flatMap((room, index, array) => (
+											{apartmentInfo?.apartmentRooms?.flatMap?.((room, index, array) => (
 												<span key={index}>
 													{room?.item?.name} * <span style={{color: '#2970FF'}}>{room?.count}</span>
 													{index < array.length - 1 && <span key={`sep-${room?.uuid}`}>, </span>}
@@ -113,7 +113,7 @@ function InfoApartment({}: PropsInfoApartment) {
 									name='Nội thất'
 									value={
 										<>
-											{apartmentInfo?.apartmentFurnitures.flatMap((furniture, index, array) => (
+											{apartmentInfo?.apartmentFurnitures?.flatMap?.((furniture, index, array) => (
 												<span key={index}>
 													{furniture?.item?.name} * <span style={{color: '#2970FF'}}>{furniture?.count}</span>
 													{index < array.length - 1 && <span key={`sep-${furniture?.uuid}`}>, </span>}
