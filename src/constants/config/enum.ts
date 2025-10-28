@@ -17,6 +17,7 @@ export enum QUERY_KEY {
 	table_meter,
 	table_meter_type,
 	table_apartment_owner,
+	table_employee_profile,
 
 	detail_info_apartment,
 	detail_apartment_type,
@@ -39,6 +40,7 @@ export enum QUERY_KEY {
 	dropdown_province,
 	dropdown_ward,
 	dropdown_meter_type,
+	dropdown_role,
 
 	list_room,
 	list_furniture,
@@ -86,6 +88,11 @@ export enum CONFIG_TYPE_FINDING {
 export enum STATUS_CONFIG {
 	LOCKED = 0,
 	ACTIVE,
+}
+
+export enum STATE_ACCOUNT {
+	NOT_ISSUE = 0, // chưa cấp tài khoản
+	ISSUED, // đã cấp tài khoản
 }
 
 export enum STATUS_TEMPORARILY_ABSENT {

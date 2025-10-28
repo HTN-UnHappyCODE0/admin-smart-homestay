@@ -45,6 +45,8 @@ export enum PATH {
 	Furniture = '/furniture',
 
 	ApartmentOwner = 'apartment-owner',
+
+	EmployeeProfile = 'employee-profile',
 }
 
 export const Menus: {
@@ -161,6 +163,17 @@ export const Menus: {
 				icon: Lamp,
 				path: PATH.ApartmentOwner,
 				pathActive: PATH.ApartmentOwner,
+			},
+		],
+	},
+	{
+		title: 'QUẢN LÝ TÀI KHOẢN',
+		group: [
+			{
+				title: 'Hồ sơ nhân viên',
+				icon: Lamp,
+				path: PATH.EmployeeProfile,
+				pathActive: PATH.EmployeeProfile,
 			},
 		],
 	},

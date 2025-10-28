@@ -57,7 +57,7 @@ function MainPageApartmentOwner({}: PropsMainPageApartmentOwner) {
 					pageSize: pageSize,
 					keyword: keyword,
 					hasRented: null,
-					type: 10,
+					type: [10],
 					userUuid: '',
 				}),
 			}),
