@@ -1,42 +1,42 @@
+import {useRouter} from 'next/router';
+import styles from './DetailApartmentVisit.module.scss';
+import {IDetailRequestView, PropsDetailApartmentVisit} from './interfaces';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useState} from 'react';
+import {httpRequest} from '~/services';
+import apartmentVisitServices from '~/services/apartmentVisitServices';
+import {QUERY_KEY, STATE_APARTMENT_VISIT} from '~/constants/config/enum';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
-import styles from './DetailRequestViewApartment.module.scss';
-import {IDetailRequestView, PropsDetailRequestViewApartment} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import StateActive from '~/components/utils/StateActive';
 import Moment from 'react-moment';
 import WrapperForm from '~/components/utils/WrapperForm';
-import InfoDetail from '~/components/utils/InfoDetail';
 import Image from 'next/image';
-import GridColumn from '~/components/layouts/GridColumn';
-import {useRouter} from 'next/router';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {QUERY_KEY, STATE_APARTMENT_VISIT} from '~/constants/config/enum';
-import {httpRequest} from '~/services';
-import apartmentVisitServices from '~/services/apartmentVisitServices';
 import {statusApartmentVisit} from '~/constants/config/data';
-import {useState} from 'react';
+import GridColumn from '~/components/layouts/GridColumn';
+import InfoDetail from '~/components/utils/InfoDetail';
 import Dialog from '~/components/common/Dialog';
 import {Warning2} from 'iconsax-react';
 
-function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) {
+function DetailApartmentVisit({onClose}: PropsDetailApartmentVisit) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuidRequestView} = router.query;
+	const {_uuidRequestVisit} = router.query;
 
 	const [rejectApartment, setRejectApartment] = useState<string>('');
 
-	const {data: detailRequestView} = useQuery<IDetailRequestView>([QUERY_KEY.detail_request_view_detail, _uuidRequestView], {
+	const {data: detailRequestView} = useQuery<IDetailRequestView>([QUERY_KEY.detail_apartment_visit_module, _uuidRequestVisit], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentVisitServices.getDetailLApartmentVisit({uuid: _uuidRequestView as string}),
+				http: apartmentVisitServices.getDetailLApartmentVisit({uuid: _uuidRequestVisit as string}),
 			}),
 
 		select(data) {
 			return data;
 		},
-		enabled: !!_uuidRequestView,
+		enabled: !!_uuidRequestVisit,
 	});
 
 	const funcRejectView = useMutation({
@@ -53,12 +53,14 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 			if (data) {
 				setRejectApartment('');
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.detail_request_view_detail],
+					queryKey: [QUERY_KEY.detail_apartment_visit_module],
+				});
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_visit_module],
 				});
 			}
 		},
 	});
-
 	return (
 		<WrapperFormPostion
 			width={1200}
@@ -66,7 +68,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 			actions={
 				<FlexLayout row gap-8>
 					{detailRequestView?.status === STATE_APARTMENT_VISIT.APPROVED && (
-						<Button p_8_24 rounded_8 red bold onClick={() => setRejectApartment(_uuidRequestView as string)}>
+						<Button p_8_24 rounded_8 red bold onClick={() => setRejectApartment(_uuidRequestVisit as string)}>
 							Từ chối xem
 						</Button>
 					)}
@@ -101,7 +103,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 					/>
 
 					<GridColumn col_3>
-						<InfoDetail name='Tên tài khoản' value={detailRequestView?.identification?.userUu?.bankName} textColor='#1F5FFF' />
+						<InfoDetail name='Tên tài khoản' value={detailRequestView?.identification?.userUu?.name} textColor='#1F5FFF' />
 						<InfoDetail name='Số điện thoại' value={detailRequestView?.identification?.userUu?.phoneNumber} />
 					</GridColumn>
 				</FlexLayout>
@@ -109,7 +111,7 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 
 			<WrapperForm title='Thông tin CMND/CCCD'>
 				<GridColumn col_3>
-					<InfoDetail name='Số CMND/CCCD' value={detailRequestView?.identification?.identityNumber} textColor='#1F5FFF' />
+					<InfoDetail name='Số CMND/CCCD' value={detailRequestView?.identification?.identityNumber} />
 					<InfoDetail name='Nơi cấp' value={detailRequestView?.identification?.issuedPlace} />
 					<InfoDetail name='Ngày cấp' value={detailRequestView?.identification?.issuedDate} />
 					<InfoDetail
@@ -157,4 +159,4 @@ function DetailRequestViewApartment({onClose}: PropsDetailRequestViewApartment) 
 	);
 }
 
-export default DetailRequestViewApartment;
+export default DetailApartmentVisit;

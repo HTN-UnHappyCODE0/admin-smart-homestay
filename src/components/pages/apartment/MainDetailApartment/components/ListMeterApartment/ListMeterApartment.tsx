@@ -58,7 +58,7 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment_list_meter, page, pageSize, keyword, status, _uuid], {
+	}>([QUERY_KEY.table_apartment_list_meter_detail, page, pageSize, keyword, status, _uuid], {
 		queryFn: () =>
 			httpRequest({
 				http: meterServices.listMeterInApartment({
@@ -95,7 +95,7 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 			if (data) {
 				setDataChangeStateSwitch(null);
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_list_meter],
+					queryKey: [QUERY_KEY.table_apartment_list_meter_detail],
 				});
 			}
 		},

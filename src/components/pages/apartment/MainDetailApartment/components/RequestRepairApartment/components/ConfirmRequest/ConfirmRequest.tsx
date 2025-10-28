@@ -52,10 +52,10 @@ function ConfirmRequest({uuidConfirm, onClose}: PropsConfirmRequest) {
 					images: [],
 				});
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_incident],
+					queryKey: [QUERY_KEY.table_apartment_incident_detail],
 				});
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.detail_request_repair],
+					queryKey: [QUERY_KEY.detail_request_repair_detail],
 				});
 			}
 		},
