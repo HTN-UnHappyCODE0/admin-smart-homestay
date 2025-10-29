@@ -47,9 +47,9 @@ export enum PATH {
 
 	GuestTenant = '/guest-tenant',
 
-	ApartmentOwner = 'apartment-owner',
+	ApartmentOwner = '/apartment-owner',
 
-	EmployeeProfile = 'employee-profile',
+	EmployeeProfile = '/employee-profile',
 }
 
 export const Menus: {

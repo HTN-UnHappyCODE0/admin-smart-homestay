@@ -14,6 +14,8 @@ const apartmentServices = {
 			sizeTo: number | null;
 			province: string;
 			ward: string;
+			hasWaterMeter: number | null;
+			hasElectricMeter: number | null;
 		},
 		tokenAxios?: any
 	) => {

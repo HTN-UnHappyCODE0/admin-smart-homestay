@@ -79,6 +79,8 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 					sizeTo: null,
 					province: '',
 					ward: '',
+					hasElectricMeter: null,
+					hasWaterMeter: null,
 				}),
 			}),
 		select(data) {

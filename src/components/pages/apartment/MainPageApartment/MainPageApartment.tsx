@@ -72,6 +72,8 @@ function MainPageApartment({}: PropsMainPageApartment) {
 					ward: '',
 					sizeFrom: null,
 					sizeTo: null,
+					hasElectricMeter: null,
+					hasWaterMeter: null,
 				}),
 			}),
 		select(data) {

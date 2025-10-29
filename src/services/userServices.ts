@@ -95,6 +95,30 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+
+	getStaffDetail: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/User/get-staff-detail`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+
+	createAccountForUser: (
+		data: {
+			userUuid: string;
+			username: string;
+			type: number;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/User/create-account-for-user`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default userServices;

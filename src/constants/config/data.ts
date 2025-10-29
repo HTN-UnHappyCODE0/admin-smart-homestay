@@ -13,6 +13,7 @@ import {
 	STATE_APARTMENT_PAYMENT_TYPE,
 	STATE_SWITCH,
 	STATE_ACCOUNT,
+	TYPE_USER,
 } from './enum';
 
 export function tabsDetailApartments(uuid: string): {
@@ -139,32 +140,32 @@ export const roleAccounts: {
 	textColor?: string;
 }[] = [
 	{
-		state: 1,
+		state: TYPE_USER.USER,
 		text: 'Người dùng',
 		backgroundColor: '#ABEFC6',
 		textColor: '#333',
 	},
 	{
-		state: 10,
+		state: TYPE_USER.APARTMENT_OWNER,
 		text: 'Chủ căn hộ',
 		backgroundColor: '#FEDF89',
 		textColor: '#333',
 	},
 
 	{
-		state: 25,
+		state: TYPE_USER.STAFF,
 		text: 'Nhân viên',
 		backgroundColor: '#FEDF89',
 		textColor: '#333',
 	},
 	{
-		state: 50,
+		state: TYPE_USER.MANAGE,
 		text: 'Quản lý',
 		backgroundColor: '#FEDF89',
 		textColor: '#333',
 	},
 	{
-		state: 100,
+		state: TYPE_USER.ADMINISTRATOR,
 		text: 'Quản trị viên',
 		backgroundColor: '#FEDF89',
 		textColor: '#333',
