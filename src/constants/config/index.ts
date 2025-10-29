@@ -50,6 +50,13 @@ export enum PATH {
 	ApartmentOwner = '/apartment-owner',
 
 	EmployeeProfile = '/employee-profile',
+	Advertisement = '/advertisement',
+
+	ApartmentVisit = '/apartment-visit',
+	ApartmentIncidentReport = '/apartment-incident-report',
+
+	ElectricWater = '/electric-water',
+	ElectricWaterDetail = '/electric-water/detail',
 }
 
 export const Menus: {
@@ -95,26 +102,26 @@ export const Menus: {
 			{
 				title: 'Bài đăng & quảng cáo',
 				icon: FavoriteChart,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.Advertisement,
+				pathActive: PATH.Advertisement,
 			},
 			{
 				title: 'Yêu cầu xem nhà',
 				icon: NotificationFavorite,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.ApartmentVisit,
+				pathActive: PATH.ApartmentVisit,
 			},
 			{
 				title: 'Yêu cầu sửa chữa',
 				icon: Alarm,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.ApartmentIncidentReport,
+				pathActive: PATH.ApartmentIncidentReport,
 			},
 			{
 				title: 'Quản lý điện nước',
 				icon: Flash,
-				path: PATH.Any,
-				pathActive: PATH.Any,
+				path: PATH.ElectricWater,
+				pathActive: PATH.ElectricWater,
 			},
 		],
 	},

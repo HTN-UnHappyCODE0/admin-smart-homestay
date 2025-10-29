@@ -1,11 +1,11 @@
 export enum QUERY_KEY {
 	table_apartment_type,
 	table_apartment,
-	table_apartment_visit,
-	table_apartment_incident,
-	table_apartment_list_meter,
-	table_apartment_advertisement,
-	table_rental_contract,
+	table_apartment_visit_detail,
+	table_apartment_incident_detail,
+	table_apartment_list_meter_detail,
+	table_apartment_advertisement_detail,
+	table_rental_contract_detail,
 	table_room_type,
 	table_cost_type,
 	table_lock,
@@ -17,15 +17,18 @@ export enum QUERY_KEY {
 	table_meter,
 	table_meter_type,
 	table_apartment_owner,
+	table_apartment_advertisement,
+	table_apartment_visit_module,
+	table_apartment_incident_module,
 	table_employee_profile,
 	table_guest_tenant,
 	table_employee_profile_apartment,
 
 	detail_info_apartment,
 	detail_apartment_type,
-	detail_request_view,
-	detail_request_repair,
-	detail_user_contract,
+	detail_request_view_detail,
+	detail_request_repair_detail,
+	detail_user_contract_detail,
 	detail_room_type,
 	detail_meter_type,
 	detail_cost_type,
@@ -34,6 +37,8 @@ export enum QUERY_KEY {
 	detail_apartment_for_update,
 	detail_meter_apartment_update,
 	detail_apartment_owner,
+	detail_apartment_visit_module,
+	detail_apartment_incident_report_module,
 	detail_guest_tenant,
 	detail_employee_profile,
 
@@ -123,7 +128,6 @@ export enum STATE_APARTMENT {
 
 export enum STATE_APARTMENT_VISIT {
 	CANCELED, // đã hủy
-	PENDING, // chờ duyệt
 	APPROVED, // đã duyệt
 	OVERDUE, // quá hạn
 }

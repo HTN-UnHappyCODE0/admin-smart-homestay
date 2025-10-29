@@ -27,7 +27,7 @@ function FormUpdateListMeter({onClose}: PropsFormUpdateListMeter) {
 		meters: [],
 	});
 
-	const {data: apartment} = useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_list_meter, _uuid], {
+	const {data: apartment} = useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_list_meter_detail, _uuid], {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.apartmentDetailForUpdate({
@@ -113,7 +113,7 @@ function FormUpdateListMeter({onClose}: PropsFormUpdateListMeter) {
 			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [QUERY_KEY.table_apartment_list_meter],
+				queryKey: [QUERY_KEY.table_apartment_list_meter_detail],
 			});
 			onClose?.();
 		},

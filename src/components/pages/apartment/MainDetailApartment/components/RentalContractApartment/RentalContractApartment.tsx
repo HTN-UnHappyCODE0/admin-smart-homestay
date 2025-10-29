@@ -40,7 +40,7 @@ function RentalContractApartment({}: PropsRentalContractApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_rental_contract, page, pageSize, _uuid], {
+	}>([QUERY_KEY.table_rental_contract_detail, page, pageSize, _uuid], {
 		queryFn: () =>
 			httpRequest({
 				http: contractServices.getUserContract({
@@ -56,7 +56,7 @@ function RentalContractApartment({}: PropsRentalContractApartment) {
 		},
 	});
 
-	const {data: apartmentInfo} = useQuery<ICurrentContract>([QUERY_KEY.detail_user_contract, _uuid], {
+	const {data: apartmentInfo} = useQuery<ICurrentContract>([QUERY_KEY.detail_user_contract_detail, _uuid], {
 		queryFn: () =>
 			httpRequest({
 				http: contractServices.getCurrentContract({

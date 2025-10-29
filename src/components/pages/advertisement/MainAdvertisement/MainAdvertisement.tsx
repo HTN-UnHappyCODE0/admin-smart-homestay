@@ -1,37 +1,34 @@
-import WrapperForm from '~/components/utils/WrapperForm';
-import MainDetailApartment from '../../MainDetailApartment';
-import styles from './ListAdvertisementApartment.module.scss';
-import {IAdvertisement, PropsListAdvertisementApartment} from './interfaces';
-import FlexLayout from '~/components/layouts/FlexLayout';
-import Search from '~/components/common/Search';
-import FilterCustom from '~/components/common/FilterCustom';
-import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
-import Button from '~/components/common/Button';
-import {DocumentSketch, Edit, Eye, RepeatCircle, Warning2} from 'iconsax-react';
 import {useRouter} from 'next/router';
+import styles from './MainAdvertisement.module.scss';
+import {IAdvertisement, PropsMainAdvertisement} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useState} from 'react';
+import {Fragment, useState} from 'react';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
+import FlexLayout from '~/components/layouts/FlexLayout';
+import Header from '~/components/utils/Header';
+import Button from '~/components/common/Button';
+import {AddCircle, DocumentSketch, Edit, Eye, RepeatCircle, Warning2} from 'iconsax-react';
+import {PATH} from '~/constants/config';
+import SearchBlock from '~/components/utils/SearchBlock';
+import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
+import FilterCustom from '~/components/common/FilterCustom';
+import {stateApartmentAdvertisement, statusApartmentAdvertisement} from '~/constants/config/data';
 import FilterDateRange from '~/components/common/FilterDateRange';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_PAYMENT_TYPE, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
+import Pagination from '~/components/common/Pagination';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
 import Link from 'next/link';
-import {PATH} from '~/constants/config';
-import StateActive from '~/components/utils/StateActive';
+import {getUnitByAdPrice} from '~/common/funcs/getUnitByAdPrice';
 import moment from 'moment';
-import IconActionTable from '~/components/utils/IconActionTable';
-import Pagination from '~/components/common/Pagination';
+import StateActive from '~/components/utils/StateActive';
 import SwitchButton from '~/components/common/SwitchButton';
+import IconActionTable from '~/components/utils/IconActionTable';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
-import {stateApartmentAdvertisement, statusApartmentAdvertisement} from '~/constants/config/data';
-import {getUnitByAdPrice} from '~/common/funcs/getUnitByAdPrice';
 import Dialog from '~/components/common/Dialog';
-import PositionContainer from '~/components/common/PositionContainer';
-import FormCreateAdvertisement from './components/FormCreateAdvertisement';
 
-function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
+function MainAdvertisement({}: PropsMainAdvertisement) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
@@ -51,6 +48,13 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 		name: string;
 	} | null>(null);
 
+	const resetFilter = () => {
+		setKeyword('');
+		setStatus(null);
+		setTypeDate(TYPE_DATE.ALL);
+		setDate(null);
+	};
+
 	const {
 		data = {
 			items: [],
@@ -66,7 +70,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment_advertisement_detail, page, pageSize, keyword, status, stateAdvertisement], {
+	}>([QUERY_KEY.table_apartment_advertisement, page, pageSize, keyword, status, stateAdvertisement], {
 		queryFn: () =>
 			httpRequest({
 				http: advertisementServices.getListAdvertisement({
@@ -108,59 +112,78 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 			if (data) {
 				setDataChangeStateSwitch(null);
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_advertisement_detail],
+					queryKey: [QUERY_KEY.table_apartment_advertisement],
 				});
 			}
 		},
 	});
 
 	return (
-		<MainDetailApartment>
-			<WrapperForm title='Danh sách quảng cáo'>
-				<FlexLayout row gap-8 justify-space-between wrap>
-					<FlexLayout row gap-8 wrap>
-						<Search keyword={keyword} setKeyword={setKeyword} />
-						<FilterCustom
-							name='Trạng thái'
-							value={status}
-							setValue={setStatus}
-							listOption={statusApartmentAdvertisement.map((item) => ({
-								uuid: item.state,
-								name: item.text,
-							}))}
-						/>
-						<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
-						<FilterCustom
-							name='Hiển thị'
-							value={stateAdvertisement}
-							setValue={setStateAdvertisement}
-							listOption={stateApartmentAdvertisement.map((item) => ({
-								uuid: item.state,
-								name: item.text,
-							}))}
-						/>
-					</FlexLayout>
-					<FlexItem>
-						<Button
-							icon={<Edit />}
-							p_8_24
-							rounded_8
-							blue
-							bold
-							onClick={() =>
-								router.replace({
-									pathname: router.pathname,
-									query: {
-										...router.query,
-										_open: 'create',
-									},
-								})
-							}
-						>
-							Tạo bài đăng
-						</Button>
-					</FlexItem>
-				</FlexLayout>
+		<Fragment>
+			<FlexLayout column gap-12>
+				<Header
+					title='Bài đăng & quảng cáo'
+					actions={
+						<FlexLayout row gap-6>
+							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold>
+								Tạo bài đăng
+							</Button>
+						</FlexLayout>
+					}
+				/>
+
+				<SearchBlock
+					keyword={keyword}
+					setKeyword={setKeyword}
+					placeholder='Tìm kiếm theo mã, tên danh mục'
+					action={
+						<FlexLayout row gap-8 fit-height>
+							<FlexItem flex-1 overflow-y scrollbar>
+								<FlexLayout row gap-8>
+									<FilterCustom
+										name='Căn hộ'
+										value={status}
+										setValue={setStatus}
+										listOption={[
+											{
+												uuid: 1,
+												name: 'Căn hộ 1',
+											},
+											{
+												uuid: 2,
+												name: 'Căn hộ 2',
+											},
+										]}
+									/>
+									<FilterCustom
+										name='Trạng thái'
+										value={status}
+										setValue={setStatus}
+										listOption={statusApartmentAdvertisement.map((item) => ({
+											uuid: item.state,
+											name: item.text,
+										}))}
+									/>
+									<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
+									<FilterCustom
+										name='Hiển thị'
+										value={stateAdvertisement}
+										setValue={setStateAdvertisement}
+										listOption={stateApartmentAdvertisement.map((item) => ({
+											uuid: item.state,
+											name: item.text,
+										}))}
+									/>
+								</FlexLayout>
+							</FlexItem>
+							<FlexLayout row gap-8>
+								<Button p_8_24 black rounded_24 bold onClick={resetFilter}>
+									Đặt lại
+								</Button>
+							</FlexLayout>
+						</FlexLayout>
+					}
+				/>
 
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
@@ -183,7 +206,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 									{
 										title: 'Mã bài đăng',
 										render: (row, _) => (
-											<Link className={styles.link} href={PATH.ListAdvertisementApartment}>
+											<Link className={styles.link} href={PATH.Advertisement}>
 												{row?.code}
 											</Link>
 										),
@@ -311,36 +334,9 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 					onClose={() => setDataChangeStateSwitch(null)}
 					onSubmit={funcChangeSwitch.mutate}
 				/>
-
-				<PositionContainer
-					open={_open == 'create'}
-					onClose={() => {
-						const {_open, ...rest} = router.query;
-
-						router.replace({
-							pathname: router.pathname,
-							query: {
-								...rest,
-							},
-						});
-					}}
-				>
-					<FormCreateAdvertisement
-						onClose={() => {
-							const {_open, ...rest} = router.query;
-
-							router.replace({
-								pathname: router.pathname,
-								query: {
-									...rest,
-								},
-							});
-						}}
-					/>
-				</PositionContainer>
-			</WrapperForm>
-		</MainDetailApartment>
+			</FlexLayout>
+		</Fragment>
 	);
 }
 
-export default ListAdvertisementApartment;
+export default MainAdvertisement;

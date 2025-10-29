@@ -1,0 +1,28 @@
+export interface PropsMainApartmentIncidentReport {}
+
+export interface IIncidentApartment {
+	code: string;
+	userReportUu: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	apartmentUu: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	reportDate: string;
+	reason: string;
+	userResolveUu: number;
+	resolveDate: string;
+	description: string;
+	images: string[];
+	id: number;
+	uuid: string;
+	status: number;
+}

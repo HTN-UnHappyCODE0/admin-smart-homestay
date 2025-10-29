@@ -55,7 +55,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			uuid: string;
 			status: number;
 		}[]
-	>([QUERY_KEY.table_apartment_advertisement], {
+	>([QUERY_KEY.table_apartment_advertisement_detail], {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.getListApartments({
@@ -79,7 +79,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement, form.apartmentUuid], {
+	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_detail, form.apartmentUuid], {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.apartmentDetailForUpdate({

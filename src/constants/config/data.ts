@@ -273,12 +273,6 @@ export const statusApartmentVisit: {
 		textColor: '#FFF',
 	},
 	{
-		state: STATE_APARTMENT_VISIT.PENDING,
-		text: 'Chờ duyệt',
-		backgroundColor: '#F79009',
-		textColor: '#FFF',
-	},
-	{
 		state: STATE_APARTMENT_VISIT.APPROVED,
 		text: 'Đã duyệt',
 		backgroundColor: '#17B26A',
