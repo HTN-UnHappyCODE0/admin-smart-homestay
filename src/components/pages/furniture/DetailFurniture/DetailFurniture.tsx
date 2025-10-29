@@ -20,6 +20,7 @@ import {useRouter} from 'next/router';
 import StateActive from '~/components/utils/StateActive';
 import {statusFurniture} from '~/constants/config/data';
 import Pagination from '~/components/common/Pagination';
+import {getDetailAddress} from '~/common/funcs/optionConvert';
 
 function DetailFurniture({onClose}: PropsDetailFurniture) {
 	const router = useRouter();
@@ -129,7 +130,16 @@ function DetailFurniture({onClose}: PropsDetailFurniture) {
 										},
 										{
 											title: 'Địa chỉ',
-											render: (row, _) => <>{row?.apartmentUu?.address || '---'}</>,
+											render: (row, _) => (
+												<>
+													{getDetailAddress({
+														address: row?.apartmentUu?.address,
+														provinceName: row?.apartmentUu?.province?.fullName,
+														districtName: '',
+														wardName: row?.apartmentUu?.ward?.fullName,
+													})}
+												</>
+											),
 										},
 										{
 											title: 'Số lượng',

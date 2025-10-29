@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import TippyHeadless from '@tippyjs/react/headless';
-
 import {PropsFilterDateRange} from './interfaces';
 import styles from './FilterDateRange.module.scss';
 import Moment from 'react-moment';

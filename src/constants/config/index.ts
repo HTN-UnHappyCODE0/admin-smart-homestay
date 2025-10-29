@@ -47,13 +47,13 @@ export enum PATH {
 
 	GuestTenant = '/guest-tenant',
 
+	ApartmentOwner = '/apartment-owner',
+
+	EmployeeProfile = '/employee-profile',
 	Advertisement = '/advertisement',
 
 	ApartmentVisit = '/apartment-visit',
 	ApartmentIncidentReport = '/apartment-incident-report',
-	ApartmentOwner = 'apartment-owner',
-
-	EmployeeProfile = 'employee-profile',
 
 	ElectricWater = '/electric-water',
 	ElectricWaterDetail = '/electric-water/detail',
