@@ -22,6 +22,9 @@ import {getDetailAddress} from '~/common/funcs/optionConvert';
 import StateActive from '~/components/utils/StateActive';
 import Loading from '~/components/common/Loading';
 import Dialog from '~/components/common/Dialog';
+import {PATH} from '~/constants/config';
+import Link from 'next/link';
+import Tippy from '@tippyjs/react';
 
 function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 	const router = useRouter();
@@ -62,6 +65,9 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 				queryClient.invalidateQueries({
 					queryKey: [QUERY_KEY.detail_employee_profile],
 				});
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_employee_profile],
+				});
 			}
 		},
 	});
@@ -73,7 +79,7 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 				width={1200}
 				title='Chi tiết hồ sơ '
 				nodes={
-					<FlexLayout row gap-8>
+					<FlexLayout row gap-8 items-center>
 						<p
 							style={{
 								color: '#202939',
@@ -149,13 +155,18 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 									column={[
 										{
 											title: 'STT',
-											fixedLeft: true,
 											render: (_, index) => <>{index + 1}</>,
 										},
 
 										{
 											title: 'Tên căn hộ',
-											render: (row, _) => <>{row?.name || '---'}</>,
+											render: (row, _) => (
+												<Tippy content='Xem chi tiết căn hộ'>
+													<Link href={`${PATH.ApartmentDetail}?_uuid=${row?.uuid}`} className={styles.link}>
+														{row?.name || '---'}
+													</Link>
+												</Tippy>
+											),
 										},
 										{
 											title: 'Tên chủ căn hộ',
@@ -181,7 +192,11 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 											fixedRight: true,
 											render: (row, _) => (
 												<FlexLayout row>
-													<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+													<IconActionTable
+														icon={<Eye color='#292D32' size={24} />}
+														tooltip='Xem chi tiết căn hộ'
+														href={`${PATH.ApartmentDetail}?_uuid=${row?.uuid}`}
+													/>
 												</FlexLayout>
 											),
 										},

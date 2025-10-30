@@ -90,10 +90,11 @@ export enum CONFIG_TYPE_FIND {
 
 export enum CONFIG_TYPE_FINDING {
 	CATALOG = 0,
+	SIMPLE,
 	DTO,
 	DETAIL,
-	SIMPLE,
 	CUSTOM,
+	OTHER,
 }
 
 export enum STATUS_CONFIG {

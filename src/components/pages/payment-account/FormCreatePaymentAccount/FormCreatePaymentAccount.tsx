@@ -113,7 +113,7 @@ function FormCreatePaymentAccount({onClose}: PropsFormCreatePaymentAccount) {
 		<Form form={form} setForm={setForm} onSubmit={handleCreatePaymentAccount}>
 			<Loading loading={funcCreatePaymentAccount.isLoading} />
 			<WrapperFormPostion
-				width={1200}
+				width={600}
 				title='Thêm tài khoản thanh toán'
 				actions={
 					<FlexLayout row gap-8>
@@ -131,56 +131,53 @@ function FormCreatePaymentAccount({onClose}: PropsFormCreatePaymentAccount) {
 				}
 			>
 				<WrapperForm title='Thông tin tài khoản'>
-					<GridColumn col_3>
-						<Select
-							placeholder='Lựa chọn'
+					<Select
+						placeholder='Lựa chọn'
+						label={
+							<span>
+								Tên ngân hàng <span style={{color: 'red'}}>* </span>
+							</span>
+						}
+						value={form?.bankName}
+						options={bankNames}
+						onSelect={(data) =>
+							setForm((prev) => ({
+								...prev,
+								bankName: data.name,
+							}))
+						}
+						getOptionLabel={(opt) => opt.name}
+						getOptionValue={(opt) => opt.name}
+					/>
+					<div style={{marginTop: '16px'}}>
+						<Input
 							label={
 								<span>
-									Tên ngân hàng <span style={{color: 'red'}}>* </span>
+									Tên tài khoản <span style={{color: 'red'}}>*</span>
 								</span>
 							}
-							value={form?.bankName}
-							options={bankNames}
-							onSelect={(data) =>
-								setForm((prev) => ({
-									...prev,
-									bankName: data.name,
-								}))
-							}
-							getOptionLabel={(opt) => opt.name}
-							getOptionValue={(opt) => opt.name}
+							placeholder='Nhập tên tài khoản'
+							type='text'
+							name='bankAccount'
+							onClean
+							isRequired
+							isUppercase
+							isBlur
 						/>
-						<div>
-							<Input
-								label={
-									<span>
-										Tên tài khoản <span style={{color: 'red'}}>*</span>
-									</span>
-								}
-								placeholder='Nhập tên tài khoản'
-								type='text'
-								name='bankAccount'
-								onClean
-								isRequired
-								isBlur
-							/>
-						</div>
-						<div>
-							<Input
-								label={
-									<span>
-										Số tài khoản <span style={{color: 'red'}}>*</span>
-									</span>
-								}
-								placeholder='Nhập số tài khoản'
-								type='text'
-								name='bankNumber'
-								onClean
-								isRequired
-								isBlur
-							/>
-						</div>
-					</GridColumn>
+						<Input
+							label={
+								<span>
+									Số tài khoản <span style={{color: 'red'}}>*</span>
+								</span>
+							}
+							placeholder='Nhập số tài khoản'
+							type='text'
+							name='bankNumber'
+							onClean
+							isRequired
+							isBlur
+						/>
+					</div>
 				</WrapperForm>
 			</WrapperFormPostion>
 		</Form>

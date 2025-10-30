@@ -64,7 +64,6 @@ function FormCreateAccount({data, onClose}: PropsFormCreateAccount) {
 					name='name'
 					readOnly
 				/>
-				<div className={styles.line}></div>
 				<Input
 					label={
 						<span>
@@ -75,37 +74,43 @@ function FormCreateAccount({data, onClose}: PropsFormCreateAccount) {
 					type='text'
 					name='userName'
 					isRequired
+					isBlur
 					value={form?.userName}
 				/>
-				<div className={styles.line}></div>
-				<Select
-					placeholder='Lựa chọn'
-					label={
-						<span>
-							Vai trò <span style={{color: 'red'}}>*</span>
-						</span>
-					}
-					value={form.type}
-					options={roleAccounts.map((type) => ({
-						...type,
-						state: String(type.state),
-					}))}
-					onSelect={(data) =>
-						setForm((prev) => ({
-							...prev,
-							type: String(data.state),
-						}))
-					}
-					getOptionLabel={(opt) => opt.text}
-					getOptionValue={(opt) => opt.state}
-				/>
+				<div style={{marginTop: '16px'}}>
+					<Select
+						placeholder='Lựa chọn'
+						label={
+							<span>
+								Vai trò <span style={{color: 'red'}}>*</span>
+							</span>
+						}
+						value={form.type}
+						options={roleAccounts
+							?.filter(
+								(role) =>
+									role.state == TYPE_USER.STAFF || role.state == TYPE_USER.MANAGE || role.state == TYPE_USER.ADMINISTRATOR
+							)
+							?.map((type) => ({
+								...type,
+								state: String(type.state),
+							}))}
+						onSelect={(data) =>
+							setForm((prev) => ({
+								...prev,
+								type: String(data.state),
+							}))
+						}
+						getOptionLabel={(opt) => opt.text}
+						getOptionValue={(opt) => opt.state}
+					/>
+				</div>
 				<div className={styles.list_btn}>
 					<div>
 						<Button p_10_24 white rounded_8 bold onClick={onClose}>
 							Hủy bỏ
 						</Button>
 					</div>
-
 					<ContextForm.Consumer>
 						{({isDone}) => (
 							<div>

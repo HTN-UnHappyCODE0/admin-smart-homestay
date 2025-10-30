@@ -15,7 +15,15 @@ import Table from '~/components/common/Table';
 import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_ACCOUNT, STATUS_CONFIG, TYPE_USER} from '~/constants/config/enum';
+import {
+	CONFIG_PAGING,
+	CONFIG_TYPE_FIND,
+	CONFIG_TYPE_FINDING,
+	QUERY_KEY,
+	STATE_ACCOUNT,
+	STATUS_CONFIG,
+	TYPE_USER,
+} from '~/constants/config/enum';
 import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateEmployeeProfile from '../FormCreateEmployeeProfile';
@@ -26,7 +34,6 @@ import userServices from '~/services/userServices';
 import DetailEmployeeProfile from '../DetailEmployeeProfile';
 import Popup from '~/components/common/Popup';
 import FormCreateAccount from '../FormCreateAccount';
-import FilterCustom from '~/components/common/FilterCustom';
 
 function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const router = useRouter();
@@ -39,7 +46,6 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [status, setStatus] = useState<number | null>(null);
 	const [dataCreateAccount, setDataCreateAccount] = useState<{name: string; userUuid: string} | null>(null);
 
 	const {
@@ -57,18 +63,18 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_employee_profile, keyword, page, pageSize, keyword, status], {
+	}>([QUERY_KEY.table_employee_profile, page, pageSize, keyword], {
 		queryFn: () =>
 			httpRequest({
 				http: userServices.getUsers({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
-					page: 1,
-					pageSize: 100,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+					page: page,
+					pageSize: pageSize,
 					keyword: keyword,
-					hasRented: 0,
-					status: null,
 					type: [TYPE_USER.STAFF, TYPE_USER.MANAGE, TYPE_USER.ADMINISTRATOR],
+					hasRented: null,
+					status: null,
 					userUuid: '',
 				}),
 			}),
@@ -147,10 +153,10 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 								column={[
 									{
 										title: 'STT',
-										fixedLeft: true,
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
+										fixedLeft: true,
 										title: 'Mã nhân viên',
 										render: (row, _) => <>{row?.code || '---'}</>,
 									},
@@ -169,10 +175,10 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 									},
 									{
 										title: 'Căn hộ quản lý',
-										render: (row, _) => <>{row?.numApartment || '---'}</>,
+										render: (row, _) => <>{row?.numApartment || '0'}</>,
 									},
 									{
-										title: 'Trạng thái nhân viên',
+										title: 'Trạng thái tài khoản',
 										render: (row, _) => (
 											<StateActive
 												stateActive={!row?.userName ? STATE_ACCOUNT.NOT_ISSUE : STATE_ACCOUNT.ISSUED}
@@ -212,7 +218,6 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 													}
 												/>
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa nội thất' />
-
 												<IconActionTable
 													icon={
 														row?.status == STATUS_CONFIG.ACTIVE ? (
@@ -229,7 +234,6 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 														})
 													}
 												/>
-
 												{row?.userName == null && (
 													<IconActionTable
 														icon={<UserAdd color='#292D32' size={24} />}

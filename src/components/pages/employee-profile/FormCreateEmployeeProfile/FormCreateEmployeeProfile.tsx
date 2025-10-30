@@ -8,12 +8,10 @@ import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import WrapperForm from '~/components/utils/WrapperForm';
 import GridColumn from '~/components/layouts/GridColumn';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import userServices from '~/services/userServices';
-import {useRouter} from 'next/router';
-import {toastWarn} from '~/common/funcs/toast';
-import {TYPE_USER} from '~/constants/config/enum';
+import {QUERY_KEY, TYPE_USER} from '~/constants/config/enum';
 import {roleAccounts} from '~/constants/config/data';
 
 export interface IFormCreateEmployeeProfile {
@@ -35,23 +33,24 @@ const initForm: IFormCreateEmployeeProfile = {
 };
 
 function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
-	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const [form, setForm] = useState<IFormCreateEmployeeProfile>(initForm);
 
-	const funcCreateApartment = useMutation({
-		mutationFn: (body: {paths: string[]}) =>
+	const funcCreateEmployeeProfile = useMutation({
+		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
 				msgSuccess: 'Thêm hồ sơ nhân viên thành công!',
 				http: userServices.createUser({
-					managerUuid: '',
 					name: form?.name,
 					email: form?.email,
-					username: form?.username,
-					password: '',
 					phoneNumber: form?.phoneNumber,
+					username: form?.username,
+					type: Number(form?.role) || TYPE_USER.STAFF,
+					managerUuid: '',
+					password: '',
 					profileImage: '',
 					birthDate: null,
 					gender: 0,
@@ -63,36 +62,26 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 					bankName: '',
 					bankNumber: '',
 					bankAccount: '',
-					type: TYPE_USER.STAFF,
 				}),
 			}),
 		onSuccess(data) {
 			if (data) {
 				setForm(initForm);
-				router.back();
+				onClose();
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_employee_profile],
+				});
 			}
 		},
 	});
 
 	const handleCreateEmpoyeeProfile = async () => {
-		if (!form.name) {
-			return toastWarn({msg: 'Nhập họ tên nhân viên!'});
-		}
-		if (!form.phoneNumber) {
-			return toastWarn({msg: 'Nhập số điện thoại!'});
-		}
-		if (!form.email) {
-			return toastWarn({msg: 'Nhập email!'});
-		} else {
-			return funcCreateApartment.mutate({
-				paths: [],
-			});
-		}
+		return funcCreateEmployeeProfile.mutate();
 	};
 
 	return (
 		<Form form={form} setForm={setForm} onSubmit={handleCreateEmpoyeeProfile}>
-			<Loading loading={funcCreateApartment.isLoading} />
+			<Loading loading={funcCreateEmployeeProfile.isLoading} />
 			<WrapperFormPostion
 				width={1200}
 				title='Thêm mới hồ sơ nhân viên'
@@ -122,7 +111,6 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 							placeholder='Nhập tên'
 							type='text'
 							name='name'
-							onClean
 							isRequired
 							isBlur
 						/>
@@ -136,7 +124,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 								placeholder='Nhập số'
 								type='text'
 								name='phoneNumber'
-								onClean
+								isPhone
 								isRequired
 								isBlur
 							/>
@@ -151,7 +139,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 								placeholder='Nhập email'
 								type='text'
 								name='email'
-								onClean
+								isEmail
 								isRequired
 								isBlur
 							/>
@@ -164,16 +152,23 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 
 				<WrapperForm title='Thông tin tài khoản'>
 					<GridColumn col_2>
-						<Input label={<span>Tên tài khoản</span>} placeholder='Nhập tên' type='text' name='username' onClean />
+						<Input label={<span>Tên tài khoản</span>} placeholder='Nhập tên' type='text' name='username' isBlur />
 						<div>
 							<Select
 								placeholder='Lựa chọn'
 								label={<span>Vai trò</span>}
 								value={form.role}
-								options={roleAccounts.map((role) => ({
-									...role,
-									state: String(role.state),
-								}))}
+								options={roleAccounts
+									?.filter(
+										(role) =>
+											role.state == TYPE_USER.STAFF ||
+											role.state == TYPE_USER.MANAGE ||
+											role.state == TYPE_USER.ADMINISTRATOR
+									)
+									?.map((role) => ({
+										...role,
+										state: String(role.state),
+									}))}
 								onSelect={(data) =>
 									setForm((prev) => ({
 										...prev,

@@ -2,7 +2,6 @@ import {Fragment, useState} from 'react';
 import styles from './MainPaymentAccount.module.scss';
 import {IPaymentAccount, PropsMainPaymentAccount} from './interfaces';
 import Loading from '~/components/common/Loading';
-import LayoutMainPage from '~/components/layouts/LayoutMainPage';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
@@ -30,11 +29,12 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
+	const {_open} = router.query;
+
 	const [keyword, setKeyword] = useState<string>('');
+	const [status, setStatus] = useState<number | null>(null);
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
-	const [status, setStatus] = useState<number | null>(null);
-	const {_open} = router.query;
 
 	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number} | null>(null);
 
@@ -57,8 +57,8 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 		queryFn: () =>
 			httpRequest({
 				http: paymentAccountServices.getListBankPayment({
-					keyword: keyword,
 					isPaging: CONFIG_PAGING.IS_PAGING,
+					keyword: keyword,
 					page: page,
 					pageSize: pageSize,
 					status: status,
@@ -162,16 +162,15 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 								column={[
 									{
 										title: 'STT',
-										fixedLeft: true,
 										render: (_, index) => <>{index + 1}</>,
-									},
-									{
-										title: 'Tên ngân hàng',
-										render: (row, _) => <>{row?.bankName || '---'}</>,
 									},
 									{
 										title: 'Tên tài khoản',
 										render: (row, _) => <>{row?.bankAccount || '---'}</>,
+									},
+									{
+										title: 'Tên ngân hàng',
+										render: (row, _) => <>{row?.bankName || '---'}</>,
 									},
 									{
 										title: 'Số tài khoản',
@@ -189,7 +188,6 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 										render: (row, _) => (
 											<FlexLayout row>
 												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
-
 												<IconActionTable
 													icon={<Edit color='#292D32' size={24} />}
 													tooltip='Chỉnh sửa tài khoản thanh toán'
@@ -227,7 +225,7 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword]}
+							dependencies={[pageSize, keyword, status]}
 						/>
 					</MainTable>
 				</FlexItem>
