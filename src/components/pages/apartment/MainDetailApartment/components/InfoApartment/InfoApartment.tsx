@@ -50,12 +50,12 @@ function InfoApartment({}: PropsInfoApartment) {
 				showMessageSuccess: true,
 				showMessageFailed: true,
 				msgSuccess:
-					dataChangeStateSwitch?.state == STATE_SWITCH.ON
+					dataChangeStateSwitch?.state == 1
 						? `Tắt ${dataChangeStateSwitch?.name} thành công!`
 						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
 				http: apartmentServices.changeStateMeter({
 					apartmentMeterUuid: dataChangeStateSwitch?.apartmentMeterUuid!,
-					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
+					state: dataChangeStateSwitch?.state === STATE_SWITCH.OFF,
 				}),
 			}),
 		onSuccess(data) {

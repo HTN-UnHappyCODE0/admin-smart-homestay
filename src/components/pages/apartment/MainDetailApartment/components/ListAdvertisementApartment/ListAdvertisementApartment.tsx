@@ -263,7 +263,6 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 													icon={<DocumentSketch color='#292D32' size={24} />}
 													tooltip='Copy và đăng mới'
 												/>
-												{/*  */}
 												<IconActionTable
 													icon={<RepeatCircle color='#292D32' size={24} />}
 													tooltip='Đăng lại ngay'

@@ -117,30 +117,30 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	const funcCreateAdvertisement = useMutation({
-		mutationFn: (body: {paths: string[]}) =>
-			httpRequest({
-				showMessageFailed: true,
-				showMessageSuccess: true,
-				msgSuccess: 'Thêm căn hộ thành công!',
-				http: advertisementServices.createAdvertisement({
-					apartmentUuid: _uuid as string,
-					title: form?.title,
-					adPrices: form?.adPrices,
-					deposit: form?.deposit,
-					description: form?.description,
-					startDate: moment(form?.startDate).format('YYYY-MM-DD'),
-					expireDate: moment(form?.expireDate).format('YYYY-MM-DD'),
-					price: form?.price,
-					images: body?.paths,
-				}),
-			}),
-		onSuccess(data) {
-			if (data) {
-				setForm(initForm);
-			}
-		},
-	});
+	// const funcCreateAdvertisement = useMutation({
+	// 	mutationFn: (body: {paths: string[]}) =>
+	// 		httpRequest({
+	// 			showMessageFailed: true,
+	// 			showMessageSuccess: true,
+	// 			msgSuccess: 'Thêm căn hộ thành công!',
+	// 			http: advertisementServices.createAdvertisement({
+	// 				apartmentUuid: _uuid as string,
+	// 				title: form?.title,
+	// 				adPrices: form?.adPrices,
+	// 				deposit: form?.deposit,
+	// 				description: form?.description,
+	// 				startDate: moment(form?.startDate).format('YYYY-MM-DD'),
+	// 				expireDate: moment(form?.expireDate).format('YYYY-MM-DD'),
+	// 				price: form?.price,
+	// 				images: body?.paths,
+	// 			}),
+	// 		}),
+	// 	onSuccess(data) {
+	// 		if (data) {
+	// 			setForm(initForm);
+	// 		}
+	// 	},
+	// });
 
 	const handleCreateAdvertisement = async () => {
 		if (!form.title) {
@@ -167,27 +167,27 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			return toastWarn({msg: 'Chọn thời gian kết thúc!'});
 		}
 
-		if (images.length > 0) {
-			const files = images?.map((v) => v?.file);
+		// if (images.length > 0) {
+		// 	const files = images?.map((v) => v?.file);
 
-			const dataImage = await httpRequest({
-				setLoading,
-				http: fileServices.uploadMultilFile(files, 'false'),
-			});
+		// 	const dataImage = await httpRequest({
+		// 		setLoading,
+		// 		http: fileServices.uploadMultilFile(files, 'false'),
+		// 	});
 
-			return funcCreateAdvertisement.mutate({
-				paths: dataImage,
-			});
-		} else {
-			return funcCreateAdvertisement.mutate({
-				paths: [],
-			});
-		}
+		// 	return funcCreateAdvertisement.mutate({
+		// 		paths: dataImage,
+		// 	});
+		// } else {
+		// 	return funcCreateAdvertisement.mutate({
+		// 		paths: [],
+		// 	});
+		// }
 	};
 
 	return (
 		<Form form={form} setForm={setForm} onSubmit={handleCreateAdvertisement}>
-			<Loading loading={loading || funcCreateAdvertisement.isLoading} />
+			{/* <Loading loading={loading || funcCreateAdvertisement.isLoading} /> */}
 			<WrapperFormPostion
 				width={1400}
 				title='Thêm mới bài đăng'

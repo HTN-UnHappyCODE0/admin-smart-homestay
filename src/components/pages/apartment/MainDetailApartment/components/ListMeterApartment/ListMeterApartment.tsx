@@ -88,7 +88,7 @@ function ListMeterApartment({}: PropsListMeterApartment) {
 						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
 				http: apartmentServices.changeStateMeter({
 					apartmentMeterUuid: dataChangeStateSwitch?.apartmentMeterUuid!,
-					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
+					state: dataChangeStateSwitch?.state === STATE_SWITCH.OFF,
 				}),
 			}),
 		onSuccess(data) {

@@ -112,7 +112,7 @@ const apartmentServices = {
 	changeStateMeter: (
 		data: {
 			apartmentMeterUuid: string;
-			state: number;
+			state: Boolean;
 		},
 		tokenAxios?: any
 	) => {
