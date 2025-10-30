@@ -22,6 +22,8 @@ export enum QUERY_KEY {
 	table_apartment_incident_module,
 	table_employee_profile,
 	table_guest_tenant,
+	table_employee_profile_apartment,
+	table_payment_account,
 
 	detail_info_apartment,
 	detail_apartment_type,
@@ -39,6 +41,7 @@ export enum QUERY_KEY {
 	detail_apartment_visit_module,
 	detail_apartment_incident_report_module,
 	detail_guest_tenant,
+	detail_employee_profile,
 
 	dropdown_apartment_type,
 	dropdown_user,
@@ -48,6 +51,7 @@ export enum QUERY_KEY {
 	dropdown_ward,
 	dropdown_meter_type,
 	dropdown_role,
+	dropdown_payment_account,
 
 	list_room,
 	list_furniture,
@@ -187,4 +191,12 @@ export enum PURPOSE_UPLOAD {
 export enum STATE_SWITCH {
 	OFF,
 	ON,
+}
+
+export enum TYPE_USER {
+	USER = 1, // người dùng
+	APARTMENT_OWNER = 10, // chủ căn hộ
+	STAFF = 25, // nhân viên
+	MANAGE = 50, // quản lý
+	ADMINISTRATOR = 100, // quản trị viên
 }

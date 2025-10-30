@@ -47,16 +47,18 @@ export enum PATH {
 
 	GuestTenant = '/guest-tenant',
 
+	ApartmentOwner = '/apartment-owner',
+
+	EmployeeProfile = '/employee-profile',
 	Advertisement = '/advertisement',
 
 	ApartmentVisit = '/apartment-visit',
 	ApartmentIncidentReport = '/apartment-incident-report',
-	ApartmentOwner = 'apartment-owner',
-
-	EmployeeProfile = 'employee-profile',
 
 	ElectricWater = '/electric-water',
 	ElectricWaterDetail = '/electric-water/detail',
+
+	PaymentAccount = '/payment-account',
 }
 
 export const Menus: {
@@ -190,6 +192,18 @@ export const Menus: {
 				icon: Lamp,
 				path: PATH.EmployeeProfile,
 				pathActive: PATH.EmployeeProfile,
+			},
+		],
+	},
+
+	{
+		title: 'TÀI KHOẢN THANH TOÁN',
+		group: [
+			{
+				title: 'Tài khoản thanh toán',
+				icon: Lamp,
+				path: PATH.PaymentAccount,
+				pathActive: PATH.PaymentAccount,
 			},
 		],
 	},

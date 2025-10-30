@@ -70,6 +70,8 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 					sizeTo: null,
 					province: '',
 					ward: '',
+					hasElectricMeter: null,
+					hasWaterMeter: null,
 				}),
 			}),
 		select(data) {

@@ -8,12 +8,12 @@ import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import WrapperForm from '~/components/utils/WrapperForm';
 import GridColumn from '~/components/layouts/GridColumn';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import userServices from '~/services/userServices';
 import {useRouter} from 'next/router';
 import {toastWarn} from '~/common/funcs/toast';
-import {QUERY_KEY} from '~/constants/config/enum';
+import {TYPE_USER} from '~/constants/config/enum';
 import {roleAccounts} from '~/constants/config/data';
 
 export interface IFormCreateEmployeeProfile {
@@ -53,7 +53,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 					password: '',
 					phoneNumber: form?.phoneNumber,
 					profileImage: '',
-					birthDate: '',
+					birthDate: null,
 					gender: 0,
 					identityNumber: '',
 					provinceId: '',
@@ -63,7 +63,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 					bankName: '',
 					bankNumber: '',
 					bankAccount: '',
-					type: 1,
+					type: TYPE_USER.STAFF,
 				}),
 			}),
 		onSuccess(data) {
@@ -76,7 +76,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 
 	const handleCreateEmpoyeeProfile = async () => {
 		if (!form.name) {
-			return toastWarn({msg: 'Nhập họ tên người quản lý!'});
+			return toastWarn({msg: 'Nhập họ tên nhân viên!'});
 		}
 		if (!form.phoneNumber) {
 			return toastWarn({msg: 'Nhập số điện thoại!'});
@@ -91,8 +91,8 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 	};
 
 	return (
-		<Form form={form} setForm={setForm}>
-			<Loading loading={false} />
+		<Form form={form} setForm={setForm} onSubmit={handleCreateEmpoyeeProfile}>
+			<Loading loading={funcCreateApartment.isLoading} />
 			<WrapperFormPostion
 				width={1200}
 				title='Thêm mới hồ sơ nhân viên'
@@ -116,7 +116,7 @@ function FormCreateEmployeeProfile({onClose}: PropsFormCreateEmployeeProfile) {
 						<Input
 							label={
 								<span>
-									Họ tên người quản lý <span style={{color: 'red'}}>*</span>
+									Họ tên <span style={{color: 'red'}}>*</span>
 								</span>
 							}
 							placeholder='Nhập tên'

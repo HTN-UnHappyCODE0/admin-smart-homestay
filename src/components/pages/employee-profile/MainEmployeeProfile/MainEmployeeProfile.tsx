@@ -7,8 +7,6 @@ import Button from '~/components/common/Button';
 import {AddCircle, Edit, Eye, Lock, Unlock, UserAdd, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
-import FilterCustom from '~/components/common/FilterCustom';
-import FilterDateRange from '~/components/common/FilterDateRange';
 import {roleAccounts, stateAccounts, statusConfigs} from '~/constants/config/data';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
@@ -17,7 +15,7 @@ import Table from '~/components/common/Table';
 import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_ACCOUNT, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_ACCOUNT, STATUS_CONFIG, TYPE_USER} from '~/constants/config/enum';
 import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateEmployeeProfile from '../FormCreateEmployeeProfile';
@@ -25,13 +23,16 @@ import Dialog from '~/components/common/Dialog';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import userServices from '~/services/userServices';
-import servicesTypeServices from '~/services/servicesTypeServices';
+import DetailEmployeeProfile from '../DetailEmployeeProfile';
+import Popup from '~/components/common/Popup';
+import FormCreateAccount from '../FormCreateAccount';
+import FilterCustom from '~/components/common/FilterCustom';
 
 function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_open, _uuid, _uuidUpdate} = router.query;
+	const {_open, _uuid} = router.query;
 
 	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number | null} | null>(null);
 
@@ -39,6 +40,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
+	const [dataCreateAccount, setDataCreateAccount] = useState<{name: string; userUuid: string} | null>(null);
 
 	const {
 		data = {
@@ -55,7 +57,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_employee_profile, page, pageSize, keyword], {
+	}>([QUERY_KEY.table_employee_profile, keyword, page, pageSize, keyword, status], {
 		queryFn: () =>
 			httpRequest({
 				http: userServices.getUsers({
@@ -63,10 +65,10 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 					typeFinding: CONFIG_TYPE_FIND.TABLE,
 					page: 1,
 					pageSize: 100,
-					keyword: '',
+					keyword: keyword,
 					hasRented: 0,
-					status: status,
-					type: [25, 50, 100],
+					status: null,
+					type: [TYPE_USER.STAFF, TYPE_USER.MANAGE, TYPE_USER.ADMINISTRATOR],
 					userUuid: '',
 				}),
 			}),
@@ -81,7 +83,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 				showMessageSuccess: true,
 				showMessageFailed: true,
 				msgSuccess:
-					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khóa tài khoản thành công!' : 'Mở khóa tài khoản thành công!',
+					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khóa nhân viên thành công!' : 'Mở khóa nhân viên thành công!',
 				http: userServices.changeStatus({
 					uuid: dataChangeStatus?.uuid!,
 					status: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? STATUS_CONFIG.LOCKED : STATUS_CONFIG.ACTIVE,
@@ -100,7 +102,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 
 	return (
 		<Fragment>
-			<Loading loading={false} />
+			<Loading loading={funcChangeStatus.isLoading} />
 			<FlexLayout column gap-12>
 				<Header
 					title='Quản lý hồ sơ nhân viên'
@@ -128,7 +130,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 					}
 				/>
 
-				<SearchBlock keyword={keyword} setKeyword={setKeyword} placeholder='Tìm kiếm theo tên nhân viên, tên tài khoản' />
+				<SearchBlock keyword={keyword} setKeyword={setKeyword} placeholder='Tìm kiếm theo tên nhân viên, tên nhân viên' />
 
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
@@ -170,7 +172,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 										render: (row, _) => <>{row?.numApartment || '---'}</>,
 									},
 									{
-										title: 'Trạng thái tài khoản',
+										title: 'Trạng thái nhân viên',
 										render: (row, _) => (
 											<StateActive
 												stateActive={!row?.userName ? STATE_ACCOUNT.NOT_ISSUE : STATE_ACCOUNT.ISSUED}
@@ -179,7 +181,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 										),
 									},
 									{
-										title: 'Tên tài khoản',
+										title: 'Tên nhân viên',
 										render: (row, _) => <>{row?.userName || '---'}</>,
 									},
 									{
@@ -196,29 +198,44 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
+												<IconActionTable
+													icon={<Eye color='#292D32' size={24} />}
+													tooltip='Xem chi tiết'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuid: row?.uuid,
+															},
+														})
+													}
+												/>
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa nội thất' />
 
-												{row?.status == null ? null : (
-													<IconActionTable
-														icon={
-															row?.status == STATUS_CONFIG.ACTIVE ? (
-																<Lock color='#292D32' size={24} />
-															) : (
-																<Unlock color='#292D32' size={24} />
-															)
-														}
-														tooltip={row?.status == STATUS_CONFIG.ACTIVE ? 'Khóa tài khoản' : 'Mở tài khoản'}
-														onClick={() =>
-															setDataChangeStatus({
-																uuid: row?.uuid,
-																status: row?.status,
-															})
-														}
-													/>
-												)}
+												<IconActionTable
+													icon={
+														row?.status == STATUS_CONFIG.ACTIVE ? (
+															<Lock color='#292D32' size={24} />
+														) : (
+															<Unlock color='#292D32' size={24} />
+														)
+													}
+													tooltip={row?.status == STATUS_CONFIG.ACTIVE ? 'Khóa nhân viên' : 'Mở nhân viên'}
+													onClick={() =>
+														setDataChangeStatus({
+															uuid: row?.uuid,
+															status: row?.status,
+														})
+													}
+												/>
+
 												{row?.userName == null && (
-													<IconActionTable icon={<UserAdd color='#292D32' size={24} />} tooltip='Cấp tài khoản' />
+													<IconActionTable
+														icon={<UserAdd color='#292D32' size={24} />}
+														tooltip='Cấp tài khoản'
+														onClick={() => setDataCreateAccount({name: row?.name, userUuid: row?.uuid})}
+													/>
 												)}
 											</FlexLayout>
 										),
@@ -266,16 +283,43 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 				/>
 			</PositionContainer>
 
+			<PositionContainer
+				open={!!_uuid}
+				onClose={() => {
+					const {_uuid, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<DetailEmployeeProfile
+					onClose={() => {
+						const {_uuid, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
 			<Dialog
 				open={!!dataChangeStatus}
 				type={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'error' : 'primary'}
 				backgroundIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#ffdce4' : '#b5f4d4ff'}
 				borderIconColor={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? '#fff0f3' : '#d6f6e6ff'}
-				title={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khoá tài khoản' : 'Mở khóa tài khoản'}
+				title={dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khoá nhân viên' : 'Mở khóa nhân viên'}
 				note={
 					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE
-						? 'Bạn có chắc chắn muốn khóa tài khoản không?'
-						: 'Bạn có chắc chắn muốn mở khóa tài khoản không?'
+						? 'Bạn có chắc chắn muốn khóa nhân viên không?'
+						: 'Bạn có chắc chắn muốn mở khóa nhân viên không?'
 				}
 				icon={
 					dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? (
@@ -287,6 +331,13 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 				onClose={() => setDataChangeStatus(null)}
 				onSubmit={funcChangeStatus.mutate}
 			/>
+
+			<Popup open={!!dataCreateAccount} onClose={() => setDataCreateAccount(null)}>
+				<FormCreateAccount
+					data={{name: dataCreateAccount?.name!, userUuid: dataCreateAccount?.userUuid!}}
+					onClose={() => setDataCreateAccount(null)}
+				/>
+			</Popup>
 		</Fragment>
 	);
 }
