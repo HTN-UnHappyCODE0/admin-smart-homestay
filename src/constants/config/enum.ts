@@ -23,6 +23,7 @@ export enum QUERY_KEY {
 	table_employee_profile,
 	table_guest_tenant,
 	table_employee_profile_apartment,
+	table_payment_account,
 
 	detail_info_apartment,
 	detail_apartment_type,
@@ -50,6 +51,7 @@ export enum QUERY_KEY {
 	dropdown_ward,
 	dropdown_meter_type,
 	dropdown_role,
+	dropdown_payment_account,
 
 	list_room,
 	list_furniture,

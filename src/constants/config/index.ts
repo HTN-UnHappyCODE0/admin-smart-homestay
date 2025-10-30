@@ -57,6 +57,8 @@ export enum PATH {
 
 	ElectricWater = '/electric-water',
 	ElectricWaterDetail = '/electric-water/detail',
+
+	PaymentAccount = '/payment-account',
 }
 
 export const Menus: {
@@ -190,6 +192,18 @@ export const Menus: {
 				icon: Lamp,
 				path: PATH.EmployeeProfile,
 				pathActive: PATH.EmployeeProfile,
+			},
+		],
+	},
+
+	{
+		title: 'TÀI KHOẢN THANH TOÁN',
+		group: [
+			{
+				title: 'Tài khoản thanh toán',
+				icon: Lamp,
+				path: PATH.PaymentAccount,
+				pathActive: PATH.PaymentAccount,
 			},
 		],
 	},

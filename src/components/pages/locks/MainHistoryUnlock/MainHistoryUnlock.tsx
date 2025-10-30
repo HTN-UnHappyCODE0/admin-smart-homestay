@@ -27,6 +27,7 @@ function MainHistoryUnlock({onClose}: PropsMainHistoryUnlock) {
 
 	const {_uuidHistory} = router.query;
 
+	const [keyword, setKeyword] = useState<string>('');
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [type, setType] = useState<number | null>(null);
@@ -60,11 +61,11 @@ function MainHistoryUnlock({onClose}: PropsMainHistoryUnlock) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_detail_lock_history, page, pageSize, _uuidHistory, date?.from, date?.to, type], {
+	}>([QUERY_KEY.table_detail_lock_history, keyword, page, pageSize, _uuidHistory, date?.from, date?.to, type], {
 		queryFn: () =>
 			httpRequest({
 				http: lockServices.getLockHistory({
-					keyword: '',
+					keyword: keyword,
 					isPaging: CONFIG_PAGING.IS_PAGING,
 					page: page,
 					pageSize: pageSize,

@@ -26,6 +26,7 @@ import userServices from '~/services/userServices';
 import DetailEmployeeProfile from '../DetailEmployeeProfile';
 import Popup from '~/components/common/Popup';
 import FormCreateAccount from '../FormCreateAccount';
+import FilterCustom from '~/components/common/FilterCustom';
 
 function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const router = useRouter();
@@ -38,6 +39,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
+	const [status, setStatus] = useState<number | null>(null);
 	const [dataCreateAccount, setDataCreateAccount] = useState<{name: string; userUuid: string} | null>(null);
 
 	const {
@@ -55,7 +57,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_employee_profile, page, pageSize, keyword], {
+	}>([QUERY_KEY.table_employee_profile, keyword, page, pageSize, keyword, status], {
 		queryFn: () =>
 			httpRequest({
 				http: userServices.getUsers({
@@ -63,7 +65,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 					typeFinding: CONFIG_TYPE_FIND.TABLE,
 					page: 1,
 					pageSize: 100,
-					keyword: '',
+					keyword: keyword,
 					hasRented: 0,
 					status: null,
 					type: [TYPE_USER.STAFF, TYPE_USER.MANAGE, TYPE_USER.ADMINISTRATOR],
@@ -100,7 +102,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 
 	return (
 		<Fragment>
-			<Loading loading={false} />
+			<Loading loading={funcChangeStatus.isLoading} />
 			<FlexLayout column gap-12>
 				<Header
 					title='Quản lý hồ sơ nhân viên'
