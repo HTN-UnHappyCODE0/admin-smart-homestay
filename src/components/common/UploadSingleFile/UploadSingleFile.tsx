@@ -51,7 +51,7 @@ function UploadSingleFile({label, image, setImage, isDisableDelete = false, size
 							src={image.url || `${process.env.NEXT_PUBLIC_IMAGE}/${image.path}`}
 							alt='uploaded'
 							layout='fill'
-							objectFit='cover'
+							style={{objectFit: 'cover'}}
 							className={styles.image}
 						/>
 						{!isDisableDelete && (

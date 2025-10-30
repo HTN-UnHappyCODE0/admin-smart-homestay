@@ -63,7 +63,7 @@ function UploadMultipleFile({label, images = [], setImages, isDisableDelete = fa
 									className={styles.image}
 									src={image.url || `${process.env.NEXT_PUBLIC_IMAGE}/${image.path}`}
 									alt='uploaded image'
-									objectFit='cover'
+									style={{objectFit: 'cover'}}
 									layout='fill'
 								/>
 								{!isDisableDelete && (
