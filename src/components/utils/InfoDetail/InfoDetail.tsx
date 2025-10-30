@@ -34,8 +34,7 @@ function InfoDetail({name, value, textColor, images = [], actions, isMarginTop}:
 									src={image}
 									width={80}
 									height={80}
-									objectFit='cover'
-									style={{cursor: 'pointer', borderRadius: '8px'}}
+									style={{cursor: 'pointer', borderRadius: '8px', objectFit: 'cover'}}
 								/>
 							</a>
 						))}

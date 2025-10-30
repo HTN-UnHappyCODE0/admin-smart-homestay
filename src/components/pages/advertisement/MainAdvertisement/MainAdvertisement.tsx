@@ -27,12 +27,15 @@ import IconActionTable from '~/components/utils/IconActionTable';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
 import Dialog from '~/components/common/Dialog';
+import PositionContainer from '~/components/common/PositionContainer';
+import FormCreateAdvertisement from '../FormCreateAdvertisement';
+import DetailAdvertisement from '../DetailAdvertisement';
 
 function MainAdvertisement({}: PropsMainAdvertisement) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidAdvertisement, _open} = router.query;
+	const {_uuid, _uuidAdvertisement, _open, _uuidDetail} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -125,7 +128,22 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					title='Bài đăng & quảng cáo'
 					actions={
 						<FlexLayout row gap-6>
-							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold>
+							<Button
+								icon={<AddCircle />}
+								p_8_24
+								rounded_40
+								bright-cyan
+								bold
+								onClick={() =>
+									router.replace({
+										pathname: router.pathname,
+										query: {
+											...router.query,
+											_open: 'create',
+										},
+									})
+								}
+							>
 								Tạo bài đăng
 							</Button>
 						</FlexLayout>
@@ -279,14 +297,21 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 												<IconActionTable
 													icon={<Eye color='#303229ff' size={24} />}
 													tooltip='Xem chi tiết'
-													href={`${PATH.ApartmentDetail}?_uuid=${row?.uuid}`}
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidDetail: row?.uuid,
+															},
+														})
+													}
 												/>
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 												<IconActionTable
 													icon={<DocumentSketch color='#292D32' size={24} />}
 													tooltip='Copy và đăng mới'
 												/>
-												{/*  */}
 												<IconActionTable
 													icon={<RepeatCircle color='#292D32' size={24} />}
 													tooltip='Đăng lại ngay'
@@ -334,6 +359,60 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					onClose={() => setDataChangeStateSwitch(null)}
 					onSubmit={funcChangeSwitch.mutate}
 				/>
+
+				<PositionContainer
+					open={_open == 'create'}
+					onClose={() => {
+						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				>
+					<FormCreateAdvertisement
+						onClose={() => {
+							const {_open, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
+				</PositionContainer>
+
+				<PositionContainer
+					open={!!_uuidDetail}
+					onClose={() => {
+						const {_uuidDetail, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				>
+					<DetailAdvertisement
+						onClose={() => {
+							const {_uuidDetail, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
+				</PositionContainer>
 			</FlexLayout>
 		</Fragment>
 	);
