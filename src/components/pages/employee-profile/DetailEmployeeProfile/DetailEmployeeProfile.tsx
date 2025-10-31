@@ -77,7 +77,7 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 			<Loading loading={funcChangeStatus.isLoading} />
 			<WrapperFormPostion
 				width={1200}
-				title='Chi tiết hồ sơ '
+				title={`Chi tiết hồ sơ ${employeeProfile?.code || ''}`}
 				nodes={
 					<FlexLayout row gap-8 items-center>
 						<p
@@ -121,7 +121,7 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 						>
 							{employeeProfile?.status == STATUS_CONFIG.ACTIVE ? 'Khóa nhân viên' : 'Mở nhân viên'}
 						</Button>
-						<Button p_8_24 rounded_8 bright-cyan bold>
+						<Button p_8_24 rounded_8 bright-cyan bold href={`${PATH.EmployeeProfile}?_uuidUpdate=${_uuid}`}>
 							Chỉnh sửa
 						</Button>
 					</FlexLayout>

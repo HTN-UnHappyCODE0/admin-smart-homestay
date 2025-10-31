@@ -32,6 +32,7 @@ export interface IApartmentManager {
 }
 
 export interface IDetailEmployeeProfile {
+	code: string;
 	name: string;
 	managerUu: string;
 	phoneNumber: string;

@@ -43,6 +43,7 @@ export enum QUERY_KEY {
 	detail_apartment_incident_report_module,
 	detail_guest_tenant,
 	detail_employee_profile,
+	detail_payment_account,
 
 	dropdown_apartment_type,
 	dropdown_user,
