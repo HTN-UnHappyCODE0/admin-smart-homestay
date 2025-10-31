@@ -14,7 +14,7 @@ import {useRouter} from 'next/router';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import apartmentServices from '~/services/apartmentServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import moment from 'moment';

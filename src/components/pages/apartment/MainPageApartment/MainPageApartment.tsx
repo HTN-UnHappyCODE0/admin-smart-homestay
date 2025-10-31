@@ -8,11 +8,7 @@ import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
-<<<<<<< HEAD
 import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
-=======
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
->>>>>>> d3468588a29e0164932c1d6d67de997248dd2731
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -66,11 +62,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				http: apartmentServices.getListApartments({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-<<<<<<< HEAD
 					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
-=======
-					typeFinding: CONFIG_TYPE_FINDING.DTO,
->>>>>>> d3468588a29e0164932c1d6d67de997248dd2731
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

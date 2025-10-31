@@ -15,15 +15,7 @@ import Table from '~/components/common/Table';
 import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
-import {
-	CONFIG_PAGING,
-	CONFIG_TYPE_FIND,
-	CONFIG_TYPE_FINDING,
-	QUERY_KEY,
-	STATE_ACCOUNT,
-	STATUS_CONFIG,
-	TYPE_USER,
-} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_ACCOUNT, STATUS_CONFIG, TYPE_USER} from '~/constants/config/enum';
 import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateEmployeeProfile from '../FormCreateEmployeeProfile';
