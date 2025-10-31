@@ -101,20 +101,20 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-	apartmentDetailForUpdate: (
+	apartmentDetail: (
 		data: {
 			uuid: string;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/Apartment/get-apartment-detailed-for-update`, data, {
+		return axiosClient.post(`/Apartment/get-apartment-detailed`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
 	changeStateMeter: (
 		data: {
 			apartmentMeterUuid: string;
-			state: Boolean;
+			state: boolean;
 		},
 		tokenAxios?: any
 	) => {

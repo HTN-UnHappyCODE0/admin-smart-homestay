@@ -8,7 +8,6 @@ import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
 import {AddCircle, CloseCircle, Eye, Warning2} from 'iconsax-react';
-import {PATH} from '~/constants/config';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -70,7 +69,11 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 			httpRequest({
 				http: apartmentVisitServices.getApartmentVisit({
 					isPaging: CONFIG_PAGING.IS_PAGING,
+<<<<<<< HEAD
 					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+=======
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+>>>>>>> d3468588a29e0164932c1d6d67de997248dd2731
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -168,7 +171,11 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Tên tài khoản',
+										title: 'Mã bài quảng cáo',
+										render: (row, _) => <>{'QC001'}</>,
+									},
+									{
+										title: 'Tên người dùng',
 										render: (row, _) => <>{row?.identification?.userUu?.name || '---'}</>,
 									},
 									{

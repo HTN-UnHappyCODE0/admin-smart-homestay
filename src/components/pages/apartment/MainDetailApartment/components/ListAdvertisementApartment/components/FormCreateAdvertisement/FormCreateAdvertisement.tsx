@@ -82,7 +82,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_detail, form.apartmentUuid], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.apartmentDetailForUpdate({
+				http: apartmentServices.apartmentDetail({
 					uuid: form.apartmentUuid,
 				}),
 			}),
@@ -415,11 +415,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 							/>
 							<div>
 								<Input
-									label={
-										<span>
-											Thời gian kết thúc<span style={{color: 'red'}}>*</span>
-										</span>
-									}
+									label={<span>Thời gian kết thúc</span>}
 									placeholder='Thời gian kết thúc'
 									type='date'
 									name='expireDate'

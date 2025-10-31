@@ -1,13 +1,13 @@
 import {Fragment, useState} from 'react';
 import styles from './MainElectricWater.module.scss';
-import {PropsMainElectricWater} from './interfaces';
+import {IMeter, PropsMainElectricWater} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FilterCustom from '~/components/common/FilterCustom';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Button from '~/components/common/Button';
-import {useQueryClient} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import Pagination from '~/components/common/Pagination';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
@@ -18,6 +18,10 @@ import {Eye} from 'iconsax-react';
 import {PATH} from '~/constants/config';
 import moment from 'moment';
 import Link from 'next/link';
+import {httpRequest} from '~/services';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
+import meterServices from '~/services/meterServices';
+import FilterDateRange from '~/components/common/FilterDateRange';
 
 function MainElectricWater({}: PropsMainElectricWater) {
 	const queryClient = useQueryClient();
@@ -26,6 +30,8 @@ function MainElectricWater({}: PropsMainElectricWater) {
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
+	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
+	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
 
 	const resetFilter = () => {
 		setPage(1);
@@ -33,6 +39,42 @@ function MainElectricWater({}: PropsMainElectricWater) {
 		setKeyword('');
 		setStatus(null);
 	};
+
+	const {
+		data = {
+			items: [],
+			pagination: {
+				totalCount: 0,
+				totalPage: 0,
+			},
+		},
+		isLoading,
+	} = useQuery<{
+		items: IMeter[];
+		pagination: {
+			totalCount: number;
+			totalPage: number;
+		};
+	}>([QUERY_KEY.table_electric_meter, page, pageSize, keyword, date?.from, date?.to], {
+		queryFn: () =>
+			httpRequest({
+				http: meterServices.listmeter({
+					isPaging: CONFIG_PAGING.IS_PAGING,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+					page: page,
+					pageSize: pageSize,
+					keyword: keyword,
+					status: null,
+					installDateFrom: date?.from ? moment(date.from).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+					installDateTo: date?.to ? moment(date.to).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+					isUsed: null,
+					meterTypeUuid: '',
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
 
 	return (
 		<Fragment>
@@ -46,21 +88,7 @@ function MainElectricWater({}: PropsMainElectricWater) {
 						<FlexLayout row gap-8 fit-height>
 							<FlexItem flex-1 overflow-y scrollbar>
 								<FlexLayout row gap-8>
-									<FilterCustom
-										name='Trạng thái'
-										value={status}
-										setValue={setStatus}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Hoạt động',
-											},
-											{
-												uuid: 2,
-												name: 'Đang khóa',
-											},
-										]}
-									/>
+									<FilterDateRange date={date} setDate={setDate} typeDate={typeDate} setTypeDate={setTypeDate} />
 								</FlexLayout>
 							</FlexItem>
 							<FlexLayout row gap-8>
@@ -75,42 +103,14 @@ function MainElectricWater({}: PropsMainElectricWater) {
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
 						<DataWrapper
-							// data={data?.items || []}
-							data={[1]}
+							data={data?.items || []}
 							loading={false}
 							title='Dữ liệu trống!'
 							note='Danh sách dữ liệu hiện đang trống!'
 						>
-							<Table<{
-								uuid: string;
-								name: string;
-								paymentPeriod: string;
-								datePower: string;
-								powerBeginMonth: number;
-								powerEndMonth: number;
-								powerConsume: number;
-								dateWater: string;
-								waterBeginMonth: number;
-								waterEndMonth: number;
-								waterConsume: number;
-							}>
+							<Table<IMeter>
 								rowKey={(row) => row.uuid}
-								// data={data?.items || []}
-								data={[
-									{
-										uuid: '1',
-										name: '1',
-										paymentPeriod: 'Tháng 10',
-										datePower: '01/08 - 31/08/2025',
-										powerBeginMonth: 500,
-										powerEndMonth: 590,
-										powerConsume: 90,
-										dateWater: '01/08 - 31/08/2025',
-										waterBeginMonth: 500,
-										waterEndMonth: 580,
-										waterConsume: 90,
-									},
-								]}
+								data={data?.items || []}
 								fixedHeader={true}
 								column={[
 									{
@@ -120,52 +120,52 @@ function MainElectricWater({}: PropsMainElectricWater) {
 									},
 									{
 										title: 'Căn hộ',
-										render: (row, _) => <>{row?.name}</>,
+										render: (row, _) => <>{row?.apartment?.name || '---'}</>,
 									},
 									{
 										title: 'Kỳ thanh toán',
-										render: (row, _) => <>{row?.paymentPeriod || '---'}</>,
+										render: (row, _) => <>{moment(row?.installedDate).format('DD/MM/YYYY HH:mm:ss')}</>,
 									},
-									{
-										title: 'Thời gian tiêu thụ điện',
-										render: (row, _) => <>{moment(row?.datePower).format('DD/MM/YYYY HH:mm:ss')}</>,
-									},
-									{
-										title: 'Số điện đầu tháng',
-										render: (row, _) => <>{row?.powerBeginMonth || '---'}</>,
-									},
-									{
-										title: 'Số điện cuối tháng',
-										render: (row, _) => <>{row?.powerEndMonth || '---'}</>,
-									},
-									{
-										title: 'Số điện tiêu thụ',
-										render: (row, _) => (
-											<Link href={'#'} className={styles.link}>
-												{row?.powerConsume || '---'}
-											</Link>
-										),
-									},
-									{
-										title: 'Thời gian tiêu thụ nước',
-										render: (row, _) => <>{moment(row?.dateWater).format('DD/MM/YYYY HH:mm:ss')}</>,
-									},
-									{
-										title: 'Số nước đầu tháng',
-										render: (row, _) => <>{row?.waterBeginMonth || '---'}</>,
-									},
-									{
-										title: 'Số nước cuối tháng',
-										render: (row, _) => <>{row?.waterEndMonth || '---'}</>,
-									},
-									{
-										title: 'Số nước tiêu thụ',
-										render: (row, _) => (
-											<Link href={'#'} className={styles.link}>
-												{row?.waterConsume || '---'}
-											</Link>
-										),
-									},
+									// {
+									// 	title: 'Thời gian tiêu thụ điện',
+									// 	render: (row, _) => <>{moment(row?.datePower).format('DD/MM/YYYY HH:mm:ss')}</>,
+									// },
+									// {
+									// 	title: 'Số điện đầu tháng',
+									// 	render: (row, _) => <>{row?.powerBeginMonth || '---'}</>,
+									// },
+									// {
+									// 	title: 'Số điện cuối tháng',
+									// 	render: (row, _) => <>{row?.powerEndMonth || '---'}</>,
+									// },
+									// {
+									// 	title: 'Số điện tiêu thụ',
+									// 	render: (row, _) => (
+									// 		<Link href={'#'} className={styles.link}>
+									// 			{row?.powerConsume || '---'}
+									// 		</Link>
+									// 	),
+									// },
+									// {
+									// 	title: 'Thời gian tiêu thụ nước',
+									// 	render: (row, _) => <>{moment(row?.dateWater).format('DD/MM/YYYY HH:mm:ss')}</>,
+									// },
+									// {
+									// 	title: 'Số nước đầu tháng',
+									// 	render: (row, _) => <>{row?.waterBeginMonth || '---'}</>,
+									// },
+									// {
+									// 	title: 'Số nước cuối tháng',
+									// 	render: (row, _) => <>{row?.waterEndMonth || '---'}</>,
+									// },
+									// {
+									// 	title: 'Số nước tiêu thụ',
+									// 	render: (row, _) => (
+									// 		<Link href={'#'} className={styles.link}>
+									// 			{row?.waterConsume || '---'}
+									// 		</Link>
+									// 	),
+									// },
 									{
 										title: 'Tác vụ',
 										fixedRight: true,
@@ -188,8 +188,7 @@ function MainElectricWater({}: PropsMainElectricWater) {
 							onSetPage={setPage}
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
-							// total={data?.pagination.totalCount || 0}
-							total={10}
+							total={data?.pagination.totalCount || 0}
 							dependencies={[pageSize, keyword, status]}
 						/>
 					</MainTable>

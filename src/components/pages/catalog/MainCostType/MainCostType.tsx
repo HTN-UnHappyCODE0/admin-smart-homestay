@@ -4,7 +4,7 @@ import {ICostType, PropsMainCostType} from './interfaces';
 import {statusConfigs, tabsCatalogs} from '~/constants/config/data';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
-import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
+import {AddCircle, Edit, Lock, Unlock, Warning2} from 'iconsax-react';
 import {Fragment, useState} from 'react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
@@ -64,7 +64,11 @@ function MainCostType({}: PropsMainCostType) {
 			httpRequest({
 				http: servicesTypeServices.listServicesType({
 					isPaging: CONFIG_PAGING.IS_PAGING,
+<<<<<<< HEAD
 					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+=======
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+>>>>>>> d3468588a29e0164932c1d6d67de997248dd2731
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

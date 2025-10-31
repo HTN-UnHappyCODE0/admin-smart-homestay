@@ -166,7 +166,7 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Tên tài khoản',
+										title: 'Chủ tài khoản',
 										render: (row, _) => <>{row?.bankAccount || '---'}</>,
 									},
 									{
