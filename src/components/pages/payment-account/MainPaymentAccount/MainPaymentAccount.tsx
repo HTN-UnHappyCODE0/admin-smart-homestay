@@ -24,12 +24,13 @@ import Dialog from '~/components/common/Dialog';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreatePaymentAccount from '../FormCreatePaymentAccount';
 import FilterCustom from '~/components/common/FilterCustom';
+import FormUpdatePaymentAccount from '../FormUpdatePaymentAccount';
 
 function MainPaymentAccount({}: PropsMainPaymentAccount) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_open} = router.query;
+	const {_open, _uuidUpdate} = router.query;
 
 	const [keyword, setKeyword] = useState<string>('');
 	const [status, setStatus] = useState<number | null>(null);
@@ -191,6 +192,15 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 												<IconActionTable
 													icon={<Edit color='#292D32' size={24} />}
 													tooltip='Chỉnh sửa tài khoản thanh toán'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
 												/>
 
 												<IconActionTable
@@ -247,6 +257,33 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 				<FormCreatePaymentAccount
 					onClose={() => {
 						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidUpdate}
+				onClose={() => {
+					const {_uuidUpdate, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormUpdatePaymentAccount
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,

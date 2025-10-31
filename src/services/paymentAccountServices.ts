@@ -54,6 +54,31 @@ const paymentAccountServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getBankPaymentDetail: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/BankPayment/get-bank-payment-detail`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateBankPayment: (
+		data: {
+			uuid: string;
+			userUuid: string;
+			bankName: string;
+			bankNumber: string;
+			bankAccount: string;
+			description: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/BankPayment/update-bank-payment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default paymentAccountServices;
