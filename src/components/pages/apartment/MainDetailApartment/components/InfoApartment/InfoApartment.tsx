@@ -97,7 +97,7 @@ function InfoApartment({}: PropsInfoApartment) {
 								<InfoDetail name='Loại căn hộ' value={apartmentInfo?.apartmentTypeUu?.name} />
 								<InfoDetail name='Diện tích' value={`${apartmentInfo?.apartmentSize} m2`} />
 								<InfoDetail name='ID ổ khóa' value={apartmentInfo?.lock?.code} />
-								<InfoDetail
+								{/* <InfoDetail
 									name='Phòng'
 									value={
 										<>
@@ -122,7 +122,7 @@ function InfoApartment({}: PropsInfoApartment) {
 											))}
 										</>
 									}
-								/>
+								/> */}
 								<InfoDetail name='Giá cho thuê' value={apartmentInfo?.rentPrice} />
 								<InfoDetail name='Giá quảng cáo' value={apartmentInfo?.adPrice} />
 							</GridColumn>

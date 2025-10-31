@@ -6,7 +6,7 @@ import WrapperForm from '~/components/utils/WrapperForm';
 import FormChooseMeter from '~/components/pages/apartment/FormCreateApartment/components/FormChooseMeter';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import {useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import meterTypeServices from '~/services/meterTypeServices';
 import Button from '~/components/common/Button';
@@ -64,7 +64,7 @@ function FormUpdateListMeter({onClose}: PropsFormUpdateListMeter) {
 				http: meterTypeServices.listMeterType({
 					keyword: '',
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					status: STATUS_CONFIG.ACTIVE,
 					page: 1,
 					pageSize: 100,

@@ -4,7 +4,7 @@ import {PropsFormChooseMeter} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import {Input, Select} from '~/components/common/Form';
 import {useQuery} from '@tanstack/react-query';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, IS_USED, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, IS_USED, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import meterServices from '~/services/meterServices';
 import {IMeter} from '../../FormCreateApartment';
@@ -80,7 +80,7 @@ function Meter({
 			httpRequest({
 				http: meterServices.listmeter({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',

@@ -1,7 +1,7 @@
 import {Fragment, useState} from 'react';
 import styles from './MainDevice.module.scss';
 import {IDevice, PropsMainDevice} from './interfaces';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header/Header';
 import {AddCircle, Edit} from 'iconsax-react';

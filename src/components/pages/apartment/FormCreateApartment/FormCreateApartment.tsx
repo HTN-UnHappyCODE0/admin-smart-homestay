@@ -12,7 +12,7 @@ import GridColumn from '~/components/layouts/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import {useRouter} from 'next/router';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
@@ -110,7 +110,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 			httpRequest({
 				http: apartmentTypeServices.listApartmentType({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -133,7 +133,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 			httpRequest({
 				http: userServices.getUsers({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -221,7 +221,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 			httpRequest({
 				http: furnitureServices.getListFurnitures({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -257,7 +257,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 			httpRequest({
 				http: roomServices.listRoom({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -291,7 +291,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 			httpRequest({
 				http: meterTypeServices.listMeterType({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
