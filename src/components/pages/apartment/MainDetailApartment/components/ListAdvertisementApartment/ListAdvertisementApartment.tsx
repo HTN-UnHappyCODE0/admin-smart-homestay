@@ -12,7 +12,7 @@ import {useRouter} from 'next/router';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import FilterDateRange from '~/components/common/FilterDateRange';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_PAYMENT_TYPE, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -71,7 +71,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 			httpRequest({
 				http: advertisementServices.getListAdvertisement({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

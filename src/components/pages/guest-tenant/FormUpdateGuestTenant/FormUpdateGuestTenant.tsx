@@ -224,7 +224,7 @@ function FormUpdateGuestTenant({onClose}: PropsFormUpdateGuestTenant) {
 								<Input
 									label={
 										<span>
-											Số điện thoại <span style={{color: 'red'}}>*</span>
+											Số điện thoại liên hệ <span style={{color: 'red'}}>*</span>
 										</span>
 									}
 									placeholder='Nhập số điện thoại'
@@ -266,6 +266,7 @@ function FormUpdateGuestTenant({onClose}: PropsFormUpdateGuestTenant) {
 							name='identityNumber'
 							isRequired
 							isBlur
+							readOnly
 						/>
 
 						<div>
@@ -280,6 +281,7 @@ function FormUpdateGuestTenant({onClose}: PropsFormUpdateGuestTenant) {
 								name='issuedPlace'
 								isRequired
 								isBlur
+								readOnly
 							/>
 						</div>
 
@@ -295,6 +297,7 @@ function FormUpdateGuestTenant({onClose}: PropsFormUpdateGuestTenant) {
 								name='issuedDate'
 								isRequired
 								isBlur
+								readOnly
 							/>
 						</div>
 					</GridColumn>

@@ -15,7 +15,7 @@ import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {CloseCircle, Eye, Warning2} from 'iconsax-react';
 import {useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
 import WrapperForm from '~/components/utils/WrapperForm';
 import {FaCircleCheck} from 'react-icons/fa6';
@@ -69,7 +69,7 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			httpRequest({
 				http: incidentServices.getIncidentReports({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

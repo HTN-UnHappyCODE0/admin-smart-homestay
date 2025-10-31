@@ -48,7 +48,7 @@ function DetailApartmentIncidentReport({onClose}: PropsDetailApartmentIncidentRe
 		}
 	);
 
-	const funcRequestRepairApartment = useMutation({
+	const funcIncidentReportApartment = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageSuccess: true,
@@ -160,7 +160,7 @@ function DetailApartmentIncidentReport({onClose}: PropsDetailApartmentIncidentRe
 				note={<span>Bạn có chắc chắn muốn từ chối yêu cầu xử lý sửa chữa không?</span>}
 				icon={<Warning2 size='28' color='#EE0033' />}
 				onClose={() => setRejectRepairApartment('')}
-				onSubmit={funcRequestRepairApartment.mutate}
+				onSubmit={funcIncidentReportApartment.mutate}
 				isDisabledBtnSubmit={!form?.note}
 				form={
 					<Form form={form} setForm={setForm}>

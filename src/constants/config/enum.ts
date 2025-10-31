@@ -23,6 +23,7 @@ export enum QUERY_KEY {
 	table_employee_profile,
 	table_guest_tenant,
 	table_employee_profile_apartment,
+	table_electric_meter,
 	table_payment_account,
 
 	detail_info_apartment,
@@ -92,7 +93,7 @@ export enum CONFIG_TYPE_FIND {
 export enum CONFIG_TYPE_FINDING {
 	CATALOG = 0,
 	SIMPLE,
-	DTO,
+	DTO, // table
 	DETAIL,
 	CUSTOM,
 	OTHER,
@@ -169,6 +170,11 @@ export enum TYPE_LOCK {
 	USER_PASS,
 	TEMP_PASS,
 	APP_PASS,
+}
+
+export enum TYPE_METER {
+	ELECTRIC,
+	WATER,
 }
 
 export enum IS_USED {

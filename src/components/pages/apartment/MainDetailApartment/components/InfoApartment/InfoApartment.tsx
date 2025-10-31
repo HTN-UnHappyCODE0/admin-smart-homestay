@@ -35,7 +35,7 @@ function InfoApartment({}: PropsInfoApartment) {
 	const {data: apartmentInfo} = useQuery<IDetailInfoApartment>([QUERY_KEY.detail_info_apartment, _uuid], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.apartmentDetailForUpdate({uuid: _uuid as string}),
+				http: apartmentServices.apartmentDetail({uuid: _uuid as string}),
 			}),
 
 		select(data) {
@@ -59,10 +59,11 @@ function InfoApartment({}: PropsInfoApartment) {
 				}),
 			}),
 		onSuccess(data) {
+			console.log('API success:', data);
 			if (data) {
 				setDataChangeStateSwitch(null);
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.detail_info_apartment],
+					queryKey: [QUERY_KEY.detail_info_apartment, _uuid],
 				});
 			}
 		},
@@ -172,11 +173,11 @@ function InfoApartment({}: PropsInfoApartment) {
 									value=''
 									actions={
 										<SwitchButton
-											checkOn={meter?.onState === STATE_SWITCH.ON}
+											checkOn={meter?.meterUu?.onState === STATE_SWITCH.ON}
 											onClick={() =>
 												setDataChangeStateSwitch({
 													apartmentMeterUuid: meter?.uuid!,
-													state: meter?.onState!,
+													state: meter?.meterUu?.onState!,
 													name: meter?.meterTypeUu?.name,
 												})
 											}

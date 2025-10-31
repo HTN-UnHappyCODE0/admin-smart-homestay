@@ -62,7 +62,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			httpRequest({
 				http: apartmentServices.getListApartments({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -72,6 +72,8 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 					sizeTo: null,
 					province: '',
 					ward: '',
+					hasElectricMeter: null,
+					hasWaterMeter: null,
 				}),
 			}),
 		select(data) {
@@ -82,7 +84,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 	// useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement, form.apartmentUuid], {
 	// 	queryFn: () =>
 	// 		httpRequest({
-	// 			http: apartmentServices.apartmentDetailForUpdate({
+	// 			http: apartmentServices.apartmentDetail({
 	// 				uuid: form.apartmentUuid,
 	// 			}),
 	// 		}),
@@ -418,11 +420,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 							/>
 							<div>
 								<Input
-									label={
-										<span>
-											Thời gian kết thúc<span style={{color: 'red'}}>*</span>
-										</span>
-									}
+									label={<span>Thời gian kết thúc</span>}
 									placeholder='Thời gian kết thúc'
 									type='date'
 									name='expireDate'

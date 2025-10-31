@@ -3,7 +3,7 @@ import styles from './MainApartmentIncidentReport.module.scss';
 import {IIncidentApartment, PropsMainApartmentIncidentReport} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Fragment, useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_APARTMENT_INCIDENT_REPORTS} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import incidentServices from '~/services/incidentServices';
 import FlexLayout from '~/components/layouts/FlexLayout';
@@ -71,7 +71,7 @@ function MainApartmentIncidentReport({}: PropsMainApartmentIncidentReport) {
 			httpRequest({
 				http: incidentServices.getIncidentReports({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

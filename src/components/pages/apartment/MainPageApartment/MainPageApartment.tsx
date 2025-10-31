@@ -8,7 +8,7 @@ import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FIND, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -62,7 +62,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				http: apartmentServices.getListApartments({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -183,6 +183,22 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										render: (row, _) => <>{row?.name || '---'}</>,
 									},
 									{
+										title: 'Giá cho thuê (VND)',
+										render: (row, _) => <>{convertCoin(row?.rentPrice)}</>,
+									},
+									{
+										title: 'Giá quảng cáo(VND)',
+										render: (row, _) => <>{convertCoin(row?.adPrices)}</>,
+									},
+									{
+										title: 'Aptomat',
+										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
+									},
+									{
+										title: 'Đồng hồ nước',
+										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
+									},
+									{
 										title: 'Diện tích (m2)',
 										render: (row, _) => <>{row?.apartmentSize || '---'}</>,
 									},
@@ -203,27 +219,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 										render: (row, _) => <>{row?.numIncidentRequest || '---'}</>,
 									},
 									{
-										title: 'Giá cho thuê (VND)',
-										render: (row, _) => <>{convertCoin(row?.rentPrice)}</>,
-									},
-									{
-										title: 'Giá quảng cáo(VND)',
-										render: (row, _) => <>{convertCoin(row?.adPrices)}</>,
-									},
-									{
-										title: 'Aptomat',
-										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
-									},
-									{
-										title: 'Đồng hồ nước',
-										render: (row, _) => <SwitchButton checkOn={row?.uuid == '1'} />,
-									},
-									{
 										title: 'Người quản lý',
 										render: (row, _) => <>{row?.managerUu?.name || '---'}</>,
 									},
 									{
-										title: 'Trạng thái căn hộ',
+										title: 'Trạng thái',
 										render: (row, _) => <StateActive stateActive={row?.state} listState={stateApartments} />,
 									},
 									{
