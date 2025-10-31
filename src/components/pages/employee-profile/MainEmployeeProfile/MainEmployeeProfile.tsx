@@ -34,18 +34,21 @@ import userServices from '~/services/userServices';
 import DetailEmployeeProfile from '../DetailEmployeeProfile';
 import Popup from '~/components/common/Popup';
 import FormCreateAccount from '../FormCreateAccount';
+import FilterCustom from '~/components/common/FilterCustom';
+import FormUpdateEmployeeProfile from '../FormUpdateEmployeeProfile';
 
 function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_open, _uuid} = router.query;
+	const {_open, _uuid, _uuidUpdate} = router.query;
 
 	const [dataChangeStatus, setDataChangeStatus] = useState<{uuid: string; status: number | null} | null>(null);
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
+	const [status, setStatus] = useState<number | null>(null);
 	const [dataCreateAccount, setDataCreateAccount] = useState<{name: string; userUuid: string} | null>(null);
 
 	const {
@@ -63,7 +66,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_employee_profile, page, pageSize, keyword], {
+	}>([QUERY_KEY.table_employee_profile, page, pageSize, keyword, status], {
 		queryFn: () =>
 			httpRequest({
 				http: userServices.getUsers({
@@ -74,7 +77,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 					keyword: keyword,
 					type: [TYPE_USER.STAFF, TYPE_USER.MANAGE, TYPE_USER.ADMINISTRATOR],
 					hasRented: null,
-					status: null,
+					status: status,
 					userUuid: '',
 				}),
 			}),
@@ -136,7 +139,28 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 					}
 				/>
 
-				<SearchBlock keyword={keyword} setKeyword={setKeyword} placeholder='Tìm kiếm theo tên nhân viên, tên nhân viên' />
+				<SearchBlock
+					keyword={keyword}
+					setKeyword={setKeyword}
+					placeholder='Nhập từ khóa để tìm kiếm'
+					action={
+						<FlexLayout row gap-8 fit-height>
+							<FlexItem flex-1 overflow-y scrollbar>
+								<FlexLayout row gap-8>
+									<FilterCustom
+										name='Trạng thái'
+										value={status}
+										setValue={setStatus}
+										listOption={statusConfigs?.map((v) => ({
+											uuid: v?.state,
+											name: v?.text,
+										}))}
+									/>
+								</FlexLayout>
+							</FlexItem>
+						</FlexLayout>
+					}
+				/>
 
 				<FlexItem flex-1 overflow-x>
 					<MainTable>
@@ -187,7 +211,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 										),
 									},
 									{
-										title: 'Tên nhân viên',
+										title: 'Tên tài khoản',
 										render: (row, _) => <>{row?.userName || '---'}</>,
 									},
 									{
@@ -217,7 +241,19 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 														})
 													}
 												/>
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa nội thất' />
+												<IconActionTable
+													icon={<Edit color='#292D32' size={24} />}
+													tooltip='Chỉnh sửa hồ sơ'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
+												/>
 												<IconActionTable
 													icon={
 														row?.status == STATUS_CONFIG.ACTIVE ? (
@@ -303,6 +339,33 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 				<DetailEmployeeProfile
 					onClose={() => {
 						const {_uuid, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidUpdate}
+				onClose={() => {
+					const {_uuidUpdate, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormUpdateEmployeeProfile
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,

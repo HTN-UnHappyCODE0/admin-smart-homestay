@@ -6,7 +6,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	getUsers: (
 		data: {
 			keyword: string;
@@ -25,7 +24,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	getApartmentOwners: (
 		data: {
 			keyword: string;
@@ -43,7 +41,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	getApartmentOwnersDetail: (
 		data: {
 			uuid: string;
@@ -54,7 +51,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	createUser: (
 		data: {
 			managerUuid: string;
@@ -82,7 +78,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	changeStatus: (
 		data: {
 			uuid: string;
@@ -106,7 +101,6 @@ const userServices = {
 			cancelToken: tokenAxios,
 		});
 	},
-
 	createAccountForUser: (
 		data: {
 			userUuid: string;
@@ -116,6 +110,34 @@ const userServices = {
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/User/create-account-for-user`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	updateUser: (
+		data: {
+			managerUuid: string;
+			name: string;
+			email: string;
+			username: string;
+			password: string;
+			phoneNumber: string;
+			profileImage: string;
+			birthDate: string | null;
+			gender: number;
+			identityNumber: string;
+			provinceId: string;
+			wardId: string;
+			address: string;
+			description: string;
+			bankName: string;
+			bankNumber: string;
+			bankAccount: string;
+			type: number;
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/User/update-user`, data, {
 			cancelToken: tokenAxios,
 		});
 	},
