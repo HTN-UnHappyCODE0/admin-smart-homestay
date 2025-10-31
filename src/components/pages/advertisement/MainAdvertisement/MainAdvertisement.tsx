@@ -78,7 +78,11 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 			httpRequest({
 				http: advertisementServices.getListAdvertisement({
 					isPaging: CONFIG_PAGING.IS_PAGING,
+<<<<<<< HEAD
+					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+=======
 					typeFinding: CONFIG_TYPE_FINDING.DTO,
+>>>>>>> d3468588a29e0164932c1d6d67de997248dd2731
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

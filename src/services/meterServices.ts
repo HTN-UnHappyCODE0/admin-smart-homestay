@@ -26,7 +26,7 @@ const meterServices = {
 			serialNumber: string;
 			apartmentUuid: string;
 			userInstallUuid: string;
-			installedDate: string;
+			installedDate: string | null;
 		},
 		tokenAxios?: any
 	) => {
@@ -62,6 +62,16 @@ const meterServices = {
 		tokenAxios?: any
 	) => {
 		return axiosClient.post(`/Meter/update-meters-in-apartment`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	meterDetail: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Meter/meter-detail`, data, {
 			cancelToken: tokenAxios,
 		});
 	},

@@ -64,7 +64,7 @@ function DetailApartmentOwner({onClose}: PropsDetailApartmentOwner) {
 					<GridColumn col_3>
 						<InfoDetail name='Tên chủ căn hộ' value={apartmentOwner?.name || '---'} />
 						<InfoDetail name='Số điện thoại' value={apartmentOwner?.phoneNumber || '---'} />
-						<InfoDetail name='Số căn hộ' value={apartmentOwner?.numApartment || '---'} />
+						<InfoDetail name='Số căn hộ' value={apartmentOwner?.numApartment || '0'} />
 						<InfoDetail name='Số tài khoản' value={apartmentOwner?.bankInfos?.[0]?.bankNumber || '---'} />
 						<InfoDetail name='Tên chủ tài khoản' value={apartmentOwner?.bankInfos?.[0]?.bankAccount || '---'} />
 						<InfoDetail name='Ngân hàng' value={apartmentOwner?.bankInfos?.[0]?.bankName || '---'} />

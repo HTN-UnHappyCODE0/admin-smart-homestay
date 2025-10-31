@@ -21,6 +21,7 @@ import FormCreateApartmentOwner from '../FormCreateApartmentOwner';
 import Pagination from '~/components/common/Pagination';
 import DetailApartmentOwner from '../DetailApartmentOwner';
 import userServices from '~/services/userServices';
+import FormUpdateApartmentOwner from '../FormUpdateApartmentOwner';
 
 function MainPageApartmentOwner({}: PropsMainPageApartmentOwner) {
 	const router = useRouter();
@@ -121,7 +122,7 @@ function MainPageApartmentOwner({}: PropsMainPageApartmentOwner) {
 									},
 									{
 										title: 'Căn hộ sở hữu',
-										render: (row, _) => <>{row?.numApartment || '---'}</>,
+										render: (row, _) => <>{row?.numApartment || '0'}</>,
 									},
 									{
 										title: 'Số điện thoại',
@@ -151,7 +152,19 @@ function MainPageApartmentOwner({}: PropsMainPageApartmentOwner) {
 													}
 												/>
 
-												<IconActionTable icon={<Edit size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable
+													icon={<Edit size={24} />}
+													tooltip='Chỉnh sửa'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
+												/>
 											</FlexLayout>
 										),
 									},
@@ -213,6 +226,33 @@ function MainPageApartmentOwner({}: PropsMainPageApartmentOwner) {
 				<DetailApartmentOwner
 					onClose={() => {
 						const {_uuid, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidUpdate}
+				onClose={() => {
+					const {_uuidUpdate, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormUpdateApartmentOwner
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,

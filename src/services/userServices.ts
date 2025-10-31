@@ -128,7 +128,7 @@ const userServices = {
 			provinceId: string;
 			wardId: string;
 			address: string;
-			description: string;
+			description: string | null;
 			bankName: string;
 			bankNumber: string;
 			bankAccount: string;
