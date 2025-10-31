@@ -4,7 +4,7 @@ import {IRoomType, PropsMainRoomType} from './interfaces';
 import {statusConfigs, tabsCatalogs} from '~/constants/config/data';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
-import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
+import {AddCircle, Edit, Lock, Unlock, Warning2} from 'iconsax-react';
 import {Fragment, useState} from 'react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
@@ -18,7 +18,7 @@ import {useRouter} from 'next/router';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateRoomType from '../FormCreateRoomType';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import roomServices from '~/services/roomServices';
 import {httpRequest} from '~/services';
 import Pagination from '~/components/common/Pagination';
@@ -64,7 +64,7 @@ function MainRoomType({}: PropsMainRoomType) {
 			httpRequest({
 				http: roomServices.listRoom({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

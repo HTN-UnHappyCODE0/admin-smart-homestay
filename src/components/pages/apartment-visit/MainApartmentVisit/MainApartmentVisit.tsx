@@ -3,12 +3,11 @@ import styles from './MainApartmentVisit.module.scss';
 import {IApartmentVisit, PropsMainApartmentVisit} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Fragment, useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
 import {AddCircle, CloseCircle, Eye, Warning2} from 'iconsax-react';
-import {PATH} from '~/constants/config';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import FilterCustom from '~/components/common/FilterCustom';
@@ -70,7 +69,7 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 			httpRequest({
 				http: apartmentVisitServices.getApartmentVisit({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -168,7 +167,11 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Tên tài khoản',
+										title: 'Mã bài quảng cáo',
+										render: (row, _) => <>{'QC001'}</>,
+									},
+									{
+										title: 'Tên người dùng',
 										render: (row, _) => <>{row?.identification?.userUu?.name || '---'}</>,
 									},
 									{

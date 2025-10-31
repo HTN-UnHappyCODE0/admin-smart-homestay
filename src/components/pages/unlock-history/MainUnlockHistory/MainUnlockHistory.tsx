@@ -165,7 +165,7 @@ function MainUnlockHistory({}: PropsMainUnlockHistory) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword, status]}
+							dependencies={[pageSize, keyword, date?.from, date?.to, type]}
 						/>
 					</MainTable>
 				</FlexItem>

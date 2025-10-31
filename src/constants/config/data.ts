@@ -38,6 +38,11 @@ export function tabsDetailApartments(uuid: string): {
 			pathActive: PATH.RequestViewApartment,
 		},
 		{
+			title: 'Danh sách quảng cáo',
+			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
+			pathActive: PATH.ListAdvertisementApartment,
+		},
+		{
 			title: 'Yêu cầu sửa chữa',
 			path: `${PATH.RequestRepairApartment}?_uuid=${uuid}`,
 			pathActive: PATH.RequestRepairApartment,
@@ -46,11 +51,6 @@ export function tabsDetailApartments(uuid: string): {
 			title: 'Danh sách thiết bị',
 			path: `${PATH.ListMeterApartment}?_uuid=${uuid}`,
 			pathActive: PATH.ListMeterApartment,
-		},
-		{
-			title: 'Danh sách quảng cáo',
-			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
-			pathActive: PATH.ListAdvertisementApartment,
 		},
 		{
 			title: 'Danh sách nội thất',

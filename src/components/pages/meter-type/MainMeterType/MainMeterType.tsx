@@ -16,7 +16,7 @@ import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
 import Pagination from '~/components/common/Pagination';
 import IconActionTable from '~/components/utils/IconActionTable';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import meterTypeServices from '~/services/meterTypeServices';
@@ -65,7 +65,7 @@ function MainMeterType({}: PropsMainMeterType) {
 			httpRequest({
 				http: meterTypeServices.listMeterType({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

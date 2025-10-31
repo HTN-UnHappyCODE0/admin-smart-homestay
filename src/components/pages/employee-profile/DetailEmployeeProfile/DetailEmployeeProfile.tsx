@@ -169,7 +169,7 @@ function DetailEmployeeProfile({onClose}: PropsDetailEmployeeProfile) {
 											),
 										},
 										{
-											title: 'Tên chủ căn hộ',
+											title: 'Tên người thuê',
 											render: (row, _) => <>{row?.ownerUu?.name || '---'}</>,
 										},
 

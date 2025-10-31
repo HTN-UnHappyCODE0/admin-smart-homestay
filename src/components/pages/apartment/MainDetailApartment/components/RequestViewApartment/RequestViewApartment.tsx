@@ -13,7 +13,7 @@ import StateActive from '~/components/utils/StateActive';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {CloseCircle, Eye, Warning2} from 'iconsax-react';
 import {useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
 import FilterCustom from '~/components/common/FilterCustom';
 import WrapperForm from '~/components/utils/WrapperForm';
 import Pagination from '~/components/common/Pagination';
@@ -69,7 +69,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 			httpRequest({
 				http: apartmentVisitServices.getApartmentVisit({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -150,7 +150,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Tên tài khoản',
+										title: 'Tên người dùng',
 										render: (row, _) => <>{row?.userUu?.name || '---'}</>,
 									},
 									{
