@@ -9,7 +9,7 @@ import {useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import meterServices from '~/services/meterServices';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG, TYPE_USER} from '~/constants/config/enum';
 import WrapperForm from '~/components/utils/WrapperForm';
 import GridColumn from '~/components/layouts/GridColumn';
 import apartmentServices from '~/services/apartmentServices';
@@ -68,11 +68,11 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.getListApartments({
+					keyword: '',
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.CUSTOM,
 					page: 1,
 					pageSize: 100,
-					keyword: '',
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					status: STATUS_CONFIG.ACTIVE,
 					state: null,
 					sizeFrom: null,
@@ -104,8 +104,8 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 					page: 1,
 					pageSize: 100,
 					status: STATUS_CONFIG.ACTIVE,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
-					type: null,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
+					type: [TYPE_USER.USER, TYPE_USER.STAFF, TYPE_USER.MANAGE, TYPE_USER.APARTMENT_OWNER, TYPE_USER.ADMINISTRATOR],
 					userUuid: '',
 				}),
 			}),
@@ -125,7 +125,7 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 			httpRequest({
 				http: meterTypeServices.listMeterType({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.DROPDOWN,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -148,7 +148,7 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 					serialNumber: form?.serialNumber,
 					apartmentUuid: form?.apartmentUuid,
 					userInstallUuid: form?.userInstallUuid,
-					installedDate: moment(form?.installedDate).format('YYYY-MM-DD'),
+					installedDate: form?.installedDate ? moment(form?.installedDate).format('YYYY-MM-DD') : null,
 				}),
 			}),
 		onSuccess(data) {

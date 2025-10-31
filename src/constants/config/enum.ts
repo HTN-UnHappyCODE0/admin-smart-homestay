@@ -32,6 +32,7 @@ export enum QUERY_KEY {
 	detail_user_contract_detail,
 	detail_room_type,
 	detail_meter_type,
+	detail_meter,
 	detail_cost_type,
 	detail_lock,
 	detail_furniture,
@@ -83,13 +84,7 @@ export enum CONFIG_PAGING {
 	IS_PAGING,
 }
 
-export enum CONFIG_TYPE_FIND {
-	DROPDOWN,
-	TABLE,
-	CUSTOM = 4,
-}
-
-export enum CONFIG_TYPE_FINDING {
+export enum CONFIG_TYPE_FINDING { //CONFIG_TYPE_FIND:   DROPDOWN = 0, TABLE = 1, CUSTOM = 4
 	CATALOG = 0,
 	SIMPLE,
 	DTO,

@@ -1,1 +1,3 @@
-export interface PropsFormUpdateMeter {}
+export interface PropsFormUpdateMeter {
+	onClose: () => void;
+}

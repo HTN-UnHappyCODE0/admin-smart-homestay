@@ -15,7 +15,7 @@ import Table from '~/components/common/Table';
 import Pagination from '~/components/common/Pagination';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import lockServices from '~/services/lockServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
@@ -68,7 +68,7 @@ function MainLocks({}: PropsMainLocks) {
 			httpRequest({
 				http: lockServices.listLock({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

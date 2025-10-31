@@ -1,33 +1,33 @@
-import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
-import styles from './FormCreateApartmentOwner.module.scss';
-import {PropsFormCreateApartmentOwner} from './interfaces';
+import {Fragment, useState} from 'react';
+import styles from './FormUpdateApartmentOwner.module.scss';
+import {PropsFormUpdateApartmentOwner} from './interfaces';
 import Loading from '~/components/common/Loading';
+import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
-import {Fragment, useState} from 'react';
-import Header from '~/components/utils/Header';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import WrapperForm from '~/components/utils/WrapperForm';
 import GridColumn from '~/components/layouts/GridColumn';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {IDetailApartmentOwner} from '../DetailApartmentOwner/interfaces';
+import {CONFIG_PAGING, QUERY_KEY} from '~/constants/config/enum';
+import {useRouter} from 'next/router';
 import {httpRequest} from '~/services';
 import userServices from '~/services/userServices';
-import {useRouter} from 'next/router';
-import {toastWarn} from '~/common/funcs/toast';
-import {CONFIG_PAGING, QUERY_KEY} from '~/constants/config/enum';
 import paymentAccountServices from '~/services/paymentAccountServices';
+import {toastWarn} from '~/common/funcs/toast';
 
-export interface IFormCreateApartmentOwner {
+export interface IFormUpdateApartmentOwner {
 	name: string;
 	phoneNumber: string;
 	bankNumber: string;
 	bankAccount: string;
 	bankName: string;
-	description: string;
+	description: string | null;
 }
 
-const initForm: IFormCreateApartmentOwner = {
+const initForm: IFormUpdateApartmentOwner = {
 	name: '',
 	phoneNumber: '',
 	bankNumber: '',
@@ -36,12 +36,13 @@ const initForm: IFormCreateApartmentOwner = {
 	description: '',
 };
 
-function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
+function FormUpdateApartmentOwner({onClose}: PropsFormUpdateApartmentOwner) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
-	const [form, setForm] = useState<IFormCreateApartmentOwner>(initForm);
+	const {_uuidUpdate} = router.query;
 
-	const [loading, setLoading] = useState<boolean>(false);
+	const [form, setForm] = useState<IFormUpdateApartmentOwner>(initForm);
 
 	const {data: bankNames = []} = useQuery<
 		{
@@ -66,69 +67,94 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 		},
 	});
 
-	const funcCreateApartmentOwner = useMutation({
-		mutationFn: (body: {paths: string[]}) =>
+	useQuery<IDetailApartmentOwner>([QUERY_KEY.detail_apartment_owner, _uuidUpdate], {
+		queryFn: () =>
+			httpRequest({
+				http: userServices.getApartmentOwnersDetail({uuid: _uuidUpdate as string}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setForm({
+					name: data.name || '',
+					phoneNumber: data.phoneNumber || '',
+					bankNumber: data.bankInfos?.[0]?.bankNumber || '',
+					bankAccount: data.bankInfos?.[0]?.bankAccount || '',
+					bankName: data.bankInfos?.[0]?.bankName || '',
+					description: data.description || '',
+				});
+			}
+		},
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidUpdate,
+	});
+
+	const funcUpdateApartmentOwner = useMutation({
+		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Thêm chủ căn hộ thành công!',
-				http: userServices.createUser({
+				msgSuccess: 'Chỉnh sửa chủ căn hộ thành công!',
+				http: userServices.updateUser({
+					managerUuid: '',
 					name: form?.name,
-					phoneNumber: form?.phoneNumber,
-					description: form?.description,
-					bankName: form?.bankName,
-					bankAccount: form?.bankAccount,
-					bankNumber: form?.bankNumber,
-					type: 10,
 					email: '',
 					username: '',
 					password: '',
+					phoneNumber: form?.phoneNumber,
 					profileImage: '',
 					birthDate: null,
-					gender: 1,
+					gender: 0,
 					identityNumber: '',
 					provinceId: '',
 					wardId: '',
 					address: '',
-					managerUuid: '',
+					description: form?.description,
+					bankName: form?.bankName,
+					bankNumber: form?.bankNumber,
+					bankAccount: form?.bankAccount,
+					type: 10,
+					uuid: _uuidUpdate as string,
 				}),
 			}),
 		onSuccess(data) {
 			if (data) {
-				setForm(initForm);
-				router.back();
+				setForm({name: '', phoneNumber: '', bankNumber: '', bankAccount: '', bankName: '', description: ''});
+				onClose();
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_owner],
+				});
 			}
 		},
 	});
 
-	const handleCreateApartmentOwner = async () => {
-		if (!form.name) {
-			return toastWarn({msg: 'Nhập tên chủ căn hộ!'});
+	const handleUpdateApartmentOwner = () => {
+		if (!form?.name) {
+			return toastWarn({msg: 'Vui lòng nhập tên chủ căn hộ!'});
 		}
-		if (!form.phoneNumber) {
-			return toastWarn({msg: 'Nhập số điện thoại'});
+		if (!form?.phoneNumber) {
+			return toastWarn({msg: 'Vui lòng nhập số điện thoại!'});
 		}
-		if (!form.bankNumber) {
-			return toastWarn({msg: 'Nhập số tài khoản'});
+		if (!form?.bankName) {
+			return toastWarn({msg: 'Vui lòng chọn tên ngân hàng!'});
 		}
-		if (!form.bankAccount) {
-			return toastWarn({msg: 'Nhập tên chủ tài khoản'});
+		if (!form?.bankAccount) {
+			return toastWarn({msg: 'Vui lòng nhập tên tài khoản!'});
 		}
-		if (!form.bankName) {
-			return toastWarn({msg: 'Nhập ngân hàng'});
-		} else {
-			return funcCreateApartmentOwner.mutate({
-				paths: [],
-			});
+		if (!form?.bankNumber) {
+			return toastWarn({msg: 'Vui lòng nhập số tài khoản!'});
 		}
+
+		return funcUpdateApartmentOwner.mutate();
 	};
 
 	return (
-		<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleCreateApartmentOwner}>
-			<Loading loading={loading || funcCreateApartmentOwner.isLoading} />
+		<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleUpdateApartmentOwner}>
+			<Loading loading={funcUpdateApartmentOwner.isLoading} />
 			<WrapperFormPostion
 				width={1200}
-				title='Thêm chủ căn hộ'
+				title='Chỉnh sửa chủ căn hộ'
 				actions={
 					<FlexLayout row gap-8>
 						<Button p_8_24 rounded_8 white bold onClick={onClose}>
@@ -136,7 +162,7 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 						</Button>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold onSubmit={funcCreateApartmentOwner.mutate}>
+								<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
 									Lưu lại
 								</Button>
 							)}
@@ -228,4 +254,4 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 	);
 }
 
-export default FormCreateApartmentOwner;
+export default FormUpdateApartmentOwner;

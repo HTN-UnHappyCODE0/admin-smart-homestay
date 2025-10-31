@@ -15,7 +15,7 @@ import Table from '~/components/common/Table';
 import IconActionTable from '~/components/utils/IconActionTable';
 import Pagination from '~/components/common/Pagination';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG, TYPE_DATE} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import furnitureServices from '~/services/furnitureServices';
 import moment from 'moment';
@@ -71,7 +71,7 @@ function MainFurniture({}: PropsMainFurniture) {
 				http: furnitureServices.getListFurnitures({
 					keyword: keyword,
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
 					page: page,
 					pageSize: pageSize,
 					status: status,

@@ -9,7 +9,7 @@ import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import {useRouter} from 'next/router';
 import FilterDateRange from '~/components/common/FilterDateRange';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, TYPE_DATE} from '~/constants/config/enum';
 import MainTable from '~/components/utils/MainTable';
 import DataWrapper from '~/components/utils/DataWrapper';
 import Table from '~/components/common/Table';
@@ -23,11 +23,12 @@ import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateMeter from '../FormCreateMeter';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import IconActionTable from '~/components/utils/IconActionTable';
+import FormUpdateMeter from '../FormUpdateMeter';
 
 function MainMeter({}: PropsMainMeter) {
 	const router = useRouter();
 
-	const {_open} = router.query;
+	const {_open, _uuidUpdate} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -61,7 +62,7 @@ function MainMeter({}: PropsMainMeter) {
 			httpRequest({
 				http: meterServices.listmeter({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -188,7 +189,19 @@ function MainMeter({}: PropsMainMeter) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Edit size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable
+													icon={<Edit size={24} />}
+													tooltip='Chỉnh sửa'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
+												/>
 											</FlexLayout>
 										),
 									},
@@ -224,6 +237,33 @@ function MainMeter({}: PropsMainMeter) {
 				<FormCreateMeter
 					onClose={() => {
 						const {_open, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				/>
+			</PositionContainer>
+
+			<PositionContainer
+				open={!!_uuidUpdate}
+				onClose={() => {
+					const {_uuidUpdate, ...rest} = router.query;
+
+					router.replace({
+						pathname: router.pathname,
+						query: {
+							...rest,
+						},
+					});
+				}}
+			>
+				<FormUpdateMeter
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
 
 						router.replace({
 							pathname: router.pathname,

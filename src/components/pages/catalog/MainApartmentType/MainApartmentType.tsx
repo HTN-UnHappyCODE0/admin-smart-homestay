@@ -18,7 +18,7 @@ import PositionContainer from '~/components/common/PositionContainer';
 import {useRouter} from 'next/router';
 import FormCreateApartmentType from '../FormCreateApartmentType';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
 import Pagination from '~/components/common/Pagination';
@@ -64,7 +64,7 @@ function MainApartmentType({}: PropsMainApartmentType) {
 			httpRequest({
 				http: apartmentTypeServices.listApartmentType({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,

@@ -3,7 +3,7 @@ import styles from './MainApartmentVisit.module.scss';
 import {IApartmentVisit, PropsMainApartmentVisit} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Fragment, useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FIND, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_APARTMENT_VISIT, TYPE_DATE} from '~/constants/config/enum';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
@@ -70,7 +70,7 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 			httpRequest({
 				http: apartmentVisitServices.getApartmentVisit({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FIND.TABLE,
+					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
