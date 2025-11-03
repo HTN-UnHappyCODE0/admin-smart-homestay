@@ -62,7 +62,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 			httpRequest({
 				http: apartmentServices.getListApartments({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -172,11 +172,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Loại hình căn hộ',
-										render: (row, _) => <>{row?.apartmentTypeUu?.name}</>,
+										render: (row, _) => <>{row?.apartmentTypeUu?.name || '---'}</>,
 									},
 									{
 										title: 'ID ổ khóa',
-										render: (row, _) => <>{row?.lock?.code}</>,
+										render: (row, _) => <>{row?.apartmentTypeUu?.code || '---'}</>,
 									},
 									{
 										title: 'Tên căn hộ',
@@ -184,11 +184,11 @@ function MainPageApartment({}: PropsMainPageApartment) {
 									},
 									{
 										title: 'Giá cho thuê (VND)',
-										render: (row, _) => <>{convertCoin(row?.rentPrice)}</>,
+										render: (row, _) => <>{convertCoin(row?.rentPrice || 0)}</>,
 									},
 									{
 										title: 'Giá quảng cáo(VND)',
-										render: (row, _) => <>{convertCoin(row?.adPrices)}</>,
+										render: (row, _) => <>{convertCoin(row?.adPrices || 0)}</>,
 									},
 									{
 										title: 'Aptomat',

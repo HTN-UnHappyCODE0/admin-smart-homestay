@@ -6,7 +6,16 @@ export interface IApartment {
 		code: string;
 		name: string;
 	};
-	ownerUu: null;
+	ownerUu: {
+		bankNumber: string;
+		bankName: string;
+		phoneNumber: string;
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
 	lock: {
 		uuid: string;
 		code: string;
@@ -43,9 +52,11 @@ export interface IApartment {
 	description: string;
 	attachments: string[];
 	apartmentTypeUu: {
-		uuid: string;
 		code: string;
 		name: string;
+		id: number;
+		uuid: string;
+		status: number;
 	};
 	name: string;
 	province: {
@@ -60,6 +71,7 @@ export interface IApartment {
 		provinceCode: string;
 	};
 	address: string;
+	numFloor: string;
 	apartmentSize: number;
 	id: number;
 	uuid: string;

@@ -71,7 +71,7 @@ function MainFurniture({}: PropsMainFurniture) {
 				http: furnitureServices.getListFurnitures({
 					keyword: keyword,
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					status: status,

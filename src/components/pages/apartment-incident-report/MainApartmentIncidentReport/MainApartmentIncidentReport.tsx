@@ -71,7 +71,7 @@ function MainApartmentIncidentReport({}: PropsMainApartmentIncidentReport) {
 			httpRequest({
 				http: incidentServices.getIncidentReports({
 					isPaging: CONFIG_PAGING.IS_PAGING,
-					typeFinding: CONFIG_TYPE_FINDING.SIMPLE,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
