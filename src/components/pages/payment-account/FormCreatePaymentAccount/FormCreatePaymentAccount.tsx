@@ -7,7 +7,6 @@ import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import WrapperForm from '~/components/utils/WrapperForm';
-import GridColumn from '~/components/layouts/GridColumn';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {CONFIG_PAGING, QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/services';
