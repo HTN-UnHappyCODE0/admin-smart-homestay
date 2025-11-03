@@ -96,7 +96,7 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 		onSuccess(data) {
 			if (data) {
 				setForm(initForm);
-				router.back();
+				onClose();
 			}
 		},
 	});
@@ -197,6 +197,7 @@ function FormCreateApartmentOwner({onClose}: PropsFormCreateApartmentOwner) {
 										</span>
 									}
 									placeholder='Nhập tên chủ tài khoản'
+									isUppercase
 								/>
 							</div>
 							<div>

@@ -3,7 +3,14 @@ import styles from './MainAdvertisement.module.scss';
 import {IAdvertisement, PropsMainAdvertisement} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Fragment, useState} from 'react';
-import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATE_SWITCH, TYPE_DATE} from '~/constants/config/enum';
+import {
+	CONFIG_PAGING,
+	CONFIG_TYPE_FINDING,
+	QUERY_KEY,
+	STATE_APARTMENT_ADVERTISEMENT,
+	STATE_SWITCH,
+	TYPE_DATE,
+} from '~/constants/config/enum';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
@@ -30,6 +37,7 @@ import Dialog from '~/components/common/Dialog';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateAdvertisement from '../FormCreateAdvertisement';
 import DetailAdvertisement from '../DetailAdvertisement';
+import {convertCoin} from '~/common/funcs/convertCoin';
 
 function MainAdvertisement({}: PropsMainAdvertisement) {
 	const router = useRouter();
@@ -48,7 +56,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{
 		advertisementUuid: string;
 		state: number;
-		name: string;
+		title: string;
 	} | null>(null);
 
 	const resetFilter = () => {
@@ -103,8 +111,8 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 				showMessageFailed: true,
 				msgSuccess:
 					dataChangeStateSwitch?.state == STATE_SWITCH.ON
-						? `Tắt ${dataChangeStateSwitch?.name} thành công!`
-						: `Bật ${dataChangeStateSwitch?.name} thành công!`,
+						? `Tắt ${dataChangeStateSwitch?.title} thành công!`
+						: `Bật ${dataChangeStateSwitch?.title} thành công!`,
 				http: advertisementServices.changeStateAdvertisement({
 					uuid: dataChangeStateSwitch?.advertisementUuid!,
 					state: dataChangeStateSwitch?.state === STATE_SWITCH.ON ? STATE_SWITCH.OFF : STATE_SWITCH.ON,
@@ -230,16 +238,16 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 										),
 									},
 									{
-										title: 'Tiêu đề bài đăng',
+										title: 'Tiêu đề',
 										render: (row, _) => <>{row?.title || '---'}</>,
 									},
 									{
 										title: 'Giá thuê/tháng',
-										render: (row, _) => <>{row?.price || '---'}</>,
+										render: (row, _) => <>{convertCoin(row?.price || 0)}</>,
 									},
 									{
 										title: 'Tiền cọc',
-										render: (row, _) => <>{row?.deposit || '---'}</>,
+										render: (row, _) => <>{convertCoin(row?.deposit || 0)}</>,
 									},
 									{
 										title: 'Giá điện/kiểu tính',
@@ -278,12 +286,12 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 										title: 'Hiển thị',
 										render: (row) => (
 											<SwitchButton
-												checkOn={row?.state === 1}
+												checkOn={row?.state === STATE_SWITCH.ON}
 												onClick={() =>
 													setDataChangeStateSwitch({
 														advertisementUuid: row?.uuid!,
 														state: row?.state!,
-														name: row?.title,
+														title: row?.title,
 													})
 												}
 											/>
@@ -312,10 +320,12 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 													icon={<DocumentSketch color='#292D32' size={24} />}
 													tooltip='Copy và đăng mới'
 												/>
-												<IconActionTable
-													icon={<RepeatCircle color='#292D32' size={24} />}
-													tooltip='Đăng lại ngay'
-												/>
+												{row?.status === STATE_APARTMENT_ADVERTISEMENT.EXPIRED && (
+													<IconActionTable
+														icon={<RepeatCircle color='#292D32' size={24} />}
+														tooltip='Đăng lại ngay'
+													/>
+												)}
 											</FlexLayout>
 										),
 									},
@@ -341,13 +351,13 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					borderIconColor={dataChangeStateSwitch?.state == STATE_SWITCH.ON ? '#fff0f3' : '#d6f6e6ff'}
 					title={
 						dataChangeStateSwitch?.state == STATE_SWITCH.ON
-							? `Tắt ${dataChangeStateSwitch?.name}`
-							: `Bật ${dataChangeStateSwitch?.name}`
+							? `Tắt ${dataChangeStateSwitch?.title}`
+							: `Bật ${dataChangeStateSwitch?.title}`
 					}
 					note={
 						dataChangeStateSwitch?.state == STATE_SWITCH.ON
-							? `Bạn có chắc chắn muốn tắt ${dataChangeStateSwitch?.name} không?`
-							: `Bạn có chắc chắn muốn bật ${dataChangeStateSwitch?.name} không?`
+							? `Bạn có chắc chắn muốn tắt ${dataChangeStateSwitch?.title} không?`
+							: `Bạn có chắc chắn muốn bật ${dataChangeStateSwitch?.title} không?`
 					}
 					icon={
 						dataChangeStateSwitch?.state == STATE_SWITCH.ON ? (

@@ -198,6 +198,7 @@ function FormUpdatePaymentAccount({onClose}: PropsFormUpdatePaymentAccount) {
 							onClean
 							isRequired
 							isBlur
+							isNumber
 						/>
 					</div>
 				</WrapperForm>

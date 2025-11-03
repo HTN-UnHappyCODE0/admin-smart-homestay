@@ -178,11 +178,11 @@ function MainLocks({}: PropsMainLocks) {
 									},
 									{
 										title: 'ID ổ khóa',
-										render: (row, _) => <>{row?.code}</>,
+										render: (row, _) => <>{row?.code || '---'}</>,
 									},
 									{
 										title: 'Mật khẩu',
-										render: (row, _) => <>{row?.password}</>,
+										render: (row, _) => <>{row?.password || '---'}</>,
 									},
 									{
 										title: 'Tên căn hộ',

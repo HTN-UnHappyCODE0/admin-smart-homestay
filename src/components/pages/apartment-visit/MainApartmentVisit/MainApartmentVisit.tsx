@@ -108,16 +108,7 @@ function MainApartmentVisit({}: PropsMainApartmentVisit) {
 	return (
 		<Fragment>
 			<FlexLayout column gap-12>
-				<Header
-					title='Yêu cầu xem nhà'
-					actions={
-						<FlexLayout row gap-6>
-							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold href={'#'}>
-								Thêm mới
-							</Button>
-						</FlexLayout>
-					}
-				/>
+				<Header title='Yêu cầu xem nhà' />
 
 				<SearchBlock
 					keyword={keyword}

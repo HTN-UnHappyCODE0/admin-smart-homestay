@@ -100,10 +100,6 @@ function FormCreateLock({onClose}: PropsFormCreateLock) {
 						isRequired
 						isBlur
 					/>
-
-					<div style={{marginTop: '16px'}}>
-						<TextArea name='description' placeholder='Nhập ghi chú' label='Ghi chú' />
-					</div>
 				</WrapperForm>
 			</WrapperFormPostion>
 		</Form>

@@ -140,7 +140,7 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 							note='Danh sách dữ liệu hiện đang trống!'
 						>
 							<Table<IApartmentVisit>
-								rowKey={(row) => row?.userUu?.uuid}
+								rowKey={(row) => row?.uuid}
 								data={data?.items || []}
 								fixedHeader={true}
 								column={[
@@ -151,11 +151,11 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 									},
 									{
 										title: 'Tên người dùng',
-										render: (row, _) => <>{row?.userUu?.name || '---'}</>,
+										render: (row, _) => <>{row?.identification?.userUu?.name || '---'}</>,
 									},
 									{
 										title: 'Số điện thoại',
-										render: (row, _) => <>{row?.userUu?.phoneNumber || '---'}</>,
+										render: (row, _) => <>{row?.identification?.userUu?.phoneNumber || '---'}</>,
 									},
 									{
 										title: 'Thời gian xem',

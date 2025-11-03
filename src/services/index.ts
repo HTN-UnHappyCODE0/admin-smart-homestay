@@ -54,6 +54,8 @@ axiosClient.interceptors.response.use(
 				// Gọi api refresh token
 				const res = await authServices.refreshToken({});
 
+				console.log('Refresh data:', res);
+
 				if (res.status == 401) {
 					deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
 					deleteCookie(COOKIE_KEY.REFRESH_TOKEN);
@@ -77,6 +79,8 @@ axiosClient.interceptors.response.use(
 					return axiosClient(originalRequest);
 				}
 			} catch (err) {
+				console.log('Refresh err:', err);
+
 				processQueue(err, null);
 				deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
 				deleteCookie(COOKIE_KEY.REFRESH_TOKEN);

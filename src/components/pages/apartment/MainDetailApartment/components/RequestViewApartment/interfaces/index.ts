@@ -1,11 +1,28 @@
 export interface PropsRequestViewApartment {}
 
 export interface IApartmentVisit {
-	userUu: {
-		name: string;
-		identityNumber: number;
-		profileImage: number;
-		phoneNumber: string;
+	identification: {
+		userUu: {
+			bankNumber: string;
+			bankName: string;
+			phoneNumber: string;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		fullName: string;
+		birthDate: string;
+		gender: number;
+		identityNumber: string;
+		issuedDate: string;
+		issuedPlace: string;
+		address: string;
+		selfieImage: string;
+		idBackImage: string[];
+		idFrontImage: string[];
+		description: string;
 		id: number;
 		uuid: string;
 		status: number;
@@ -14,10 +31,13 @@ export interface IApartmentVisit {
 	apartmentUu: {
 		name: string;
 		apartmentTypeUu: {
-			uuid: string;
 			code: string;
 			name: string;
+			id: number;
+			uuid: string;
+			status: number;
 		};
+		numFloor: number;
 		province: {
 			code: string;
 			fullName: string;
@@ -37,6 +57,7 @@ export interface IApartmentVisit {
 	};
 	from: string;
 	to: string;
-	status: number;
+	id: number;
 	uuid: string;
+	status: number;
 }
