@@ -110,16 +110,7 @@ function MainApartmentIncidentReport({}: PropsMainApartmentIncidentReport) {
 	return (
 		<Fragment>
 			<FlexLayout column gap-12>
-				<Header
-					title='Yêu cầu sửa chữa'
-					actions={
-						<FlexLayout row gap-6>
-							<Button icon={<AddCircle />} p_8_24 rounded_40 bright-cyan bold href={'#'}>
-								Thêm mới
-							</Button>
-						</FlexLayout>
-					}
-				/>
+				<Header title='Yêu cầu sửa chữa' />
 
 				<SearchBlock
 					keyword={keyword}

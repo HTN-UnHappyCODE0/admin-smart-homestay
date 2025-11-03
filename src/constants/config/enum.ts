@@ -42,6 +42,7 @@ export enum QUERY_KEY {
 	detail_apartment_owner,
 	detail_apartment_visit_module,
 	detail_apartment_incident_report_module,
+	detail_apartment_advertisement,
 	detail_guest_tenant,
 	detail_employee_profile,
 	detail_payment_account,
@@ -141,7 +142,7 @@ export enum STATE_APARTMENT_INCIDENT_REPORTS {
 
 export enum STATE_APARTMENT_ADVERTISEMENT {
 	DELETED, // đã xóa
-	PENDING, // chờ duyệt
+	PENDING, // chờ đăng
 	POSTED, // đã đăng
 	EXPIRED, // hết hạn
 }

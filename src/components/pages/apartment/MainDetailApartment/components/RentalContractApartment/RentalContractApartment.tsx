@@ -16,6 +16,7 @@ import contractServices from '~/services/contractServices';
 import StateActive from '~/components/utils/StateActive';
 import {statusContract, statusRentalContract} from '~/constants/config/data';
 import MainDetailApartment from '../../MainDetailApartment';
+import {convertCoin} from '~/common/funcs/convertCoin';
 
 function RentalContractApartment({}: PropsRentalContractApartment) {
 	const router = useRouter();
@@ -77,8 +78,8 @@ function RentalContractApartment({}: PropsRentalContractApartment) {
 					<InfoDetail name='Mã hợp đồng' value={apartmentInfo?.code || '---'} />
 					<InfoDetail name='Người thuê' value={apartmentInfo?.userSignUu?.name} />
 					<InfoDetail name='Số người ở ' value={apartmentInfo?.numPerson || 0} />
-					<InfoDetail name='Số tiền cọc' value={apartmentInfo?.deposit || 0} />
-					<InfoDetail name='Giá cho thuê' value={apartmentInfo?.price || 0} />
+					<InfoDetail name='Số tiền cọc' value={convertCoin(apartmentInfo?.deposit!) || 0} />
+					<InfoDetail name='Giá cho thuê' value={convertCoin(apartmentInfo?.price!) || 0} />
 					<InfoDetail name='Thời hạn hợp đồng' value={<Moment date={apartmentInfo?.from} format='DD/MM/YYYY' />} />
 				</GridColumn>
 			</WrapperForm>

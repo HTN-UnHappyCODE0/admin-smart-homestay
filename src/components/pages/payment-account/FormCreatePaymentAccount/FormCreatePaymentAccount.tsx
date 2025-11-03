@@ -175,6 +175,7 @@ function FormCreatePaymentAccount({onClose}: PropsFormCreatePaymentAccount) {
 							onClean
 							isRequired
 							isBlur
+							isNumber
 						/>
 					</div>
 				</WrapperForm>

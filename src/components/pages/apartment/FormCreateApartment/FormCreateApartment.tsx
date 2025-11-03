@@ -12,7 +12,7 @@ import GridColumn from '~/components/layouts/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import {useRouter} from 'next/router';
-import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG, TYPE_USER} from '~/constants/config/enum';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import apartmentTypeServices from '~/services/apartmentTypeServices';
@@ -139,7 +139,7 @@ function FormCreateApartment({}: PropsFormCreateApartment) {
 					keyword: '',
 					hasRented: 0,
 					status: STATUS_CONFIG.ACTIVE,
-					type: [1, 10, 25, 50, 100],
+					type: [TYPE_USER.STAFF],
 					userUuid: '',
 				}),
 			}),

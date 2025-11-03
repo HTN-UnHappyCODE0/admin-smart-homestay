@@ -3,20 +3,24 @@ export interface PropsRequestRepairApartment {}
 export interface IIncidentApartment {
 	code: string;
 	userReportUu: {
-		uuid: string;
-		code: number;
-		name: string;
-	};
-	apartmentUu: {
-		uuid: string;
 		code: string;
 		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	apartmentUu: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
 	};
 	reportDate: string;
 	reason: string;
 	userResolveUu: number;
-	resolveDate: number;
-	description: number;
+	resolveDate: string;
+	description: string;
 	images: string[];
 	id: number;
 	uuid: string;

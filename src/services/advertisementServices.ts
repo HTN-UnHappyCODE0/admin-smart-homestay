@@ -59,6 +59,16 @@ const advertisementServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	getAdvertisementByUuid: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Advertisement/get-advertisement-by-uuid`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default advertisementServices;

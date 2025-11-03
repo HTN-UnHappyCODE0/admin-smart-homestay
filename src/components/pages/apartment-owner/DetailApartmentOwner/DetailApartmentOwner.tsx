@@ -72,14 +72,14 @@ function DetailApartmentOwner({onClose}: PropsDetailApartmentOwner) {
 					</GridColumn>
 				</WrapperForm>
 
-				<WrapperForm title='Danh sách căn hộ sử dụng nội thất'>
+				<WrapperForm title='Danh sách căn hộ'>
 					<FlexLayout column gap-12>
 						<FlexItem flex-1 overflow-x>
 							<DataWrapper
 								data={apartmentOwner?.apartmentOwnerUus || []}
 								loading={isLoading}
 								title='Dữ liệu trống!'
-								note='Danh sách căn hộ sử dụng nội thất hiện đang trống!'
+								note='Danh sách căn hộ hiện đang trống!'
 							>
 								<Table<IApartmentOwner>
 									rowKey={(row) => row.uuid}

@@ -38,14 +38,14 @@ export function tabsDetailApartments(uuid: string): {
 			pathActive: PATH.RequestViewApartment,
 		},
 		{
-			title: 'Danh sách quảng cáo',
-			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
-			pathActive: PATH.ListAdvertisementApartment,
-		},
-		{
 			title: 'Yêu cầu sửa chữa',
 			path: `${PATH.RequestRepairApartment}?_uuid=${uuid}`,
 			pathActive: PATH.RequestRepairApartment,
+		},
+		{
+			title: 'Danh sách quảng cáo',
+			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
+			pathActive: PATH.ListAdvertisementApartment,
 		},
 		{
 			title: 'Danh sách thiết bị',
@@ -334,7 +334,7 @@ export const statusApartmentAdvertisement: {
 	},
 	{
 		state: STATE_APARTMENT_ADVERTISEMENT.PENDING,
-		text: 'Chờ duyệt',
+		text: 'Chờ đăng',
 		backgroundColor: '#17B26A',
 		textColor: '#FFF',
 	},
