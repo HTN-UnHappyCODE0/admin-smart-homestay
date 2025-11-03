@@ -282,7 +282,7 @@ function MainEmployeeProfile({}: PropsMainEmployeeProfile) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword]}
+							dependencies={[pageSize, keyword, status]}
 						/>
 					</MainTable>
 				</FlexItem>

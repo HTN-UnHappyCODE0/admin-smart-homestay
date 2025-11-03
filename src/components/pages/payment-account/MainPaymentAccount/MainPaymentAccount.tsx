@@ -5,7 +5,7 @@ import Loading from '~/components/common/Loading';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Header from '~/components/utils/Header';
 import Button from '~/components/common/Button';
-import {AddCircle, Edit, Eye, Lock, Unlock, Warning2} from 'iconsax-react';
+import {AddCircle, Edit, Lock, Unlock, Warning2} from 'iconsax-react';
 import SearchBlock from '~/components/utils/SearchBlock';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import MainTable from '~/components/utils/MainTable';
@@ -188,7 +188,6 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 										fixedRight: true,
 										render: (row, _) => (
 											<FlexLayout row>
-												<IconActionTable icon={<Eye color='#292D32' size={24} />} tooltip='Xem chi tiết' />
 												<IconActionTable
 													icon={<Edit color='#292D32' size={24} />}
 													tooltip='Chỉnh sửa tài khoản thanh toán'
@@ -202,7 +201,6 @@ function MainPaymentAccount({}: PropsMainPaymentAccount) {
 														})
 													}
 												/>
-
 												<IconActionTable
 													icon={
 														row?.status == STATUS_CONFIG.ACTIVE ? (
