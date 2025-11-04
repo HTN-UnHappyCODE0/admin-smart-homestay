@@ -5,6 +5,7 @@ export interface PropsLayoutMainPage {
 		title: string;
 		path: string;
 		pathActive?: string;
+		count?: number;
 	}[];
 	children: React.ReactNode;
 	breadcrumb?: React.ReactNode;

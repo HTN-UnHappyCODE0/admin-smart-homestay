@@ -37,12 +37,14 @@ import {getUnitByAdPrice} from '~/common/funcs/getUnitByAdPrice';
 import Dialog from '~/components/common/Dialog';
 import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateAdvertisement from './components/FormCreateAdvertisement';
+import {convertCoin} from '~/common/funcs/convertCoin';
+import DetailAdvertisement from './components/DetailAdvertisement';
 
 function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidAdvertisement, _open} = router.query;
+	const {_uuid, _uuidDetail, _open} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -76,7 +78,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 	}>([QUERY_KEY.table_apartment_advertisement_detail, page, pageSize, keyword, status, stateAdvertisement], {
 		queryFn: () =>
 			httpRequest({
-				http: advertisementServices.getListAdvertisement({
+				http: advertisementServices.getListPagedAdvertisement({
 					isPaging: CONFIG_PAGING.IS_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
@@ -89,6 +91,7 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 					adCode: '',
 					address: '',
 					apartmentCode: '',
+					apartmentUuid: _uuid as string,
 				}),
 			}),
 		select(data) {
@@ -201,31 +204,32 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 									},
 									{
 										title: 'Giá thuê/tháng',
-										render: (row, _) => <>{row?.price || '---'}</>,
+										render: (row, _) => <>{convertCoin(row?.price || 0)}</>,
 									},
 									{
 										title: 'Tiền cọc',
-										render: (row, _) => <>{row?.deposit || '---'}</>,
+										render: (row, _) => <>{convertCoin(row?.deposit || 0)}</>,
 									},
 									{
 										title: 'Giá điện/kiểu tính',
 										render: (row: IAdvertisement) => {
-											const electric = row.adPrices?.find((item) => item.serviceUu?.type === 0);
-											const unit = getUnitByAdPrice(electric?.serviceUu?.type ?? 0, electric?.type ?? 0);
-											const priceText = electric ? `${electric.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											const electric = row.adElectricInfo;
+											if (!electric) return <>---</>;
+											const unit = getUnitByAdPrice(electric.serviceUu?.type ?? 0, electric.type ?? 0);
+											const priceText = `${electric.price.toLocaleString('vi-VN')}/${unit}`;
 											return <>{priceText}</>;
 										},
 									},
 									{
 										title: 'Giá nước/kiểu tính',
 										render: (row: IAdvertisement) => {
-											const water = row.adPrices?.find((item) => item.serviceUu?.type === 1);
-											const unit = getUnitByAdPrice(water?.serviceUu?.type ?? 0, water?.type ?? 0);
-											const priceText = water ? `${water.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											const water = row.adWaterInfo;
+											if (!water) return <>---</>;
+											const unit = getUnitByAdPrice(water.serviceUu?.type ?? 0, water.type ?? 0);
+											const priceText = `${water.price.toLocaleString('vi-VN')}/${unit}`;
 											return <>{priceText}</>;
 										},
 									},
-
 									{
 										title: 'Trạng thái',
 										render: (row, _) => (
@@ -263,7 +267,15 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 												<IconActionTable
 													icon={<Eye color='#303229ff' size={24} />}
 													tooltip='Xem chi tiết'
-													href={`${PATH.ApartmentDetail}?_uuid=${row?.uuid}`}
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidDetail: row?.uuid,
+															},
+														})
+													}
 												/>
 												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
 												<IconActionTable
@@ -336,6 +348,33 @@ function ListAdvertisementApartment({}: PropsListAdvertisementApartment) {
 					<FormCreateAdvertisement
 						onClose={() => {
 							const {_open, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
+				</PositionContainer>
+
+				<PositionContainer
+					open={!!_uuidDetail}
+					onClose={() => {
+						const {_uuidDetail, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				>
+					<DetailAdvertisement
+						onClose={() => {
+							const {_uuidDetail, ...rest} = router.query;
 
 							router.replace({
 								pathname: router.pathname,

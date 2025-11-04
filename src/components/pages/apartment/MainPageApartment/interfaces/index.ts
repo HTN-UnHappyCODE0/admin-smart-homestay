@@ -1,22 +1,22 @@
 export interface PropsMainPageApartment {}
 
 export interface IApartment {
-	managerUu: {
+	lock: {
 		uuid: string;
-		code: string;
-		name: string;
-	};
-	ownerUu: {
-		bankNumber: string;
-		bankName: string;
-		phoneNumber: string;
 		code: string;
 		name: string;
 		id: number;
-		uuid: string;
 		status: number;
 	};
-	lock: {
+	numChild: number;
+	children: [];
+	inverseParentUu: null;
+	managerUu: {
+		bankNumber: string;
+		bankName: string;
+		phoneNumber: string;
+		id: number;
+		status: number;
 		uuid: string;
 		code: string;
 		name: string;
@@ -25,26 +25,29 @@ export interface IApartment {
 	numIncidentRequest: number;
 	maxPeople: number;
 	rentPrice: number;
-	adPrices: number;
-	// adPrices: {
-	// 	serviceUu: {
-	// 		name: string;
-	// 		description: string;
-	// 		state: number;
-	// 		type: number;
-	// 		id: number;
-	// 		uuid: string;
-	// 		status: number;
-	// 	};
-	// 	price: number;
-	// 	paymentCycle: number;
-	// 	type: number;
-	// }[];
-	apartmentMeters: {
-		serialNumber: string;
-		type: number;
-		value: number;
-		onState: number;
+	adPrice: number;
+	meters: {
+		meterUu: {
+			name: string;
+			serialNumber: string;
+			installedDate: string;
+			isOnline: boolean;
+			onState: number;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		meterTypeUu: {
+			type: number;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		currentValue: number;
+		initialValue: number;
+		description: string;
 		id: number;
 		uuid: string;
 		status: number;
@@ -59,6 +62,18 @@ export interface IApartment {
 		status: number;
 	};
 	name: string;
+	apartmentSize: number;
+	numFloor: number;
+	ownerUu: {
+		bankNumber: string;
+		bankName: string;
+		phoneNumber: string;
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
 	province: {
 		code: string;
 		fullName: string;
@@ -71,10 +86,8 @@ export interface IApartment {
 		provinceCode: string;
 	};
 	address: string;
-	numFloor: string;
-	apartmentSize: number;
 	id: number;
 	uuid: string;
-	state: number;
 	status: number;
+	state: number;
 }

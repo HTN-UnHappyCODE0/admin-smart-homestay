@@ -1,7 +1,7 @@
 import axiosClient from '.';
 
 const advertisementServices = {
-	getListAdvertisement: (
+	getListPagedAdvertisement: (
 		data: {
 			keyword: string;
 			isPaging: number;
@@ -15,10 +15,33 @@ const advertisementServices = {
 			adCode: string;
 			apartmentCode: string;
 			address: string;
+			apartmentUuid: string;
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/Advertisement/get-list-advertisement`, data, {
+		return axiosClient.post(`/Advertisement/get-list-paged-advertisement`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	getListCatalogAdvertisement: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			pageSize: number;
+			page: number;
+			typeFinding: number | null;
+			state: number | null;
+			status: number | null;
+			provinceId: string;
+			wardId: string;
+			adCode: string;
+			apartmentCode: string;
+			address: string;
+			apartmentUuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Advertisement/get-list-catalog-advertisement`, data, {
 			cancelToken: tokenAxios,
 		});
 	},

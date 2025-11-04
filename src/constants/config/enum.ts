@@ -17,7 +17,7 @@ export enum QUERY_KEY {
 	table_meter,
 	table_meter_type,
 	table_apartment_owner,
-	table_apartment_advertisement,
+	table_apartment_advertisement_module,
 	table_apartment_visit_module,
 	table_apartment_incident_module,
 	table_employee_profile,
@@ -31,6 +31,7 @@ export enum QUERY_KEY {
 	detail_request_view_detail,
 	detail_request_repair_detail,
 	detail_user_contract_detail,
+	detail_advertisement_detail,
 	detail_room_type,
 	detail_meter_type,
 	detail_meter,
@@ -42,7 +43,7 @@ export enum QUERY_KEY {
 	detail_apartment_owner,
 	detail_apartment_visit_module,
 	detail_apartment_incident_report_module,
-	detail_apartment_advertisement,
+	detail_apartment_advertisement_module,
 	detail_guest_tenant,
 	detail_employee_profile,
 	detail_payment_account,
@@ -171,6 +172,7 @@ export enum TYPE_LOCK {
 export enum TYPE_METER {
 	ELECTRIC,
 	WATER,
+	OTHER = 99,
 }
 
 export enum IS_USED {

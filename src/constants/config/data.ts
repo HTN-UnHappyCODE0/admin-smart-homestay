@@ -16,10 +16,14 @@ import {
 	TYPE_USER,
 } from './enum';
 
-export function tabsDetailApartments(uuid: string): {
+export function tabsDetailApartments(
+	uuid: string,
+	counts?: Record<string, number>
+): {
 	title: string;
 	path: string;
 	pathActive: string;
+	count?: number;
 }[] {
 	return [
 		{
@@ -36,11 +40,13 @@ export function tabsDetailApartments(uuid: string): {
 			title: 'Yêu cầu xem căn hộ',
 			path: `${PATH.RequestViewApartment}?_uuid=${uuid}`,
 			pathActive: PATH.RequestViewApartment,
+			count: counts?.requestView || 0,
 		},
 		{
 			title: 'Yêu cầu sửa chữa',
 			path: `${PATH.RequestRepairApartment}?_uuid=${uuid}`,
 			pathActive: PATH.RequestRepairApartment,
+			count: counts?.requestRepair || 0,
 		},
 		{
 			title: 'Danh sách quảng cáo',
