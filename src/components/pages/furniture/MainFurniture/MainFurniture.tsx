@@ -85,17 +85,20 @@ function MainFurniture({}: PropsMainFurniture) {
 	});
 
 	const funcChangeStatus = useMutation({
-		mutationFn: () =>
-			httpRequest({
+		mutationFn: () => {
+			const item = data?.items?.find((i) => i.uuid === dataChangeStatus?.uuid);
+
+			return httpRequest({
 				showMessageSuccess: true,
 				showMessageFailed: true,
 				msgSuccess: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? 'Khóa nội thất thành công!' : 'Mở khóa nội thất thành công!',
 				http: furnitureServices.changeStatus({
 					uuid: dataChangeStatus?.uuid!,
 					status: dataChangeStatus?.status == STATUS_CONFIG.ACTIVE ? STATUS_CONFIG.LOCKED : STATUS_CONFIG.ACTIVE,
-					description: '',
+					description: item?.description ?? '---',
 				}),
-			}),
+			});
+		},
 		onSuccess(data) {
 			if (data) {
 				setDataChangeStatus(null);
