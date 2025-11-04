@@ -22,26 +22,26 @@ function FormUpdateRoomType({onClose}: PropsFormUpdateRoomType) {
 
 	const [form, setForm] = useState<{name: string; description: string}>({name: '', description: ''});
 
-	// useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_room_type, _uuidUpdate], {
-	// 	queryFn: () =>
-	// 		httpRequest({
-	// 			http: roomServices.detailRoom({
-	// 				uuid: _uuidUpdate as string,
-	// 			}),
-	// 		}),
-	// 	onSuccess(data) {
-	// 		if (data) {
-	// 			setForm({
-	// 				name: data.name,
-	// 				description: data.description || '',
-	// 			});
-	// 		}
-	// 	},
-	// 	select(data) {
-	// 		return data;
-	// 	},
-	// 	enabled: !!_uuidUpdate,
-	// });
+	useQuery<{name: string; description: string; id: number; uuid: string; status: number}>([QUERY_KEY.detail_room_type, _uuidUpdate], {
+		queryFn: () =>
+			httpRequest({
+				http: roomServices.detailRoom({
+					uuid: _uuidUpdate as string,
+				}),
+			}),
+		onSuccess(data) {
+			if (data) {
+				setForm({
+					name: data.name,
+					description: data.description || '',
+				});
+			}
+		},
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidUpdate,
+	});
 
 	const funcUpdateRoom = useMutation({
 		mutationFn: () =>
