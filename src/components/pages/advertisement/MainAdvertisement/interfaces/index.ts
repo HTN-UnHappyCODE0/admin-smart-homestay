@@ -1,9 +1,8 @@
 export interface PropsMainAdvertisement {}
 
 export interface IAdvertisement {
-	code: null;
+	code: string;
 	apartmentUu: {
-		name: string;
 		apartmentTypeUu: {
 			code: string;
 			name: string;
@@ -11,7 +10,19 @@ export interface IAdvertisement {
 			uuid: string;
 			status: number;
 		};
+		name: string;
+		apartmentSize: number;
 		numFloor: number;
+		ownerUu: {
+			bankNumber: string;
+			bankName: string;
+			phoneNumber: string;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
 		province: {
 			code: string;
 			fullName: string;
@@ -24,7 +35,6 @@ export interface IAdvertisement {
 			provinceCode: string;
 		};
 		address: string;
-		apartmentSize: number;
 		id: number;
 		uuid: string;
 		status: number;
@@ -36,7 +46,7 @@ export interface IAdvertisement {
 		uuid: string;
 		status: number;
 	};
-	adPrices: {
+	adWaterInfo: {
 		serviceUu: {
 			name: string;
 			description: string;
@@ -49,17 +59,31 @@ export interface IAdvertisement {
 		price: number;
 		paymentCycle: number;
 		type: number;
-	}[];
+	};
+	adElectricInfo: {
+		serviceUu: {
+			name: string;
+			description: string;
+			state: number;
+			type: number;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		price: number;
+		paymentCycle: number;
+		type: number;
+	};
 	title: string;
 	price: number;
 	deposit: number;
 	images: string[];
-	phoneNumber: number;
+	phoneNumber: string;
 	startDate: string;
 	expireDate: string;
 	description: string;
-	id: number;
 	state: number;
+	id: number;
 	uuid: string;
 	status: number;
 }

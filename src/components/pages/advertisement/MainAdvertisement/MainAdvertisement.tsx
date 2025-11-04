@@ -9,6 +9,7 @@ import {
 	QUERY_KEY,
 	STATE_APARTMENT_ADVERTISEMENT,
 	STATE_SWITCH,
+	STATUS_CONFIG,
 	TYPE_DATE,
 } from '~/constants/config/enum';
 import FlexLayout from '~/components/layouts/FlexLayout';
@@ -38,12 +39,13 @@ import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateAdvertisement from '../FormCreateAdvertisement';
 import DetailAdvertisement from '../DetailAdvertisement';
 import {convertCoin} from '~/common/funcs/convertCoin';
+import apartmentServices from '~/services/apartmentServices';
 
 function MainAdvertisement({}: PropsMainAdvertisement) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_uuid, _uuidAdvertisement, _open, _uuidDetail} = router.query;
+	const {_open, _uuidDetail} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -52,6 +54,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 	const [stateAdvertisement, setStateAdvertisement] = useState<number | null>(null);
 	const [date, setDate] = useState<{from: Date | null; to: Date | null} | null>(null);
 	const [typeDate, setTypeDate] = useState<TYPE_DATE>(TYPE_DATE.ALL);
+	const [apartmentUuid, setApartmentUuid] = useState<string | null>(null);
 
 	const [dataChangeStateSwitch, setDataChangeStateSwitch] = useState<{
 		advertisementUuid: string;
@@ -65,6 +68,38 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 		setTypeDate(TYPE_DATE.ALL);
 		setDate(null);
 	};
+
+	const {data: apartments = []} = useQuery<
+		{
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		}[]
+	>([QUERY_KEY.table_apartment_advertisement_detail], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.getListApartments({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: STATUS_CONFIG.ACTIVE,
+					state: null,
+					sizeFrom: null,
+					sizeTo: null,
+					province: '',
+					ward: '',
+					hasElectricMeter: null,
+					hasWaterMeter: null,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+	});
 
 	const {
 		data = {
@@ -81,10 +116,10 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 			totalCount: number;
 			totalPage: number;
 		};
-	}>([QUERY_KEY.table_apartment_advertisement, page, pageSize, keyword, status, stateAdvertisement], {
+	}>([QUERY_KEY.table_apartment_advertisement_module, page, pageSize, keyword, status, stateAdvertisement, apartmentUuid], {
 		queryFn: () =>
 			httpRequest({
-				http: advertisementServices.getListAdvertisement({
+				http: advertisementServices.getListPagedAdvertisement({
 					isPaging: CONFIG_PAGING.IS_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
@@ -97,6 +132,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					adCode: '',
 					address: '',
 					apartmentCode: '',
+					apartmentUuid: apartmentUuid as string,
 				}),
 			}),
 		select(data) {
@@ -123,7 +159,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 			if (data) {
 				setDataChangeStateSwitch(null);
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_advertisement],
+					queryKey: [QUERY_KEY.table_apartment_advertisement_module],
 				});
 			}
 		},
@@ -168,19 +204,14 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 								<FlexLayout row gap-8>
 									<FilterCustom
 										name='Căn hộ'
-										value={status}
-										setValue={setStatus}
-										listOption={[
-											{
-												uuid: 1,
-												name: 'Căn hộ 1',
-											},
-											{
-												uuid: 2,
-												name: 'Căn hộ 2',
-											},
-										]}
+										value={apartmentUuid}
+										setValue={setApartmentUuid}
+										listOption={apartments.map((item) => ({
+											uuid: item?.uuid,
+											name: item?.name,
+										}))}
 									/>
+
 									<FilterCustom
 										name='Trạng thái'
 										value={status}
@@ -252,22 +283,23 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 									{
 										title: 'Giá điện/kiểu tính',
 										render: (row: IAdvertisement) => {
-											const electric = row.adPrices?.find((item) => item.serviceUu?.type === 0);
-											const unit = getUnitByAdPrice(electric?.serviceUu?.type ?? 0, electric?.type ?? 0);
-											const priceText = electric ? `${electric.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											const electric = row.adElectricInfo;
+											if (!electric) return <>---</>;
+											const unit = getUnitByAdPrice(electric.serviceUu?.type ?? 0, electric.type ?? 0);
+											const priceText = `${electric.price.toLocaleString('vi-VN')}/${unit}`;
 											return <>{priceText}</>;
 										},
 									},
 									{
 										title: 'Giá nước/kiểu tính',
 										render: (row: IAdvertisement) => {
-											const water = row.adPrices?.find((item) => item.serviceUu?.type === 1);
-											const unit = getUnitByAdPrice(water?.serviceUu?.type ?? 0, water?.type ?? 0);
-											const priceText = water ? `${water.price.toLocaleString('vi-VN')}/${unit}` : '---';
+											const water = row.adWaterInfo;
+											if (!water) return <>---</>;
+											const unit = getUnitByAdPrice(water.serviceUu?.type ?? 0, water.type ?? 0);
+											const priceText = `${water.price.toLocaleString('vi-VN')}/${unit}`;
 											return <>{priceText}</>;
 										},
 									},
-
 									{
 										title: 'Trạng thái',
 										render: (row, _) => (

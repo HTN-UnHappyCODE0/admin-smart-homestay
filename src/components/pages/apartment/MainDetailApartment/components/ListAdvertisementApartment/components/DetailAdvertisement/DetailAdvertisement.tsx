@@ -33,20 +33,17 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 		title: string;
 	} | null>(null);
 
-	const {data: detailAdvertisement, isLoading} = useQuery<IDetailAdvertisement>(
-		[QUERY_KEY.detail_apartment_advertisement_module, _uuidDetail],
-		{
-			queryFn: () =>
-				httpRequest({
-					http: advertisementServices.getAdvertisementByUuid({uuid: _uuidDetail as string}),
-				}),
+	const {data: detailAdvertisement, isLoading} = useQuery<IDetailAdvertisement>([QUERY_KEY.detail_advertisement_detail, _uuidDetail], {
+		queryFn: () =>
+			httpRequest({
+				http: advertisementServices.getAdvertisementByUuid({uuid: _uuidDetail as string}),
+			}),
 
-			select(data) {
-				return data;
-			},
-			enabled: !!_uuidDetail,
-		}
-	);
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidDetail,
+	});
 
 	const funcChangeSwitch = useMutation({
 		mutationFn: () =>
@@ -67,10 +64,10 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 			if (data) {
 				setDataChangeStateSwitch(null);
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.table_apartment_advertisement_module],
+					queryKey: [QUERY_KEY.table_apartment_advertisement_detail],
 				});
 				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEY.detail_apartment_advertisement_module],
+					queryKey: [QUERY_KEY.detail_advertisement_detail],
 				});
 			}
 		},

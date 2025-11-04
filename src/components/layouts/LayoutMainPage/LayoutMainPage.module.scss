@@ -44,6 +44,20 @@
 			background: #2c3441;
 			border: 1px solid #2c3441;
 		}
+
+		.counts {
+			margin-left: 6px;
+			color: #fff;
+			font-size: 14px;
+			font-weight: 500;
+			color: #000;
+
+			&.active {
+				color: #fff;
+				background: #2c3441;
+				border: 1px solid #2c3441;
+			}
+		}
 	}
 }
 

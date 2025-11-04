@@ -33,7 +33,12 @@ function LayoutMainPage({title, breadcrumb, actions, tabs, children}: PropsLayou
 						href={tab.path}
 						className={clsx(styles.tab, {[styles.active]: checkActive(tab.pathActive || tab.path)})}
 					>
-						{tab.title}
+						<span>{tab.title}</span>
+						{tab.count !== undefined && (
+							<span className={clsx(styles.counts, {[styles.active]: checkActive(tab.pathActive || tab.path)})}>
+								({tab.count})
+							</span>
+						)}
 					</Link>
 				))}
 			</div>

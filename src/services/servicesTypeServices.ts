@@ -32,7 +32,8 @@ const servicesTypeServices = {
 		data: {
 			name: string;
 			description: string;
-			state: number;
+			state: number | null;
+			type: number;
 		},
 		tokenAxios?: any
 	) => {
