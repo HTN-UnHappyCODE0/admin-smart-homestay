@@ -1,6 +1,6 @@
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import styles from './FormCreateAdvertisement.module.scss';
-import {IDetailApartmentForUpdate, IFormCreateAdvertisement, PropsFormCreateAdvertisement} from './interfaces';
+import {IAdvPrice, IDetailApartmentForUpdate, IFormCreateAdvertisement, PropsFormCreateAdvertisement} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import GridColumn from '~/components/layouts/GridColumn';
@@ -14,7 +14,14 @@ import {useRouter} from 'next/router';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
-import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {
+	CONFIG_PAGING,
+	CONFIG_TYPE_FINDING,
+	QUERY_KEY,
+	STATE_APARTMENT_PAYMENT_TYPE,
+	STATUS_CONFIG,
+	TYPE_METER,
+} from '~/constants/config/enum';
 import apartmentServices from '~/services/apartmentServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import moment from 'moment';
@@ -33,10 +40,12 @@ const initForm: IFormCreateAdvertisement = {
 	price: 0,
 	deposit: 0,
 	images: [],
-	adPrices: [],
 	startDate: '',
 	expireDate: '',
 	description: '',
+	advPrices: [],
+	electricPrice: 0,
+	waterPrice: 0,
 };
 
 function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
@@ -79,7 +88,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_detail, form.apartmentUuid], {
+	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_module, form.apartmentUuid], {
 		queryFn: () =>
 			httpRequest({
 				http: apartmentServices.apartmentDetail({
@@ -94,18 +103,21 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			if (data) {
 				setForm((prev) => ({
 					...prev,
-					rooms: data?.apartmentRooms?.map((v) => ({
-						assetUuid: v?.item?.uuid,
-						name: v?.item?.name,
-						count: convertCoin(v?.count),
-						description: v?.description || '',
+
+					rooms: data?.roomTypeGroups?.map((r) => ({
+						assetUuid: r?.roomTypeUu?.uuid,
+						name: r?.roomTypeUu?.name,
+						count: convertCoin(r?.count),
+						description: '',
 					})),
-					furnitures: data?.apartmentFurnitures?.map((v) => ({
-						assetUuid: v?.item?.uuid,
-						name: v?.item?.name,
-						count: convertCoin(v?.count),
-						description: v?.description || '',
+
+					furnitures: data?.furnitureTypeGroups?.map((f) => ({
+						assetUuid: f?.furnitureTypeUu?.uuid,
+						name: f?.furnitureTypeUu?.name,
+						count: convertCoin(f?.count),
+						description: '',
 					})),
+
 					apartmentTypeUu: data?.apartmentTypeUu?.name,
 					apartmentSize: convertCoin(data?.apartmentSize),
 					address: getDetailAddress({
@@ -119,30 +131,52 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	// const funcCreateAdvertisement = useMutation({
-	// 	mutationFn: (body: {paths: string[]}) =>
-	// 		httpRequest({
-	// 			showMessageFailed: true,
-	// 			showMessageSuccess: true,
-	// 			msgSuccess: 'Thêm căn hộ thành công!',
-	// 			http: advertisementServices.createAdvertisement({
-	// 				apartmentUuid: _uuid as string,
-	// 				title: form?.title,
-	// 				adPrices: form?.adPrices,
-	// 				deposit: form?.deposit,
-	// 				description: form?.description,
-	// 				startDate: moment(form?.startDate).format('YYYY-MM-DD'),
-	// 				expireDate: moment(form?.expireDate).format('YYYY-MM-DD'),
-	// 				price: form?.price,
-	// 				images: body?.paths,
-	// 			}),
-	// 		}),
-	// 	onSuccess(data) {
-	// 		if (data) {
-	// 			setForm(initForm);
-	// 		}
-	// 	},
-	// });
+	const funcCreateAdvertisement = useMutation({
+		mutationFn: async (body: {paths: string[]}) => {
+			const advPrices: IAdvPrice[] = [
+				{
+					serviceUuid: '',
+					price: Number(form.electricPrice),
+					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					type: TYPE_METER.ELECTRIC,
+				},
+				{
+					serviceUuid: '',
+					price: Number(form.waterPrice),
+					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					type: TYPE_METER.WATER,
+				},
+			];
+
+			return httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Thêm bài đăng thành công!',
+				http: advertisementServices.createAdvertisement(
+					{
+						apartmentUuid: form.apartmentUuid,
+						title: form.title,
+						deposit: Number(form.deposit),
+						price: Number(form.price),
+						images: body.paths,
+						advPrices,
+						phoneNumber: '',
+						startDate: moment(form.startDate).format('YYYY-MM-DD'),
+						expireDate: moment(form.expireDate).format('YYYY-MM-DD'),
+						description: form.description,
+					},
+					null
+				),
+			});
+		},
+		onSuccess(data) {
+			if (data) {
+				setForm(initForm);
+				setImages([]);
+				onClose?.();
+			}
+		},
+	});
 
 	const handleCreateAdvertisement = async () => {
 		if (!form.title) {
@@ -169,27 +203,27 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			return toastWarn({msg: 'Chọn thời gian kết thúc!'});
 		}
 
-		// if (images.length > 0) {
-		// 	const files = images?.map((v) => v?.file);
+		if (images.length > 0) {
+			const files = images?.map((v) => v?.file);
 
-		// 	const dataImage = await httpRequest({
-		// 		setLoading,
-		// 		http: fileServices.uploadMultilFile(files, 'false'),
-		// 	});
+			const dataImage = await httpRequest({
+				setLoading,
+				http: fileServices.uploadMultilFile(files, 'false'),
+			});
 
-		// 	return funcCreateAdvertisement.mutate({
-		// 		paths: dataImage,
-		// 	});
-		// } else {
-		// 	return funcCreateAdvertisement.mutate({
-		// 		paths: [],
-		// 	});
-		// }
+			return funcCreateAdvertisement.mutate({
+				paths: dataImage,
+			});
+		} else {
+			return funcCreateAdvertisement.mutate({
+				paths: [],
+			});
+		}
 	};
 
 	return (
 		<Form form={form} setForm={setForm} onSubmit={handleCreateAdvertisement}>
-			{/* <Loading loading={loading || funcCreateAdvertisement.isLoading} /> */}
+			<Loading loading={loading || funcCreateAdvertisement.isLoading} />
 			<WrapperFormPostion
 				width={1400}
 				title='Thêm mới bài đăng'

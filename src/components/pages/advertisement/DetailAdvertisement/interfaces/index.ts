@@ -4,12 +4,29 @@ export interface PropsDetailAdvertisement {
 
 export interface IDetailAdvertisement {
 	code: string;
+
+	//
 	apartmentUu: {
-		apartmentTypeUu: number;
+		apartmentTypeUu: {
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
 		name: string;
 		apartmentSize: number;
 		numFloor: number;
-		ownerUu: number;
+		ownerUu: {
+			bankNumber: string;
+			bankName: string;
+			phoneNumber: string;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
 		province: {
 			code: string;
 			fullName: string;
@@ -70,6 +87,13 @@ export interface IDetailAdvertisement {
 	expireDate: string;
 	description: string;
 	state: number;
+	childAds: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	}[];
 	id: number;
 	uuid: string;
 	status: number;

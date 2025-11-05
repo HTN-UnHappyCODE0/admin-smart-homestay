@@ -7,6 +7,7 @@ import {
 	FavoriteChart,
 	FingerScan,
 	Flash,
+	FolderFavorite,
 	House2,
 	Lamp,
 	Lock,
@@ -57,6 +58,7 @@ export enum PATH {
 
 	ElectricWater = '/electric-water',
 	ElectricWaterDetail = '/electric-water/detail',
+	RequestContract = '/request-contract',
 
 	PaymentAccount = '/payment-account',
 }
@@ -195,7 +197,6 @@ export const Menus: {
 			},
 		],
 	},
-
 	{
 		title: 'TÀI KHOẢN THANH TOÁN',
 		group: [
@@ -204,6 +205,12 @@ export const Menus: {
 				icon: Lamp,
 				path: PATH.PaymentAccount,
 				pathActive: PATH.PaymentAccount,
+			},
+			{
+				title: 'Yêu cầu lập hợp đồng',
+				icon: FolderFavorite,
+				path: PATH.RequestContract,
+				pathActive: PATH.RequestContract,
 			},
 		],
 	},

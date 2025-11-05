@@ -130,6 +130,7 @@ export enum STATE_APARTMENT {
 
 export enum STATE_APARTMENT_VISIT {
 	CANCELED, // đã hủy
+	PENDING, // đã chờ
 	APPROVED, // đã duyệt
 	OVERDUE, // quá hạn
 }
