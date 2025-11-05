@@ -28,6 +28,7 @@ import PositionContainer from '~/components/common/PositionContainer';
 import FormCreateLock from '../FormCreateLock';
 import MainHistoryUnlock from '../MainHistoryUnlock';
 import StateActive from '~/components/utils/StateActive';
+import {RiEyeLine, RiEyeOffLine} from 'react-icons/ri';
 
 function MainLocks({}: PropsMainLocks) {
 	const router = useRouter();
@@ -42,6 +43,8 @@ function MainLocks({}: PropsMainLocks) {
 
 	const [uuidReset, setUuidReset] = useState<string>('');
 	const [uuidChangePassword, setUuidChangePassword] = useState<string>('');
+
+	const [dataShowHidePassword, setDataShowHidePassword] = useState<{uuid: string; password: string}[]>([]);
 
 	const resetFilter = () => {
 		setKeyword('');
@@ -99,6 +102,34 @@ function MainLocks({}: PropsMainLocks) {
 			}
 		},
 	});
+
+	const funcShowPassword = useMutation({
+		mutationFn: (body: {uuid: string}) =>
+			httpRequest({
+				showMessageSuccess: false,
+				showMessageFailed: true,
+				http: lockServices.showPassword({
+					uuid: body?.uuid,
+				}),
+			}),
+		onSuccess(data, variables) {
+			setDataShowHidePassword((prev) => [
+				...prev,
+				{
+					uuid: variables?.uuid,
+					password: data || '',
+				},
+			]);
+		},
+	});
+
+	const handleShowHidePassword = (uuid: string) => {
+		if (dataShowHidePassword?.some((v) => v.uuid == uuid)) {
+			return setDataShowHidePassword((prev) => prev?.filter((v) => v.uuid != uuid));
+		}
+
+		return funcShowPassword.mutate({uuid: uuid});
+	};
 
 	return (
 		<Fragment>
@@ -182,7 +213,21 @@ function MainLocks({}: PropsMainLocks) {
 									},
 									{
 										title: 'Mật khẩu',
-										render: (row, _) => <>{row?.password || '---'}</>,
+										render: (row, _) => (
+											<FlexLayout row gap-8 items-center justify-space-between>
+												<p>{dataShowHidePassword?.find((v) => v?.uuid == row?.uuid)?.password || row?.password}</p>
+
+												<FlexItem flex-1>
+													<div className={styles.icon} onClick={() => handleShowHidePassword(row?.uuid)}>
+														{dataShowHidePassword?.some((v) => v?.uuid == row?.uuid) ? (
+															<RiEyeLine size={20} color='#29303c' />
+														) : (
+															<RiEyeOffLine size={20} color='#29303c' />
+														)}
+													</div>
+												</FlexItem>
+											</FlexLayout>
+										),
 									},
 									{
 										title: 'Tên căn hộ',

@@ -1,11 +1,7 @@
 import FlexLayout from '~/components/layouts/FlexLayout';
 import styles from './RequestRepairApartment.module.scss';
 import {IIncidentApartment, PropsRequestRepairApartment} from './interfaces';
-import LayoutMainPage from '~/components/layouts/LayoutMainPage';
-import Breadcrumb from '~/components/common/Breadcrumb/Breadcrumb';
-import {PATH} from '~/constants/config';
-import Button from '~/components/common/Button/Button';
-import {statusApartmentIncidentReport, tabsDetailApartments} from '~/constants/config/data';
+import {statusApartmentIncidentReport} from '~/constants/config/data';
 import {useRouter} from 'next/router';
 import FlexItem from '~/components/layouts/FlexLayout/FlexItem';
 import Search from '~/components/common/Search';
@@ -29,8 +25,8 @@ import Popup from '~/components/common/Popup';
 import {httpRequest} from '~/services';
 import incidentServices from '~/services/incidentServices';
 import Moment from 'react-moment';
-import Loading from '~/components/common/Loading';
 import ConfirmRequest from './components/ConfirmRequest';
+import MainDetailApartment from '../../MainDetailApartment';
 
 function RequestRepairApartment({}: PropsRequestRepairApartment) {
 	const router = useRouter();
@@ -106,154 +102,124 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 	});
 
 	return (
-		<FlexLayout column gap-12>
-			<Loading loading={funcRequestRepairApartment.isLoading} />
-			<LayoutMainPage
-				breadcrumb={
-					<Breadcrumb
-						listUrls={[
-							{
-								title: 'Danh sách căn hộ',
-								path: PATH.Apartment,
-							},
-							{
-								path: '',
-								title: 'Chi tiết căn hộ',
-							},
-						]}
-						actions={
-							<FlexLayout row gap-6>
-								<Button p_8_16 rounded_8 red bold>
-									Khóa căn hộ
-								</Button>
-								<Button p_8_16 rounded_8 bright-cyan bold>
-									Chỉnh sửa
-								</Button>
-							</FlexLayout>
-						}
-					/>
-				}
-				title='Chi tiết căn hộ'
-				tabs={tabsDetailApartments(_uuid as string)}
-			>
-				<WrapperForm title='Danh sách yêu cầu sửa chữa'>
-					<FlexLayout row gap-8 justify-space-between wrap fit-height>
-						<FlexItem>
-							<FlexLayout row gap-8 wrap>
-								<Search keyword={keyword} setKeyword={setKeyword} />
-								<FilterCustom
-									name='Trạng thái sự cố'
-									value={status}
-									setValue={setStatus}
-									listOption={statusApartmentIncidentReport.map((item) => ({
-										uuid: item.state,
-										name: item.text,
-									}))}
-								/>
-							</FlexLayout>
-						</FlexItem>
-					</FlexLayout>
-
-					<div style={{marginTop: '12px'}}>
-						<FlexItem flex-1 overflow-x>
-							<DataWrapper
-								data={data?.items || []}
-								loading={isLoading}
-								title='Dữ liệu trống!'
-								note='Danh sách dữ liệu hiện đang trống!'
-							>
-								<Table<IIncidentApartment>
-									rowKey={(row) => row.uuid}
-									data={data?.items || []}
-									fixedHeader={true}
-									column={[
-										{
-											title: 'STT',
-											fixedLeft: true,
-											render: (_, index) => <>{index + 1}</>,
-										},
-										{
-											title: 'Mã yêu cầu',
-											render: (row, _) => <>{row?.code || '---'}</>,
-										},
-										{
-											title: 'Tài khoản báo sửa',
-											render: (row, _) => <>{row?.userReportUu?.name || '---'}</>,
-										},
-										{
-											title: 'Số điện thoại',
-											render: (row, _) => <>{row?.userReportUu?.code || '---'}</>,
-										},
-										{
-											title: 'Ghi chú',
-											render: (row, _) => <>{row?.description || '---'}</>,
-										},
-										{
-											title: 'Thời gian yêu cầu',
-											render: (row, _) => <>{<Moment date={row?.reportDate} format='DD/MM/YYYY' />}</>,
-										},
-										{
-											title: 'Thời gian xử lý',
-											render: (row, _) => <>{<Moment date={row?.resolveDate} format='DD/MM/YYYY' />}</>,
-										},
-										{
-											title: 'Trạng thái sự cố',
-											render: (row, _) => (
-												<StateActive stateActive={row?.status} listState={statusApartmentIncidentReport} />
-											),
-										},
-										{
-											title: 'Tác vụ',
-											fixedRight: true,
-											render: (row, _) => (
-												<FlexLayout row>
-													<IconActionTable
-														icon={<Eye color='#292D32' size={24} />}
-														tooltip='Xem chi tiết'
-														onClick={() =>
-															router.replace({
-																pathname: router.pathname,
-																query: {
-																	...router.query,
-																	_uuidRequestRepair: row?.uuid,
-																},
-															})
-														}
-													/>
-													{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
-														<IconActionTable
-															icon={<CloseCircle color='#EE0033' size={24} />}
-															tooltip='Từ chối yêu cầu'
-															onClick={() => setRejectRepairApartment(row?.uuid)}
-														/>
-													)}
-
-													{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
-														<IconActionTable
-															icon={<FaCircleCheck color='#00a441ff' size={24} />}
-															tooltip='Xác nhận đã xử lý'
-															onClick={() => setUuidConfirm(row?.uuid)}
-														/>
-													)}
-												</FlexLayout>
-											),
-										},
-									]}
-								/>
-							</DataWrapper>
-
-							<Pagination
-								page={page}
-								onSetPage={setPage}
-								pageSize={pageSize}
-								onSetPageSize={setPageSize}
-								total={data?.pagination?.totalCount || 0}
-								dependencies={[pageSize, keyword, status, _uuid]}
+		<MainDetailApartment>
+			<WrapperForm title='Danh sách yêu cầu sửa chữa'>
+				<FlexLayout row gap-8 justify-space-between wrap fit-height>
+					<FlexItem>
+						<FlexLayout row gap-8 wrap>
+							<Search keyword={keyword} setKeyword={setKeyword} />
+							<FilterCustom
+								name='Trạng thái sự cố'
+								value={status}
+								setValue={setStatus}
+								listOption={statusApartmentIncidentReport.map((item) => ({
+									uuid: item.state,
+									name: item.text,
+								}))}
 							/>
-						</FlexItem>
-					</div>
-				</WrapperForm>
-			</LayoutMainPage>
+						</FlexLayout>
+					</FlexItem>
+				</FlexLayout>
+
+				<div style={{marginTop: '12px'}}>
+					<FlexItem flex-1 overflow-x>
+						<DataWrapper
+							data={data?.items || []}
+							loading={isLoading}
+							title='Dữ liệu trống!'
+							note='Danh sách dữ liệu hiện đang trống!'
+						>
+							<Table<IIncidentApartment>
+								rowKey={(row) => row.uuid}
+								data={data?.items || []}
+								fixedHeader={true}
+								column={[
+									{
+										title: 'STT',
+										fixedLeft: true,
+										render: (_, index) => <>{index + 1}</>,
+									},
+									{
+										title: 'Mã yêu cầu',
+										render: (row, _) => <>{row?.code || '---'}</>,
+									},
+									{
+										title: 'Tài khoản báo sửa',
+										render: (row, _) => <>{row?.userReportUu?.name || '---'}</>,
+									},
+									{
+										title: 'Số điện thoại',
+										render: (row, _) => <>{row?.userReportUu?.code || '---'}</>,
+									},
+									{
+										title: 'Ghi chú',
+										render: (row, _) => <>{row?.description || '---'}</>,
+									},
+									{
+										title: 'Thời gian yêu cầu',
+										render: (row, _) => <>{<Moment date={row?.reportDate} format='DD/MM/YYYY' />}</>,
+									},
+									{
+										title: 'Thời gian xử lý',
+										render: (row, _) => <>{<Moment date={row?.resolveDate} format='DD/MM/YYYY' />}</>,
+									},
+									{
+										title: 'Trạng thái sự cố',
+										render: (row, _) => (
+											<StateActive stateActive={row?.status} listState={statusApartmentIncidentReport} />
+										),
+									},
+									{
+										title: 'Tác vụ',
+										fixedRight: true,
+										render: (row, _) => (
+											<FlexLayout row>
+												<IconActionTable
+													icon={<Eye color='#292D32' size={24} />}
+													tooltip='Xem chi tiết'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidRequestRepair: row?.uuid,
+															},
+														})
+													}
+												/>
+												{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
+													<IconActionTable
+														icon={<CloseCircle color='#EE0033' size={24} />}
+														tooltip='Từ chối yêu cầu'
+														onClick={() => setRejectRepairApartment(row?.uuid)}
+													/>
+												)}
+
+												{row?.status === STATE_APARTMENT_INCIDENT_REPORTS.PENDING && (
+													<IconActionTable
+														icon={<FaCircleCheck color='#00a441ff' size={24} />}
+														tooltip='Xác nhận đã xử lý'
+														onClick={() => setUuidConfirm(row?.uuid)}
+													/>
+												)}
+											</FlexLayout>
+										),
+									},
+								]}
+							/>
+						</DataWrapper>
+
+						<Pagination
+							page={page}
+							onSetPage={setPage}
+							pageSize={pageSize}
+							onSetPageSize={setPageSize}
+							total={data?.pagination?.totalCount || 0}
+							dependencies={[pageSize, keyword, status, _uuid]}
+						/>
+					</FlexItem>
+				</div>
+			</WrapperForm>
 
 			<Dialog
 				open={!!rejectRepairApartment}
@@ -303,7 +269,7 @@ function RequestRepairApartment({}: PropsRequestRepairApartment) {
 			<Popup open={!!uuidConfirm} onClose={() => setUuidConfirm('')}>
 				<ConfirmRequest uuidConfirm={uuidConfirm} onClose={() => setUuidConfirm('')} />
 			</Popup>
-		</FlexLayout>
+		</MainDetailApartment>
 	);
 }
 

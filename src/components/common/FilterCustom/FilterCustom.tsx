@@ -44,8 +44,12 @@ function FilterCustom<T extends string | number | null>({name, listOption, value
 								[styles.option_active]: value === null || value === '',
 							})}
 							onClick={() => {
-								setOpen(false);
-								setValue((typeof value === 'number' ? null : '') as T);
+								if (value === null || value === '') {
+									setOpen(false);
+								} else {
+									setOpen(false);
+									setValue((typeof value === 'number' ? null : '') as T);
+								}
 							}}
 						>
 							<p>Tất cả</p>

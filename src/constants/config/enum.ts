@@ -62,6 +62,8 @@ export enum QUERY_KEY {
 	list_furniture,
 	list_meter,
 	list_meter_type,
+
+	request_summary_apartment,
 }
 
 export enum TYPE_DATE {

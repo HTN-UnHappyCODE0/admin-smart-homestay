@@ -16,65 +16,6 @@ import {
 	TYPE_USER,
 } from './enum';
 
-export function tabsDetailApartments(uuid: string): {
-	title: string;
-	path: string;
-	pathActive: string;
-}[] {
-	return [
-		{
-			title: 'Thông tin căn hộ',
-			path: `${PATH.InfoApartment}?_uuid=${uuid}`,
-			pathActive: PATH.InfoApartment,
-		},
-		{
-			title: 'Hợp đồng thuê',
-			path: `${PATH.RentalContractApartment}?_uuid=${uuid}`,
-			pathActive: PATH.RentalContractApartment,
-		},
-		{
-			title: 'Yêu cầu xem căn hộ (2)',
-			path: `${PATH.RequestViewApartment}?_uuid=${uuid}`,
-			pathActive: PATH.RequestViewApartment,
-		},
-		{
-			title: 'Yêu cầu sửa chữa (1)',
-			path: `${PATH.RequestRepairApartment}?_uuid=${uuid}`,
-			pathActive: PATH.RequestRepairApartment,
-		},
-		{
-			title: 'Danh sách quảng cáo',
-			path: `${PATH.ListAdvertisementApartment}?_uuid=${uuid}`,
-			pathActive: PATH.ListAdvertisementApartment,
-		},
-		{
-			title: 'Danh sách thiết bị',
-			path: `${PATH.ListMeterApartment}?_uuid=${uuid}`,
-			pathActive: PATH.ListMeterApartment,
-		},
-		{
-			title: 'Danh sách nội thất',
-			path: PATH.Any,
-			pathActive: PATH.Any,
-		},
-		{
-			title: 'Danh sách đánh giá',
-			path: PATH.Any,
-			pathActive: PATH.Any,
-		},
-		{
-			title: 'Lịch sử thanh toán',
-			path: PATH.Any,
-			pathActive: PATH.Any,
-		},
-		{
-			title: 'Danh sách hợp đồng',
-			path: PATH.Any,
-			pathActive: PATH.Any,
-		},
-	];
-}
-
 export const tabsCatalogs: {
 	title: string;
 	path: string;

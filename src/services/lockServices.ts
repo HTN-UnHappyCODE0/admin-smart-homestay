@@ -94,6 +94,16 @@ const lockServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	showPassword: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Lock/show-password`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default lockServices;

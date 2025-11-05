@@ -38,7 +38,7 @@ function Search({keyword, setKeyword, placeholder = 'Nhập từ khóa tìm ki�
 				onFocus={() => setIsfocus(true)}
 				onBlur={() => setIsfocus(false)}
 				value={searchTerm}
-				onChange={(e) => setSearchTerm(e.target.value.trimStart())}
+				onChange={(e) => setSearchTerm(e.target.value.trim())}
 			/>
 		</div>
 	);

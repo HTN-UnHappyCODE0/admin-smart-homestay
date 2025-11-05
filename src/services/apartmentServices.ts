@@ -122,6 +122,16 @@ const apartmentServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	requestSummary: (
+		data: {
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/request-summary`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 };
 
 export default apartmentServices;
