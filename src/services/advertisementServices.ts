@@ -52,13 +52,12 @@ const advertisementServices = {
 			deposit: number;
 			price: number;
 			images: string[];
-			advPrices: [
-				{
-					price: number;
-					paymentCycle: number;
-					type: number;
-				}
-			];
+			advPrices: {
+				serviceUuid: string;
+				price: number;
+				paymentCycle: number;
+				type: number;
+			}[];
 			phoneNumber: string;
 			startDate: string;
 			expireDate: string;

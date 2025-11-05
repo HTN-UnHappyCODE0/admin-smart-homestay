@@ -14,7 +14,14 @@ import {useRouter} from 'next/router';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
-import {CONFIG_PAGING, CONFIG_TYPE_FINDING, QUERY_KEY, STATUS_CONFIG} from '~/constants/config/enum';
+import {
+	CONFIG_PAGING,
+	CONFIG_TYPE_FINDING,
+	QUERY_KEY,
+	STATE_APARTMENT_PAYMENT_TYPE,
+	STATUS_CONFIG,
+	TYPE_METER,
+} from '~/constants/config/enum';
 import apartmentServices from '~/services/apartmentServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import moment from 'moment';
@@ -81,118 +88,118 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	// useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement, form.apartmentUuid], {
-	// 	queryFn: () =>
-	// 		httpRequest({
-	// 			http: apartmentServices.apartmentDetail({
-	// 				uuid: form.apartmentUuid,
-	// 			}),
-	// 		}),
-	// 	select(data) {
-	// 		return data;
-	// 	},
-	// 	enabled: !!form.apartmentUuid,
-	// 	onSuccess: (data) => {
-	// 		if (data) {
-	// 			setForm((prev) => ({
-	// 				...prev,
-	// 				rooms: data?.apartmentRooms?.map((v) => ({
-	// 					assetUuid: v?.uuid,
-	// 					name: v?.name,
-	// 					count: convertCoin(v?.count),
-	// 					description: v?.description || '',
-	// 				})),
-	// 				furnitures: data?.apartmentFurnitures?.map((v) => ({
-	// 					assetUuid: v?.item?.uuid,
-	// 					name: v?.item?.name,
-	// 					count: convertCoin(v?.count),
-	// 					description: v?.description || '',
-	// 				})),
-	// 				apartmentTypeUu: data?.apartmentTypeUu?.name,
-	// 				apartmentSize: convertCoin(data?.apartmentSize),
-	// 				address: getDetailAddress({
-	// 					address: data?.address!,
-	// 					districtName: '',
-	// 					provinceName: data?.province?.fullName!,
-	// 					wardName: data?.ward?.fullName!,
-	// 				}),
-	// 			}));
-	// 		}
-	// 	},
-	// });
+	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_module, form.apartmentUuid], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.apartmentDetail({
+					uuid: form.apartmentUuid,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		enabled: !!form.apartmentUuid,
+		onSuccess: (data) => {
+			if (data) {
+				setForm((prev) => ({
+					...prev,
 
-	// const funcCreateAdvertisement = useMutation({
-	// 	mutationFn: (body: {paths: string[]}) =>
-	// 		httpRequest({
-	// 			showMessageFailed: true,
-	// 			showMessageSuccess: true,
-	// 			msgSuccess: 'Thêm căn hộ thành công!',
-	// 			http: advertisementServices.createAdvertisement({
-	// 				apartmentUuid: _uuid as string,
-	// 				title: form?.title,
-	// 				deposit: form?.deposit,
-	// 				description: form?.description,
-	// 				startDate: moment(form?.startDate).format('YYYY-MM-DD'),
-	// 				expireDate: moment(form?.expireDate).format('YYYY-MM-DD'),
-	// 				advPrices: body?.advPrices,
-	// 				price: form?.price,
-	// 				images: body?.paths,
-	// 				phoneNumber: '',
-	// 			}),
-	// 		}),
-	// 	onSuccess(data) {
-	// 		if (data) {
-	// 			setForm(initForm);
-	// 		}
-	// 	},
-	// });
+					rooms: data?.roomTypeGroups?.map((r) => ({
+						assetUuid: r?.roomTypeUu?.uuid,
+						name: r?.roomTypeUu?.name,
+						count: convertCoin(r?.count),
+						description: '',
+					})),
 
-	// const handleCreateAdvertisement = async () => {
-	// 	if (!form.title) {
-	// 		return toastWarn({msg: 'Chọn tiêu đề bài đăng!'});
-	// 	}
+					furnitures: data?.furnitureTypeGroups?.map((f) => ({
+						assetUuid: f?.furnitureTypeUu?.uuid,
+						name: f?.furnitureTypeUu?.name,
+						count: convertCoin(f?.count),
+						description: '',
+					})),
 
-	// 	if (!form.apartmentTypeUu) {
-	// 		return toastWarn({msg: 'Chọn căn hộ!'});
-	// 	}
+					apartmentTypeUu: data?.apartmentTypeUu?.name,
+					apartmentSize: convertCoin(data?.apartmentSize),
+					address: getDetailAddress({
+						address: data?.address!,
+						districtName: '',
+						provinceName: data?.province?.fullName!,
+						wardName: data?.ward?.fullName!,
+					}),
+				}));
+			}
+		},
+	});
 
-	// 	if (!form.price) {
-	// 		return toastWarn({msg: 'Chọn giá thuê/tháng!'});
-	// 	}
+	const funcCreateAdvertisement = useMutation({
+		mutationFn: async (body: {paths: string[]}) => {
+			const advPrices: IAdvPrice[] = [
+				{
+					serviceUuid: '',
+					price: Number(form.electricPrice),
+					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					type: TYPE_METER.ELECTRIC,
+				},
+				{
+					serviceUuid: '',
+					price: Number(form.waterPrice),
+					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					type: TYPE_METER.WATER,
+				},
+			];
 
-	// 	if (!form.deposit) {
-	// 		return toastWarn({msg: 'Chọn tiền cọc!'});
-	// 	}
+			return httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Thêm bài đăng thành công!',
+				http: advertisementServices.createAdvertisement(
+					{
+						apartmentUuid: form.apartmentUuid,
+						title: form.title,
+						deposit: Number(form.deposit),
+						price: Number(form.price),
+						images: body.paths,
+						advPrices,
+						phoneNumber: '',
+						startDate: moment(form.startDate).format('YYYY-MM-DD'),
+						expireDate: moment(form.expireDate).format('YYYY-MM-DD'),
+						description: form.description,
+					},
+					null
+				),
+			});
+		},
+		onSuccess(data) {
+			if (data) {
+				setForm(initForm);
+				setImages([]);
+				onClose?.();
+			}
+		},
+	});
 
-	// 	if (!form.startDate) {
-	// 		return toastWarn({msg: 'Chọn thời gian đăng!'});
-	// 	}
+	const handleCreateAdvertisement = async () => {
+		if (images.length > 0) {
+			const files = images?.map((v) => v?.file);
 
-	// 	if (!form.expireDate) {
-	// 		return toastWarn({msg: 'Chọn thời gian kết thúc!'});
-	// 	}
+			const dataImage = await httpRequest({
+				setLoading,
+				http: fileServices.uploadMultilFile(files, 'false'),
+			});
 
-	// 	if (images.length > 0) {
-	// 		const files = images?.map((v) => v?.file);
-
-	// 		const dataImage = await httpRequest({
-	// 			setLoading,
-	// 			http: fileServices.uploadMultilFile(files, 'false'),
-	// 		});
-
-	// 		return funcCreateAdvertisement.mutate({
-	// 			paths: dataImage,
-	// 		});
-	// 	} else {
-	// 		return funcCreateAdvertisement.mutate({
-	// 			paths: [],
-	// 		});
-	// 	}
-	// };
+			return funcCreateAdvertisement.mutate({
+				paths: dataImage,
+			});
+		} else {
+			return funcCreateAdvertisement.mutate({
+				paths: [],
+			});
+		}
+	};
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={() => {}}>
-			{/* <Loading loading={loading || funcCreateAdvertisement.isLoading} /> */}
+		<Form form={form} setForm={setForm} onSubmit={handleCreateAdvertisement}>
+			<Loading loading={loading || funcCreateAdvertisement.isLoading} />
 			<WrapperFormPostion
 				width={1400}
 				title='Thêm mới bài đăng'
@@ -203,7 +210,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 						</Button>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button p_8_24 rounded_8 white bold onClick={onClose}>
+								<Button disable={!isDone} p_8_24 rounded_8 white bold>
 									Đăng bài
 								</Button>
 							)}
@@ -349,7 +356,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								type='text'
 								name='price'
 								isRequired
-								isBlur
+								isNumber
 							/>
 							<div>
 								<Input
@@ -363,12 +370,12 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									name='deposit'
 									isRequired
 									isBlur
+									isNumber
 								/>
 							</div>
 						</GridColumn>
 					</div>
 
-					{/* Giá điện, Giá nước  */}
 					{/* Giá điện, Giá nước  */}
 					<div style={{marginTop: '16px'}}>
 						<GridColumn col_2>
@@ -384,6 +391,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								value={form?.electricPrice}
 								isRequired
 								isBlur
+								isNumber
 							/>
 							<div>
 								<Input
@@ -398,6 +406,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									value={form?.waterPrice}
 									isRequired
 									isBlur
+									isNumber
 								/>
 							</div>
 						</GridColumn>

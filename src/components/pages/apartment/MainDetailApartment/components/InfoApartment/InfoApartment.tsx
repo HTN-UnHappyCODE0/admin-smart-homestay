@@ -97,34 +97,44 @@ function InfoApartment({}: PropsInfoApartment) {
 								<InfoDetail name='Loại căn hộ' value={apartmentInfo?.apartmentTypeUu?.name} />
 								<InfoDetail name='Diện tích' value={`${apartmentInfo?.apartmentSize} m2`} />
 								<InfoDetail name='ID ổ khóa' value={apartmentInfo?.lock?.code} />
-								{/* <InfoDetail
+								<InfoDetail
 									name='Phòng'
 									value={
-										<>
-											{apartmentInfo?.apartmentRooms?.flatMap?.((room, index, array) => (
-												<span key={index}>
-													{room?.item?.name} * <span style={{color: '#2970FF'}}>{room?.count}</span>
-													{index < array.length - 1 && <span key={`sep-${room?.uuid}`}>, </span>}
-												</span>
-											))}
-										</>
+										apartmentInfo?.roomTypeGroups?.length ? (
+											<>
+												{apartmentInfo.roomTypeGroups.map((roomGroup, index, array) => (
+													<span key={roomGroup.roomTypeUu.uuid}>
+														{roomGroup.roomTypeUu.name} *{' '}
+														<span style={{color: '#2970FF'}}>{roomGroup.count}</span>
+														{index < array.length - 1 && <span>, </span>}
+													</span>
+												))}
+											</>
+										) : (
+											<>---</>
+										)
 									}
 								/>
 								<InfoDetail
 									name='Nội thất'
 									value={
-										<>
-											{apartmentInfo?.apartmentFurnitures?.flatMap?.((furniture, index, array) => (
-												<span key={index}>
-													{furniture?.item?.name} * <span style={{color: '#2970FF'}}>{furniture?.count}</span>
-													{index < array.length - 1 && <span key={`sep-${furniture?.uuid}`}>, </span>}
-												</span>
-											))}
-										</>
+										apartmentInfo?.furnitureTypeGroups?.length ? (
+											<>
+												{apartmentInfo.furnitureTypeGroups.map((furnitureGroup, index, array) => (
+													<span key={furnitureGroup.furnitureTypeUu.uuid}>
+														{furnitureGroup.furnitureTypeUu.name} *{' '}
+														<span style={{color: '#2970FF'}}>{furnitureGroup.count}</span>
+														{index < array.length - 1 && <span>, </span>}
+													</span>
+												))}
+											</>
+										) : (
+											<>---</>
+										)
 									}
-								/> */}
-								<InfoDetail name='Giá cho thuê' value={apartmentInfo?.rentPrice} />
-								<InfoDetail name='Giá quảng cáo' value={apartmentInfo?.adPrice} />
+								/>
+								<InfoDetail name='Giá cho thuê' value={`${convertCoin(apartmentInfo?.rentPrice!)}/tháng` || 0} />
+								<InfoDetail name='Giá quảng cáo' value={`${convertCoin(apartmentInfo?.adPrice!)}/tháng` || 0} />
 							</GridColumn>
 							<InfoDetail
 								name='Địa chỉ chi tiết'

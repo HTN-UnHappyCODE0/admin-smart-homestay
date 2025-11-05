@@ -37,7 +37,6 @@ export interface IFormCreateAdvertisement {
 	description: string;
 	rooms: IRoom[];
 	furnitures: IFurniture[];
-
 	advPrices: IAdvPrice[];
 	electricPrice: number;
 	waterPrice: number;
@@ -65,62 +64,6 @@ export interface IMeterApartment {
 }
 
 export interface IDetailApartmentForUpdate {
-	lock: {
-		code: string;
-		name: string;
-		id: number;
-		uuid: string;
-		status: number;
-	};
-	managerUu: {
-		bankNumber: string;
-		bankName: string;
-		phoneNumber: string;
-		code: number;
-		name: string;
-		id: number;
-		uuid: string;
-		status: number;
-	};
-	ownerUu: {
-		bankNumber: string;
-		bankName: string;
-		phoneNumber: string;
-		code: string;
-		name: string;
-		id: number;
-		uuid: string;
-		status: number;
-	};
-	numVisitRequest: number;
-	numIncidentRequest: number;
-	maxPeople: number;
-	rentPrice: number;
-	adPrice: number;
-	meters: {
-		meterUu: {
-			serialNumber: string;
-			installedDate: string;
-			id: number;
-			uuid: string;
-			status: number;
-		};
-		meterTypeUu: {
-			type: number;
-			code: string;
-			name: string;
-			id: number;
-			uuid: string;
-			status: number;
-		};
-		currentValue: number;
-		initialValue: number;
-		onState: number;
-		description: string;
-		id: number;
-		uuid: string;
-		status: number;
-	}[];
 	apartmentRooms: {
 		room: {
 			code: string;
@@ -149,10 +92,80 @@ export interface IDetailApartmentForUpdate {
 		uuid: string;
 		status: number;
 	}[];
+	roomTypeGroups: {
+		roomTypeUu: {
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		count: number;
+	}[];
+	furnitureTypeGroups: {
+		furnitureTypeUu: {
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		count: number;
+	}[];
+	lock: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	numChild: number;
+	children: [];
+	inverseParentUu: number;
+	managerUu: {
+		bankNumber: string;
+		bankName: string;
+		phoneNumber: string;
+		code: number;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	numVisitRequest: number;
+	numIncidentRequest: number;
+	maxPeople: number;
+	rentPrice: number;
+	adPrice: number;
+	meters: {
+		meterUu: {
+			name: string;
+			serialNumber: string;
+			installedDate: string;
+			isOnline: boolean;
+			onState: number;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		meterTypeUu: {
+			type: null;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		currentValue: number;
+		initialValue: number;
+		description: string;
+		id: number;
+		uuid: string;
+		status: number;
+	}[];
 	description: string;
 	attachments: string[];
 	state: number;
-	name: string;
 	apartmentTypeUu: {
 		code: string;
 		name: string;
@@ -160,7 +173,19 @@ export interface IDetailApartmentForUpdate {
 		uuid: string;
 		status: number;
 	};
+	name: string;
+	apartmentSize: number;
 	numFloor: number;
+	ownerUu: {
+		bankNumber: string;
+		bankName: string;
+		phoneNumber: string;
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
 	province: {
 		code: string;
 		fullName: string;
@@ -173,7 +198,6 @@ export interface IDetailApartmentForUpdate {
 		provinceCode: string;
 	};
 	address: string;
-	apartmentSize: number;
 	id: number;
 	uuid: string;
 	status: number;

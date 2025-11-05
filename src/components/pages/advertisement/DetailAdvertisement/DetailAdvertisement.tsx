@@ -120,7 +120,7 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 				<FlexLayout column gap-16>
 					<GridColumn col_3>
 						<InfoDetail name='Lượt truy cập' value={'8.000'} />
-						<InfoDetail name='Người đăng' value={'Vũ Đức Anh'} textColor='#1F5FFF' />
+						<InfoDetail name='Người đăng' value={detailAdvertisement?.userPostUu?.name || '---'} textColor='#1F5FFF' />
 						<InfoDetail
 							name='Hiển thị'
 							value='Hiển thị'
@@ -179,7 +179,7 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 				<FlexLayout column gap-16>
 					<GridColumn col_3>
 						<InfoDetail name='Tên căn hộ' value={detailAdvertisement?.apartmentUu?.name || '---'} />
-						<InfoDetail name='Loại hình căn hộ' value={detailAdvertisement?.apartmentUu?.apartmentTypeUu || '---'} />
+						<InfoDetail name='Loại hình căn hộ' value={detailAdvertisement?.apartmentUu?.apartmentTypeUu?.name || '---'} />
 						<InfoDetail name='Diện tích' value={`${detailAdvertisement?.apartmentUu?.apartmentSize} m2` || 0} />
 					</GridColumn>
 
@@ -190,11 +190,7 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 					<InfoDetail
 						name='Hình ảnh'
 						value=''
-						// images={detailAdvertisement?.images?.map((item) => `${process.env.NEXT_PUBLIC_IMAGE}/${item}`)}
-						images={[
-							'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
-							'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png',
-						]}
+						images={detailAdvertisement?.images?.map((item) => `${process.env.NEXT_PUBLIC_IMAGE}/${item}`)}
 					/>
 				</FlexLayout>
 			</WrapperForm>

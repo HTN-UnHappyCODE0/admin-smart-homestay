@@ -18,7 +18,13 @@ export interface IIncidentApartment {
 	};
 	reportDate: string;
 	reason: string;
-	userResolveUu: number;
+	userResolveUu: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
 	resolveDate: string;
 	description: string;
 	images: string[];

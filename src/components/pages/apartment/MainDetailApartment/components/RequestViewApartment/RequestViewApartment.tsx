@@ -161,8 +161,8 @@ function RequestViewApartment({}: PropsRequestViewApartment) {
 										title: 'Thời gian xem',
 										render: (row, _) => (
 											<>
-												<Moment from={row?.from} format='HH:mm, DD/MM/YYYY' /> -
-												<Moment from={row?.to} format='HH:mm, DD/MM/YYYY' />
+												<Moment date={row?.from} format='HH:mm, DD/MM/YYYY' /> -
+												<Moment date={row?.to} format='HH:mm, DD/MM/YYYY' />
 											</>
 										),
 									},
