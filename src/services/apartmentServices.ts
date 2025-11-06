@@ -1,7 +1,7 @@
 import axiosClient from '.';
 
 const apartmentServices = {
-	getListApartments: (
+	getListPagedApartments: (
 		data: {
 			keyword: string;
 			isPaging: number;
@@ -19,7 +19,29 @@ const apartmentServices = {
 		},
 		tokenAxios?: any
 	) => {
-		return axiosClient.post(`/Apartment/get-list-apartments`, data, {
+		return axiosClient.post(`/Apartment/get-list-paged-apartments`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
+	getListCatalogApartments: (
+		data: {
+			keyword: string;
+			isPaging: number;
+			pageSize: number;
+			page: number;
+			typeFinding: number | null;
+			state: number | null;
+			status: number | null;
+			sizeFrom: number | null;
+			sizeTo: number | null;
+			province: string;
+			ward: string;
+			hasWaterMeter: number | null;
+			hasElectricMeter: number | null;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Apartment/get-list-catalog-apartments`, data, {
 			cancelToken: tokenAxios,
 		});
 	},

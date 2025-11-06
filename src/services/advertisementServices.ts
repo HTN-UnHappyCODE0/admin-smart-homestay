@@ -69,6 +69,31 @@ const advertisementServices = {
 			cancelToken: tokenAxios,
 		});
 	},
+	updateAdvertisement: (
+		data: {
+			apartmentUuid: string;
+			title: string;
+			deposit: number;
+			price: number;
+			images: string[];
+			advPrices: {
+				serviceUuid: string;
+				price: number;
+				paymentCycle: number;
+				type: number;
+			}[];
+			phoneNumber: string;
+			startDate: string;
+			expireDate: string;
+			description: string;
+			uuid: string;
+		},
+		tokenAxios?: any
+	) => {
+		return axiosClient.post(`/Advertisement/update-advertisement`, data, {
+			cancelToken: tokenAxios,
+		});
+	},
 	changeStateAdvertisement: (
 		data: {
 			uuid: string;

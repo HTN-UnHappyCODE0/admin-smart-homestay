@@ -1,5 +1,100 @@
-export interface PropsFormCreateAdvertisement {
+export interface PropsFormUpdateAdvertisement {
 	onClose?: () => void;
+}
+
+export interface IDetailAdvertisement {
+	code: string;
+	apartmentUu: {
+		apartmentTypeUu: {
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		name: string;
+		apartmentSize: number;
+		numFloor: number;
+		ownerUu: {
+			bankNumber: string;
+			bankName: string;
+			phoneNumber: string;
+			code: string;
+			name: string;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		province: {
+			code: string;
+			fullName: string;
+			fullNameEn: string;
+		};
+		ward: {
+			code: string;
+			fullName: string;
+			fullNameEn: string;
+			provinceCode: string;
+		};
+		address: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	userPostUu: {
+		code: number;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	};
+	adWaterInfo: {
+		serviceUu: {
+			name: string;
+			description: string;
+			state: number;
+			type: number;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		price: number;
+		paymentCycle: number;
+		type: number;
+	};
+	adElectricInfo: {
+		serviceUu: {
+			name: string;
+			description: string;
+			state: number;
+			type: number;
+			id: number;
+			uuid: string;
+			status: number;
+		};
+		price: number;
+		paymentCycle: number;
+		type: number;
+	};
+	title: string;
+	price: number;
+	deposit: number;
+	images: string[];
+	phoneNumber: string;
+	startDate: string;
+	expireDate: string;
+	description: string;
+	state: number;
+	childAds: {
+		code: string;
+		name: string;
+		id: number;
+		uuid: string;
+		status: number;
+	}[];
+	id: number;
+	uuid: string;
+	status: number;
 }
 
 export interface IRoom {
@@ -33,23 +128,21 @@ export interface IServices {
 	status: number;
 }
 
-export interface IFormCreateAdvertisement {
+export interface IFormUpdateAdvertisement {
 	title: string;
 	apartmentUuid: string;
-	apartmentTypeUu: string;
-	address: string;
-	apartmentSize: string;
-	deposit: number;
-	price: number;
-	images: string[];
+	apartmentTypeUu?: string;
+	address?: string;
+	apartmentSize?: string | number;
+	deposit: number | string;
+	price: number | string;
 	startDate: string;
 	expireDate: string;
 	description: string;
 	rooms: IRoom[];
 	furnitures: IFurniture[];
-	advPrices: IAdvPrice[];
-	electricPrice: number;
-	waterPrice: number;
+	electricPrice: number | string;
+	waterPrice: number | string;
 }
 
 export interface IMeterApartment {

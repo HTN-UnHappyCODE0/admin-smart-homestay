@@ -1,6 +1,13 @@
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
-import styles from './FormCreateAdvertisement.module.scss';
-import {IAdvPrice, IDetailApartmentForUpdate, IFormCreateAdvertisement, PropsFormCreateAdvertisement} from './interfaces';
+import styles from './FormUpdateAdvertisement.module.scss';
+import {
+	IAdvPrice,
+	IDetailAdvertisement,
+	IDetailApartmentForUpdate,
+	IFormUpdateAdvertisement,
+	IServices,
+	PropsFormUpdateAdvertisement,
+} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import GridColumn from '~/components/layouts/GridColumn';
@@ -11,7 +18,7 @@ import Loading from '~/components/common/Loading';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
 import {useRouter} from 'next/router';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
 import {
@@ -26,10 +33,10 @@ import apartmentServices from '~/services/apartmentServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import moment from 'moment';
 import {convertCoin, price} from '~/common/funcs/convertCoin';
-import {toastWarn} from '~/common/funcs/toast';
 import fileServices from '~/services/fileServices';
+import serviceServices from '~/services/serviceServices';
 
-const initForm: IFormCreateAdvertisement = {
+const initForm: IFormUpdateAdvertisement = {
 	title: '',
 	apartmentUuid: '',
 	apartmentTypeUu: '',
@@ -39,22 +46,81 @@ const initForm: IFormCreateAdvertisement = {
 	furnitures: [],
 	price: 0,
 	deposit: 0,
-	images: [],
 	startDate: '',
 	expireDate: '',
 	description: '',
-	advPrices: [],
 	electricPrice: 0,
 	waterPrice: 0,
 };
 
-function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
+function FormUpdateAdvertisement({onClose}: PropsFormUpdateAdvertisement) {
 	const router = useRouter();
-	const {_uuid} = router.query;
+	const {_uuidUpdate} = router.query;
+	const queryClient = useQueryClient();
 
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
-	const [form, setForm] = useState<IFormCreateAdvertisement>(initForm);
+	const [form, setForm] = useState<IFormUpdateAdvertisement>(initForm);
 	const [loading, setLoading] = useState<boolean>(false);
+
+	const [uuidElectricService, setUuidElectricService] = useState<string>('');
+	const [uuidWaterService, setUuidWaterService] = useState<string>('');
+
+	const {data: detailAdvertisement} = useQuery<IDetailAdvertisement>([QUERY_KEY.detail_apartment_advertisement_module, _uuidUpdate], {
+		queryFn: () =>
+			httpRequest({
+				http: advertisementServices.getAdvertisementByUuid({uuid: _uuidUpdate as string}),
+			}),
+		onSuccess(data) {
+			setForm({
+				title: data?.title,
+				rooms: [],
+				furnitures: [],
+				apartmentTypeUu: '',
+				apartmentUuid: data?.apartmentUu?.uuid,
+				price: convertCoin(data?.price),
+				deposit: convertCoin(data?.deposit),
+				startDate: moment(data?.startDate).format('YYYY-MM-DD'),
+				expireDate: moment(data?.expireDate).format('YYYY-MM-DD'),
+				description: data?.description,
+				electricPrice: convertCoin(data?.adElectricInfo?.price),
+				waterPrice: convertCoin(data?.adWaterInfo?.price),
+			});
+			setImages(
+				data?.images?.map((v) => ({
+					file: null,
+					url: '',
+					path: v,
+				}))
+			);
+		},
+		select(data) {
+			return data;
+		},
+		enabled: !!_uuidUpdate,
+	});
+
+	const {data: services} = useQuery<IServices[]>([QUERY_KEY.table_apartment_advertisement_module], {
+		queryFn: () =>
+			httpRequest({
+				http: serviceServices.getServices({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: null,
+					state: null,
+					type: null,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		onSuccess(data) {
+			setUuidElectricService(data?.filter((s) => s.type === TYPE_METER.ELECTRIC)[0]?.uuid || '');
+			setUuidWaterService(data?.filter((s) => s.type === TYPE_METER.WATER)[0]?.uuid || '');
+		},
+	});
 
 	const {data: apartments = []} = useQuery<
 		{
@@ -67,7 +133,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 	>([QUERY_KEY.table_apartment], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListPagedApartments({
+				http: apartmentServices.getListCatalogApartments({
 					isPaging: CONFIG_PAGING.NO_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
@@ -88,6 +154,8 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
+	console.log(apartments);
+
 	useQuery<IDetailApartmentForUpdate>([QUERY_KEY.table_apartment_advertisement_module, form.apartmentUuid], {
 		queryFn: () =>
 			httpRequest({
@@ -104,19 +172,21 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 				setForm((prev) => ({
 					...prev,
 
-					rooms: data?.roomTypeGroups?.map((r) => ({
-						assetUuid: r?.roomTypeUu?.uuid,
-						name: r?.roomTypeUu?.name,
-						count: convertCoin(r?.count),
-						description: '',
-					})),
+					rooms:
+						data?.roomTypeGroups?.map((r) => ({
+							assetUuid: r?.roomUu?.uuid || '',
+							name: r?.roomUu?.name || '',
+							count: convertCoin(r?.count),
+							description: '',
+						})) || [],
 
-					furnitures: data?.furnitureTypeGroups?.map((f) => ({
-						assetUuid: f?.furnitureTypeUu?.uuid,
-						name: f?.furnitureTypeUu?.name,
-						count: convertCoin(f?.count),
-						description: '',
-					})),
+					furnitures:
+						data?.furnitureTypeGroups?.map((f) => ({
+							assetUuid: f?.furnitureUu?.uuid,
+							name: f?.furnitureUu?.name,
+							count: convertCoin(f?.count),
+							description: '',
+						})) || [],
 
 					apartmentTypeUu: data?.apartmentTypeUu?.name,
 					apartmentSize: convertCoin(data?.apartmentSize),
@@ -131,42 +201,38 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		},
 	});
 
-	const funcCreateAdvertisement = useMutation({
+	const funcUpdateAdvertisement = useMutation({
 		mutationFn: async (body: {paths: string[]}) => {
-			const advPrices: IAdvPrice[] = [
-				{
-					serviceUuid: '',
-					price: Number(form.electricPrice),
-					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
-					type: TYPE_METER.ELECTRIC,
-				},
-				{
-					serviceUuid: '',
-					price: Number(form.waterPrice),
-					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
-					type: TYPE_METER.WATER,
-				},
-			];
-
 			return httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Thêm bài đăng thành công!',
-				http: advertisementServices.createAdvertisement(
-					{
-						apartmentUuid: form.apartmentUuid,
-						title: form.title,
-						deposit: Number(form.deposit),
-						price: Number(form.price),
-						images: body.paths,
-						advPrices,
-						phoneNumber: '',
-						startDate: moment(form.startDate).format('YYYY-MM-DD'),
-						expireDate: moment(form.expireDate).format('YYYY-MM-DD'),
-						description: form.description,
-					},
-					null
-				),
+				msgSuccess: 'Cập nhật bài đăng thành công!',
+				http: advertisementServices.updateAdvertisement({
+					uuid: _uuidUpdate as string,
+					apartmentUuid: form?.apartmentUuid,
+					title: form?.title,
+					deposit: price(form?.deposit),
+					price: price(form?.price),
+					images: body?.paths,
+					advPrices: [
+						{
+							serviceUuid: uuidElectricService,
+							price: price(form?.electricPrice),
+							paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+							type: TYPE_METER.ELECTRIC,
+						},
+						{
+							serviceUuid: uuidWaterService,
+							price: price(form?.waterPrice),
+							paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+							type: TYPE_METER.WATER,
+						},
+					],
+					phoneNumber: '',
+					startDate: moment(form?.startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+					expireDate: moment(form?.expireDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+					description: form?.description,
+				}),
 			});
 		},
 		onSuccess(data) {
@@ -174,68 +240,54 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 				setForm(initForm);
 				setImages([]);
 				onClose?.();
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_advertisement_module],
+				});
 			}
 		},
 	});
 
-	const handleCreateAdvertisement = async () => {
-		if (!form.title) {
-			return toastWarn({msg: 'Chọn tiêu đề bài đăng!'});
-		}
-
-		if (!form.apartmentTypeUu) {
-			return toastWarn({msg: 'Chọn căn hộ!'});
-		}
-
-		if (!form.price) {
-			return toastWarn({msg: 'Chọn giá thuê/tháng!'});
-		}
-
-		if (!form.deposit) {
-			return toastWarn({msg: 'Chọn tiền cọc!'});
-		}
-
-		if (!form.startDate) {
-			return toastWarn({msg: 'Chọn thời gian đăng!'});
-		}
-
-		if (!form.expireDate) {
-			return toastWarn({msg: 'Chọn thời gian kết thúc!'});
-		}
-
+	const handleUpdateAdvertisement = async () => {
 		if (images.length > 0) {
-			const files = images?.map((v) => v?.file);
+			const files = images?.filter((v) => !!v.file)?.map((v) => v?.file);
+			const paths = images?.filter((v) => !v?.file && !!v.path)?.map((v) => v?.path);
+
+			if (files.length == 0) {
+				return funcUpdateAdvertisement.mutate({
+					paths: paths,
+				});
+			}
 
 			const dataImage = await httpRequest({
 				setLoading,
 				http: fileServices.uploadMultilFile(files, 'false'),
 			});
 
-			return funcCreateAdvertisement.mutate({
-				paths: dataImage,
+			return funcUpdateAdvertisement.mutate({
+				paths: [...paths, ...dataImage],
 			});
 		} else {
-			return funcCreateAdvertisement.mutate({
+			return funcUpdateAdvertisement.mutate({
 				paths: [],
 			});
 		}
 	};
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={handleCreateAdvertisement}>
-			<Loading loading={loading || funcCreateAdvertisement.isLoading} />
+		<Form form={form} setForm={setForm} onSubmit={handleUpdateAdvertisement}>
+			<Loading loading={loading || funcUpdateAdvertisement.isLoading} />
 			<WrapperFormPostion
 				width={1400}
-				title='Thêm mới bài đăng'
+				title='	Cập nhật mới bài đăng'
 				actions={
 					<FlexLayout row gap-8>
-						<Button p_8_24 rounded_8 blue bold onClick={() => {}}>
+						<Button p_8_24 rounded_8 white bold onClick={onClose}>
 							Hủy bỏ
 						</Button>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button p_8_24 rounded_8 white bold onClick={onClose}>
-									Đăng bài
+								<Button disable={!isDone} p_8_24 rounded_8 blue bold>
+									Cập nhật
 								</Button>
 							)}
 						</ContextForm.Consumer>
@@ -380,7 +432,8 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								type='text'
 								name='price'
 								isRequired
-								isBlur
+								isNumber
+								isMoney
 							/>
 							<div>
 								<Input
@@ -394,6 +447,8 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									name='deposit'
 									isRequired
 									isBlur
+									isNumber
+									isMoney
 								/>
 							</div>
 						</GridColumn>
@@ -410,10 +465,12 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								}
 								placeholder='Giá điện'
 								type='text'
-								name='adPrice'
-								onClean
+								name='electricPrice'
+								value={form?.electricPrice}
 								isRequired
 								isBlur
+								isNumber
+								isMoney
 							/>
 							<div>
 								<Input
@@ -424,9 +481,12 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									}
 									placeholder='Giá nước'
 									type='text'
-									name='adPrice'
+									name='waterPrice'
+									value={form?.waterPrice}
 									isRequired
 									isBlur
+									isNumber
+									isMoney
 								/>
 							</div>
 						</GridColumn>
@@ -481,4 +541,4 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 	);
 }
 
-export default FormCreateAdvertisement;
+export default FormUpdateAdvertisement;
