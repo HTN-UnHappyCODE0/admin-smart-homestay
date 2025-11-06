@@ -67,12 +67,12 @@ function FormCreateMeter({onClose}: PropsFormCreateMeter) {
 	>([QUERY_KEY.dropdown_apartment], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListApartments({
+				http: apartmentServices.getListCatalogApartments({
 					keyword: '',
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					isPaging: CONFIG_PAGING.NO_PAGING,
 					page: 1,
 					pageSize: 100,
-					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					status: STATUS_CONFIG.ACTIVE,
 					state: null,
 					sizeFrom: null,

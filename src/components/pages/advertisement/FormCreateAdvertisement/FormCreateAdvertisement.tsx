@@ -1,6 +1,6 @@
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import styles from './FormCreateAdvertisement.module.scss';
-import {IAdvPrice, IDetailApartmentForUpdate, IFormCreateAdvertisement, PropsFormCreateAdvertisement} from './interfaces';
+import {IDetailApartmentForUpdate, IFormCreateAdvertisement, IServices, PropsFormCreateAdvertisement} from './interfaces';
 import FlexLayout from '~/components/layouts/FlexLayout';
 import Button from '~/components/common/Button';
 import GridColumn from '~/components/layouts/GridColumn';
@@ -11,7 +11,7 @@ import Loading from '~/components/common/Loading';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import {IDataUploadFile} from '~/components/common/UploadMultipleFile/interfaces';
 import {useRouter} from 'next/router';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {httpRequest} from '~/services';
 import advertisementServices from '~/services/advertisementServices';
 import {
@@ -26,8 +26,8 @@ import apartmentServices from '~/services/apartmentServices';
 import {getDetailAddress} from '~/common/funcs/optionConvert';
 import moment from 'moment';
 import {convertCoin, price} from '~/common/funcs/convertCoin';
-import {toastWarn} from '~/common/funcs/toast';
 import fileServices from '~/services/fileServices';
+import serviceServices from '~/services/serviceServices';
 
 const initForm: IFormCreateAdvertisement = {
 	title: '',
@@ -49,12 +49,37 @@ const initForm: IFormCreateAdvertisement = {
 };
 
 function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
-	const router = useRouter();
-	const {_uuid} = router.query;
+	const queryClient = useQueryClient();
 
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
 	const [form, setForm] = useState<IFormCreateAdvertisement>(initForm);
 	const [loading, setLoading] = useState<boolean>(false);
+
+	const [uuidElectricService, setUuidElectricService] = useState<string>('');
+	const [uuidWaterService, setUuidWaterService] = useState<string>('');
+
+	const {data: services} = useQuery<IServices[]>([QUERY_KEY.table_apartment_advertisement_module], {
+		queryFn: () =>
+			httpRequest({
+				http: serviceServices.getServices({
+					isPaging: CONFIG_PAGING.NO_PAGING,
+					typeFinding: CONFIG_TYPE_FINDING.DTO,
+					page: 1,
+					pageSize: 100,
+					keyword: '',
+					status: null,
+					state: null,
+					type: null,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		onSuccess(data) {
+			setUuidElectricService(data?.filter((s) => s.type === TYPE_METER.ELECTRIC)[0]?.uuid || '');
+			setUuidWaterService(data?.filter((s) => s.type === TYPE_METER.WATER)[0]?.uuid || '');
+		},
+	});
 
 	const {data: apartments = []} = useQuery<
 		{
@@ -64,12 +89,12 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 			uuid: string;
 			status: number;
 		}[]
-	>([QUERY_KEY.table_apartment_advertisement_detail], {
+	>([QUERY_KEY.table_apartment], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListApartments({
+				http: apartmentServices.getListCatalogApartments({
 					isPaging: CONFIG_PAGING.NO_PAGING,
-					typeFinding: CONFIG_TYPE_FINDING.DTO,
+					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
 					pageSize: 100,
 					keyword: '',
@@ -98,22 +123,21 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 		select(data) {
 			return data;
 		},
-		enabled: !!form.apartmentUuid,
 		onSuccess: (data) => {
 			if (data) {
 				setForm((prev) => ({
 					...prev,
 
 					rooms: data?.roomTypeGroups?.map((r) => ({
-						assetUuid: r?.roomTypeUu?.uuid,
-						name: r?.roomTypeUu?.name,
+						assetUuid: r?.roomUu?.uuid,
+						name: r?.roomUu?.name,
 						count: convertCoin(r?.count),
 						description: '',
 					})),
 
 					furnitures: data?.furnitureTypeGroups?.map((f) => ({
-						assetUuid: f?.furnitureTypeUu?.uuid,
-						name: f?.furnitureTypeUu?.name,
+						assetUuid: f?.furnitureUu?.uuid,
+						name: f?.furnitureUu?.name,
 						count: convertCoin(f?.count),
 						description: '',
 					})),
@@ -129,44 +153,55 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 				}));
 			}
 		},
+		enabled: !!form.apartmentUuid,
 	});
 
 	const funcCreateAdvertisement = useMutation({
 		mutationFn: async (body: {paths: string[]}) => {
-			const advPrices: IAdvPrice[] = [
-				{
-					serviceUuid: '',
-					price: Number(form.electricPrice),
-					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
-					type: TYPE_METER.ELECTRIC,
-				},
-				{
-					serviceUuid: '',
-					price: Number(form.waterPrice),
-					paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
-					type: TYPE_METER.WATER,
-				},
-			];
-
 			return httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
 				msgSuccess: 'Thêm bài đăng thành công!',
-				http: advertisementServices.createAdvertisement(
-					{
-						apartmentUuid: form.apartmentUuid,
-						title: form.title,
-						deposit: Number(form.deposit),
-						price: Number(form.price),
-						images: body.paths,
-						advPrices,
-						phoneNumber: '',
-						startDate: moment(form.startDate).format('YYYY-MM-DD'),
-						expireDate: moment(form.expireDate).format('YYYY-MM-DD'),
-						description: form.description,
-					},
-					null
-				),
+				http: advertisementServices.createAdvertisement({
+					apartmentUuid: form.apartmentUuid,
+					title: form.title,
+					deposit: Number(form.deposit),
+					price: Number(form.price),
+					images: body.paths,
+					advPrices: [
+						{
+							serviceUuid: uuidElectricService,
+							price: price(form.electricPrice),
+							paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+							type: TYPE_METER.ELECTRIC,
+						},
+						{
+							serviceUuid: uuidWaterService,
+							price: price(form.waterPrice),
+							paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+							type: TYPE_METER.WATER,
+						},
+					],
+					// advPrices: [
+					// 	{
+					// 		price: price(form.electricPrice),
+					// 		paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					// 		type: TYPE_METER.ELECTRIC,
+					// 	},
+					// 	{
+					// 		price: price(form.waterPrice),
+					// 		paymentCycle: STATE_APARTMENT_PAYMENT_TYPE.MONTHLY,
+					// 		type: TYPE_METER.WATER,
+					// 	},
+					// ].map((item) => ({
+					// 	...item,
+					// 	serviceUuid: String(services?.find((s) => s.type === item.type)?.uuid),
+					// })),
+					phoneNumber: '',
+					startDate: moment(form?.startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+					expireDate: moment(form?.expireDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+					description: form.description,
+				}),
 			});
 		},
 		onSuccess(data) {
@@ -174,6 +209,9 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 				setForm(initForm);
 				setImages([]);
 				onClose?.();
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEY.table_apartment_advertisement_module],
+				});
 			}
 		},
 	});
@@ -205,12 +243,12 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 				title='Thêm mới bài đăng'
 				actions={
 					<FlexLayout row gap-8>
-						<Button p_8_24 rounded_8 blue bold onClick={onClose}>
+						<Button p_8_24 rounded_8 white bold onClick={onClose}>
 							Hủy bỏ
 						</Button>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button disable={!isDone} p_8_24 rounded_8 white bold>
+								<Button disable={!isDone} p_8_24 rounded_8 blue bold>
 									Đăng bài
 								</Button>
 							)}
@@ -357,6 +395,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								name='price'
 								isRequired
 								isNumber
+								isMoney
 							/>
 							<div>
 								<Input
@@ -371,6 +410,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									isRequired
 									isBlur
 									isNumber
+									isMoney
 								/>
 							</div>
 						</GridColumn>
@@ -392,6 +432,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 								isRequired
 								isBlur
 								isNumber
+								isMoney
 							/>
 							<div>
 								<Input
@@ -407,6 +448,7 @@ function FormCreateAdvertisement({onClose}: PropsFormCreateAdvertisement) {
 									isRequired
 									isBlur
 									isNumber
+									isMoney
 								/>
 							</div>
 						</GridColumn>

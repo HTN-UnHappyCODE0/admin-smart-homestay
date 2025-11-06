@@ -40,12 +40,13 @@ import FormCreateAdvertisement from '../FormCreateAdvertisement';
 import DetailAdvertisement from '../DetailAdvertisement';
 import {convertCoin} from '~/common/funcs/convertCoin';
 import apartmentServices from '~/services/apartmentServices';
+import FormUpdateAdvertisement from '../FormUpdateAdvertisement';
 
 function MainAdvertisement({}: PropsMainAdvertisement) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const {_open, _uuidDetail} = router.query;
+	const {_open, _uuidDetail, _uuidUpdate} = router.query;
 
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
@@ -80,7 +81,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 	>([QUERY_KEY.table_apartment_advertisement_detail], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListApartments({
+				http: apartmentServices.getListCatalogApartments({
 					isPaging: CONFIG_PAGING.NO_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,
@@ -206,7 +207,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 										name='Căn hộ'
 										value={apartmentUuid}
 										setValue={setApartmentUuid}
-										listOption={apartments.map((item) => ({
+										listOption={apartments?.map((item) => ({
 											uuid: item?.uuid,
 											name: item?.name,
 										}))}
@@ -347,7 +348,19 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 														})
 													}
 												/>
-												<IconActionTable icon={<Edit color='#292D32' size={24} />} tooltip='Chỉnh sửa' />
+												<IconActionTable
+													icon={<Edit color='#292D32' size={24} />}
+													tooltip='Chỉnh sửa'
+													onClick={() =>
+														router.replace({
+															pathname: router.pathname,
+															query: {
+																...router.query,
+																_uuidUpdate: row?.uuid,
+															},
+														})
+													}
+												/>
 												<IconActionTable
 													icon={<DocumentSketch color='#292D32' size={24} />}
 													tooltip='Copy và đăng mới'
@@ -402,6 +415,7 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					onSubmit={funcChangeSwitch.mutate}
 				/>
 
+				{/* Create */}
 				<PositionContainer
 					open={_open == 'create'}
 					onClose={() => {
@@ -418,6 +432,33 @@ function MainAdvertisement({}: PropsMainAdvertisement) {
 					<FormCreateAdvertisement
 						onClose={() => {
 							const {_open, ...rest} = router.query;
+
+							router.replace({
+								pathname: router.pathname,
+								query: {
+									...rest,
+								},
+							});
+						}}
+					/>
+				</PositionContainer>
+
+				<PositionContainer
+					open={!!_uuidUpdate}
+					onClose={() => {
+						const {_uuidUpdate, ...rest} = router.query;
+
+						router.replace({
+							pathname: router.pathname,
+							query: {
+								...rest,
+							},
+						});
+					}}
+				>
+					<FormUpdateAdvertisement
+						onClose={() => {
+							const {_uuidUpdate, ...rest} = router.query;
 
 							router.replace({
 								pathname: router.pathname,

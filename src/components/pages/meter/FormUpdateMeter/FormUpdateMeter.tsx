@@ -91,7 +91,7 @@ function FormUpdateMeter({onClose}: PropsFormUpdateMeter) {
 	>([QUERY_KEY.dropdown_apartment], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListApartments({
+				http: apartmentServices.getListCatalogApartments({
 					isPaging: CONFIG_PAGING.NO_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.CATALOG,
 					page: 1,

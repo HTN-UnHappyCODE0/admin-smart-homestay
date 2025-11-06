@@ -1,6 +1,6 @@
 import {useRouter} from 'next/router';
 import styles from './DetailAdvertisement.module.scss';
-import {IDetailAdvertisement, PropsDetailAdvertisement} from './interfaces';
+import {IDetailAdvertisement, IDetailApartment, PropsDetailAdvertisement} from './interfaces';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import FlexLayout from '~/components/layouts/FlexLayout';
@@ -20,6 +20,7 @@ import {convertCoin} from '~/common/funcs/convertCoin';
 import Dialog from '~/components/common/Dialog';
 import {Warning2} from 'iconsax-react';
 import {getUnitByAdPrice} from '~/common/funcs/getUnitByAdPrice';
+import apartmentServices from '~/services/apartmentServices';
 
 function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 	const router = useRouter();
@@ -33,20 +34,37 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 		title: string;
 	} | null>(null);
 
-	const {data: detailAdvertisement, isLoading} = useQuery<IDetailAdvertisement>(
-		[QUERY_KEY.detail_apartment_advertisement_module, _uuidDetail],
-		{
-			queryFn: () =>
-				httpRequest({
-					http: advertisementServices.getAdvertisementByUuid({uuid: _uuidDetail as string}),
-				}),
+	const [apartmentUuid, setApartmentUuid] = useState<string>('');
 
-			select(data) {
-				return data;
-			},
-			enabled: !!_uuidDetail,
-		}
-	);
+	const {data: detailAdvertisement} = useQuery<IDetailAdvertisement>([QUERY_KEY.detail_apartment_advertisement_module, _uuidDetail], {
+		queryFn: () =>
+			httpRequest({
+				http: advertisementServices.getAdvertisementByUuid({uuid: _uuidDetail as string}),
+			}),
+
+		select(data) {
+			return data;
+		},
+		onSuccess(data) {
+			if (data) {
+				setApartmentUuid(data.apartmentUu?.uuid);
+			}
+		},
+		enabled: !!_uuidDetail,
+	});
+
+	const {data: detailApartment} = useQuery<IDetailApartment>([QUERY_KEY.detail_apartment_advertisement_module, apartmentUuid], {
+		queryFn: () =>
+			httpRequest({
+				http: apartmentServices.apartmentDetail({
+					uuid: apartmentUuid,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		enabled: !!apartmentUuid,
+	});
 
 	const funcChangeSwitch = useMutation({
 		mutationFn: () =>
@@ -178,14 +196,47 @@ function DetailAdvertisement({onClose}: PropsDetailAdvertisement) {
 			<WrapperForm title='Thông tin căn hộ'>
 				<FlexLayout column gap-16>
 					<GridColumn col_3>
-						<InfoDetail name='Tên căn hộ' value={detailAdvertisement?.apartmentUu?.name || '---'} />
-						<InfoDetail name='Loại hình căn hộ' value={detailAdvertisement?.apartmentUu?.apartmentTypeUu?.name || '---'} />
-						<InfoDetail name='Diện tích' value={`${detailAdvertisement?.apartmentUu?.apartmentSize} m2` || 0} />
+						<InfoDetail name='Tên căn hộ' value={detailApartment?.name || '---'} />
+						<InfoDetail name='Loại hình căn hộ' value={detailApartment?.apartmentTypeUu?.name || '---'} />
+						<InfoDetail name='Diện tích' value={`${detailApartment?.apartmentSize} m2` || 0} />
 					</GridColumn>
 
 					<GridColumn col_3>
-						<InfoDetail name='Thông tin phòng' value={'---'} />
-						<InfoDetail name='Nội thất' value={'---'} />
+						<InfoDetail
+							name='Thông tin phòng'
+							value={
+								detailApartment?.roomTypeGroups?.length ? (
+									<>
+										{detailApartment.roomTypeGroups.map((roomGroup, index, array) => (
+											<span key={roomGroup.roomUu.uuid}>
+												{roomGroup.roomUu.name} * <span style={{color: '#2970FF'}}>{roomGroup.count}</span>
+												{index < array.length - 1 && <span>, </span>}
+											</span>
+										))}
+									</>
+								) : (
+									<>---</>
+								)
+							}
+						/>
+						<InfoDetail
+							name='Nội thất'
+							value={
+								detailApartment?.furnitureTypeGroups?.length ? (
+									<>
+										{detailApartment.furnitureTypeGroups.map((furnitureGroup, index, array) => (
+											<span key={furnitureGroup.furnitureUu.uuid}>
+												{furnitureGroup.furnitureUu.name} *{' '}
+												<span style={{color: '#2970FF'}}>{furnitureGroup.count}</span>
+												{index < array.length - 1 && <span>, </span>}
+											</span>
+										))}
+									</>
+								) : (
+									<>---</>
+								)
+							}
+						/>
 					</GridColumn>
 					<InfoDetail
 						name='Hình ảnh'

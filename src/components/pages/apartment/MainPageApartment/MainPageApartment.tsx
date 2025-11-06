@@ -60,7 +60,7 @@ function MainPageApartment({}: PropsMainPageApartment) {
 	}>([QUERY_KEY.table_apartment, page, pageSize, keyword, stateApartment, status], {
 		queryFn: () =>
 			httpRequest({
-				http: apartmentServices.getListApartments({
+				http: apartmentServices.getListPagedApartments({
 					isPaging: CONFIG_PAGING.IS_PAGING,
 					typeFinding: CONFIG_TYPE_FINDING.DTO,
 					page: page,
